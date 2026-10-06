@@ -107,8 +107,8 @@ button{ font:inherit; color:inherit; background:none; border:0; cursor:pointer; 
 .nvi{ position:static; }
 /* 가로형 2뎁스 : 헤더 폭 전체로 떨어지는 띠 */
 .nvi .sub{ position:absolute; top:100%; left:0; right:0; z-index:70;
-  display:flex; flex-wrap:wrap; align-items:stretch;
-  padding:0 var(--gut);
+  display:flex; flex-wrap:wrap; align-items:stretch; justify-content:flex-end;
+    padding:0 calc(var(--gut) - clamp(14px,1.5vw,26px)) 0 var(--gut);
   background:rgba(13,18,46,.96); backdrop-filter:blur(16px);
   border-top:1.5px solid var(--amber); border-bottom:1px solid var(--hair-ink);
   opacity:0; visibility:hidden; transform:translateY(-10px);
@@ -120,7 +120,7 @@ button{ font:inherit; color:inherit; background:none; border:0; cursor:pointer; 
   transition:color .2s, background .2s; }
 .nvi .sub a + a::before{ content:''; position:absolute; left:0; top:17px; bottom:17px;
   width:1px; background:var(--hair-ink); }
-.nvi .sub a:first-child{ padding-left:0; }
+
 .nvi .sub a:hover{ color:var(--amber); background:rgba(232,163,61,.07); }
 .hd .lang{ display:flex; gap:9px; margin-left:clamp(12px,2vw,30px); font-family:var(--mono); font-size:13px; letter-spacing:.1em; }
 .hd .lang b{ color:var(--amber); }
@@ -291,6 +291,14 @@ button{ font:inherit; color:inherit; background:none; border:0; cursor:pointer; 
   height: 100%;
   object-fit: cover;
 }
+/* 아직 도판을 받지 못한 칸에 붙는 꼬리표 — 사진이 들어오면 이 span 만 지우면 된다 */
+.tile-hold{
+  position:absolute; left:16px; top:16px; z-index:1;
+  padding:5px 10px;
+  font-family:var(--mono); font-size:10px; letter-spacing:.18em;
+  color:var(--amber); border:1px solid rgba(232,163,61,.45);
+  background:rgba(10,14,36,.55);
+}
 /* .tile.big img { transform: rotate(90deg); object-fit: contain; } */
 /* 
 .mosaic{ 
@@ -325,6 +333,8 @@ button{ font:inherit; color:inherit; background:none; border:0; cursor:pointer; 
   text-align:left;
 }
 .pan:first-child{ border-left:0; }
+.pan{ -webkit-tap-highlight-color:transparent; }
+.pan:focus-visible{ outline:2px solid var(--amber); outline-offset:-4px; }
 .pan::before{ content:'+'; position:absolute; z-index:5; top:clamp(18px,2.4vw,34px); left:50%;
   width:clamp(32px,3.1vw,44px); height:clamp(32px,3.1vw,44px);
   display:flex; align-items:center; justify-content:center;
@@ -358,18 +368,71 @@ button{ font:inherit; color:inherit; background:none; border:0; cursor:pointer; 
   color:#fff; transition:opacity .4s;
 }
 .pan.on .vlabel{ opacity:0; pointer-events:none; }
-.pan .shots{ position:absolute; z-index:4; display:flex; flex-direction:column; gap:8px;
+/* ============ 설비 무대 : 3D 모형 ↔ 도판 ============ */
+.pan .pan-media{ position:absolute; z-index:5; display:block;   /* .body(z-index:4) 보다 위 — 안 그러면 HUD·토글이 눌리지 않는다 */
   top:clamp(26px,4vw,62px); bottom:clamp(26px,4vw,62px); right:clamp(26px,4vw,62px);
   width:auto; aspect-ratio:.866; max-width:46%;
   opacity:0; transform:translateY(16px); pointer-events:none;
   transition:opacity .5s .3s, transform .6s .3s; }
-.pan.on .shots{ opacity:1; transform:none; }
-.pan .shots .sh{ display:flex; min-height:0; overflow:hidden;
-  background:var(--ink-2); border:1px solid rgba(237,240,250,.16); }
-.pan .shots .sh:first-child{ flex:3 1 0; }
-.pan .shots .wide{ flex:1 1 0; }
-.pan .shots .sh img{ display:block; width:100%; height:100%; object-fit:cover; }
-@media (max-width:1280px){ .pan .shots{ display:none; } }
+.pan.on .pan-media{ opacity:1; transform:none; pointer-events:auto; }
+
+.pan-media .model-stage,
+.pan-media .media-photo{ position:absolute; inset:0; overflow:hidden; }
+.pan-media .model-stage{ border:1px solid rgba(237,240,250,.16);
+  background:linear-gradient(168deg,var(--ink-3) 0%,var(--ink) 72%);
+  opacity:1; visibility:visible; transition:opacity .4s, visibility 0s; }
+.pan-media .media-photo{ border:1px solid rgba(237,240,250,.16); background:var(--ink-2);
+  opacity:0; visibility:hidden; transition:opacity .4s, visibility 0s linear .4s; }
+.pan-media[data-view="photo"] .model-stage{ opacity:0; visibility:hidden; transition:opacity .4s, visibility 0s linear .4s; }
+.pan-media[data-view="photo"] .media-photo{ opacity:1; visibility:visible; transition:opacity .4s, visibility 0s; }
+
+.poster-grid{ position:absolute; inset:0; display:grid; gap:8px; padding:10px; box-sizing:border-box;
+  grid-template-columns:1fr; grid-template-rows:3fr 1fr; }
+.poster-grid.poster-grid-1{ grid-template-rows:1fr; }
+.poster-grid figure{ position:relative; overflow:hidden; background:var(--ink-2);
+  border:1px solid rgba(237,240,250,.16); }
+.poster-grid img{ display:block; width:100%; height:100%; object-fit:cover; }
+.poster-grid img.is-contain{ object-fit:contain; padding:7px; }
+.poster-grid .poster-label{ position:absolute; left:0; top:0; z-index:2;
+  font-family:var(--mono); font-weight:700; font-size:9px; letter-spacing:.1em; text-transform:uppercase;
+  padding:3px 7px 2px; background:rgba(10,14,36,.88); color:var(--amber);
+  border-right:1px solid rgba(237,240,250,.18); border-bottom:1px solid rgba(237,240,250,.18); }
+.no-photo{ position:absolute; inset:0; display:grid; place-items:center;
+  font-family:var(--mono); font-size:10px; letter-spacing:.16em; text-transform:uppercase; color:var(--on-ink-3); }
+
+/* 모형 무대 안쪽 */
+.model-stage .model-poster{ position:absolute; inset:0; width:100%; height:100%; object-fit:contain;
+  opacity:1; transition:opacity .25s; }
+.pan.is-active .model-stage .model-poster{ opacity:0; }
+.model-stage .model-slot{ position:absolute; inset:0; display:block; }
+.model-loading{ position:absolute; inset:0; display:grid; place-items:center; z-index:4;
+  font-family:var(--mono); font-size:10px; letter-spacing:.16em; text-transform:uppercase; color:var(--on-ink-3); }
+#model-live{ position:absolute; inset:0; }
+#model-live canvas{ display:block; width:100%; height:100%; touch-action:pan-y; }
+@media (pointer:fine){ #model-live canvas{ touch-action:none; } }
+.model-vignette{ position:absolute; inset:0; pointer-events:none;
+  background:radial-gradient(ellipse at 50% 58%,transparent 42%,rgba(10,14,36,.42) 100%); }
+.model-scale{ position:absolute; left:12px; top:12px; padding-left:9px;
+  border-left:1px solid rgba(237,240,250,.3);
+  font-family:var(--mono); font-size:9.5px; letter-spacing:.14em; color:var(--on-ink-2); }
+.model-hud{ position:absolute; left:12px; bottom:12px; z-index:3; display:flex; gap:6px; flex-wrap:wrap; }
+.model-hud button{ font-family:var(--mono); font-size:9.5px; letter-spacing:.12em; text-transform:uppercase;
+  padding:7px 10px 6px; border:1px solid rgba(237,240,250,.24); background:rgba(10,14,36,.6);
+  color:var(--on-ink-2); transition:border-color .2s, color .2s, background .2s; }
+.model-hud button:hover{ border-color:var(--amber); color:var(--amber); }
+.model-hud button[aria-pressed="true"]{ background:var(--amber); border-color:var(--amber); color:#1A1000; }
+
+/* 보기 전환 토글 */
+.view-toggle{ position:absolute; z-index:6; top:12px; right:12px; display:flex;
+  border:1px solid rgba(237,240,250,.24); background:rgba(10,14,36,.6); backdrop-filter:blur(6px); }
+.view-toggle button{ font-family:var(--mono); font-size:9.5px; font-weight:700; letter-spacing:.14em;
+  text-transform:uppercase; padding:7px 13px 6px; color:var(--on-ink-2);
+  border-left:1px solid rgba(237,240,250,.18); transition:background .2s, color .2s; }
+.view-toggle button:first-child{ border-left:0; }
+.view-toggle button:hover{ color:var(--amber); }
+.view-toggle button[aria-pressed="true"]{ background:var(--amber); color:#1A1000; }
+
+@media (max-width:1280px){ .pan .pan-media{ display:none; } }
 @media (min-width:1281px){ .pan.on .body{ padding-right:calc(46% + 76px); } }
 .pan .body{
   position:absolute; inset:auto 0 0 0; z-index:4; padding:clamp(26px,4vw,62px);
@@ -467,14 +530,13 @@ button{ font:inherit; color:inherit; background:none; border:0; cursor:pointer; 
 .strip::after{ content:''; position:absolute; inset:0; background:linear-gradient(180deg,rgba(242,243,248,1) 0%,rgba(10,14,36,.1) 40%,rgba(10,14,36,.86) 100%); }
 
 /* ============ 06 찾아오시는 길 ============ */
-.loc{ 
+.loc{
   display:grid;
-  grid-template-columns:minmax(0,7fr) minmax(0,5fr); 
-  min-height:min(78vh,700px);
-  /* margin-bottom: 50px; */
-   /* border-top:1px solid var(--hair-paper);  */
+  grid-template-columns:minmax(0,7fr) minmax(0,5fr);
+  min-height:600px;          /* 최소 높이만 정하고, 실제 높이는 내용이 정한다 */
 }
-.mapbox{ position:relative; background:var(--paper-2); height:600px; overflow: hidden; }
+.mapbox{ position:relative; background:var(--paper-2); overflow:hidden; }
+/* 지도는 행 높이에 맞춰 늘어난다 — 오른쪽 정보단과 아래끝이 저절로 맞는다 */
 .mapbox .kmaphost{ position:absolute; inset:0; overflow:hidden; display:flex; align-items:center; justify-content:center; }
 .mapbox .kmaphost .root_daum_roughmap{ width:100% !important; }
 .mapbox .kmaphost .root_daum_roughmap .wrap_map{ width:100% !important; }
@@ -484,7 +546,7 @@ button{ font:inherit; color:inherit; background:none; border:0; cursor:pointer; 
 .mapfall > *{ position:relative; }
 .mapfall b{ font-size:17px; font-weight:700; }
 .mapfall span{ font-family:var(--mono); font-size:11px; letter-spacing:.14em; opacity:.72; }
-.locinfo{ padding:clamp(34px,5vw,74px) var(--gut) clamp(34px,5vw,74px) clamp(24px,4vw,64px); display:flex; flex-direction:column; }
+.locinfo{ padding:56px var(--gut) 0 56px; display:flex; flex-direction:column; }
 .locinfo h2{ font-size:clamp(25px,3.4vw,46px); font-weight:900; letter-spacing:-.04em; line-height:1.04; }
 .locinfo .addr{ margin-top:22px; font-size:clamp(15px,1.3vw,18px); font-weight:500; line-height:1.72; }
 .locinfo dl{ margin-top:auto; padding-top:30px; }
@@ -545,6 +607,7 @@ button{ font:inherit; color:inherit; background:none; border:0; cursor:pointer; 
 @media (max-width:980px){
   .hd nav{ display:none; }
   .ov-lead,.mosaic,.loc,.ft .top,.ovgrid{ grid-template-columns:1fr; }
+  .mosaic .tile{ grid-column:auto; grid-row:auto; }
   .ovside{ margin-top:14px; }
   .tile.big{ grid-row:auto; aspect-ratio:4/3; }
   .acc{ flex-direction:column; height:auto; }
@@ -637,20 +700,20 @@ button{ font:inherit; color:inherit; background:none; border:0; cursor:pointer; 
     <div class="ovgrid">
       <div class="mosaic seq">
         <figure class="tile big">
-          <img src="assets/a-m1.jpg" alt="통합 풍동 설비 배치">
+          <img src="assets/a-m1.jpg" alt="통합 풍동 시험 설비 배치 조감">
           <figcaption>
-            <b>통합 풍동 설비 배치</b>
-            <span>Facility Layout</span>
+            <b>통합 풍동 시험 설비</b>
+            <span>Integrated Facility</span>
             <p>
                다양한 속도 영역의 고난이도 공기역학 환경을 지상에서 재현하기 위한 
                통합 풍동 시험장치를 제작·설치.
           </figcaption>
         </figure>
         <figure class="tile sm">
-          <img src="assets/a-m2.jpg" alt="삼중음속 풍동 설치 공간">
+          <img src="assets/a-m2.jpg" alt="삼중음속 풍동이 놓인 시험동 내부">
           <figcaption>
             <b>삼중음속 풍동 설치 공간</b>
-            <span>Installation</span>
+            <span>Trisonic Wind Tunnel</span>
             <p>
               불어내기식으로 정체압력 1~9.8 atm, 질량유량 60~200kg/s 조건에서 
               마하수 0.5~3급 이상의 공력 시험을 최대 60초 유지할 수 있는 장치 구축
@@ -658,23 +721,25 @@ button{ font:inherit; color:inherit; background:none; border:0; cursor:pointer; 
           </figcaption>
         </figure>
         <figure class="tile sm">
-          <img src="assets/a-m4.jpg" alt="극초음속 교체형 노즐">
+          <img src="assets/a-m4.jpg" alt="극초음속 풍동과 진공탱크가 놓인 시험동 내부">
           <figcaption>
-            <b>극초음속 풍동</b>
+            <b>극초음속 풍동 설치 공간</b>
             <span>Hypersonic Wind Tunnel</span>
             <p>
-                기히터 가열식 불어내기 방식으로 전압력 10~24 atm, 질량유량 1~2.9 kg/s 조건에서 
+                전기히터 가열식 불어내기 방식으로 전압력 10~24 atm, 질량유량 1~2.9 kg/s 조건에서 
                 마하 7급 공력시험을 최대 30초 유지 가능한 장치 구축
             </p>
           </figcaption>
         </figure>
         <figure class="tile big">
-          <img src="assets/a-m3.jpg" alt="극초음속 교체형 노즐">
+          <img src="assets/a-m5.jpg" alt="발리스틱 레인지 설치 공간 — 도판 준비 중">
+          <span class="tile-hold">도판 준비 중</span>
           <figcaption>
-            <b>교체형 노즐</b>
-            <span>Contoured Nozzle</span>
+            <b>발리스틱 레인지 설치 공간</b>
+            <span>Ballistic Range</span>
             <p>
-
+              2단 경가스 발사기로 Ø12.7 mm 탄도에서 모형을 최대 4 km/s까지 가속해,
+              지지대 없는 자유비행 조건의 공력을 계측합니다. 발사부 8 m, 시험부 4.5 m.
             </p>
           </figcaption>
         </figure>
@@ -699,13 +764,31 @@ button{ font:inherit; color:inherit; background:none; border:0; cursor:pointer; 
   </div>
 
   <div class="acc" id="acc">
-    <button class="pan on" data-i="0" aria-expanded="true">
+    <div class="pan on" data-i="0" role="button" tabindex="0" aria-expanded="true">
       <span class="bg" style="background-image:url('assets/a-eq1.jpg')"></span>
       <span class="vlabel">삼중음속 풍동</span>
-      <span class="shots">
-        <span class="sh"><img src="assets/a-tri1.jpg" alt="삼중음속 풍동 전체 구성"></span>
-        <span class="sh wide"><img src="assets/a-tri3.jpg" alt="삼중음속 풍동 측면 전개도"></span>
-      </span>
+      <span class="pan-media" data-view="model">
+          <span class="model-stage">
+            <img class="model-poster" alt="" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==">
+            <span class="model-slot"><div id="model-live">
+              <div class="model-vignette"></div>
+              <p class="model-scale" id="model-scale"></p>
+              <div class="model-hud">
+                <button type="button" id="model-reset">시점 초기화</button>
+                <button type="button" id="model-spin" aria-pressed="true">자동 회전</button>
+              </div>
+            </div></span>
+            <span class="model-loading">3D 모형 불러오는 중</span>
+          </span>
+          <span class="media-photo"><span class="poster-grid">
+            <figure><span class="poster-label">a</span><img class="is-contain" src="assets/a-tri1.jpg" alt="삼중음속 풍동 전체 구성" loading="lazy"></figure>
+            <figure><span class="poster-label">b</span><img class="is-contain" src="assets/a-tri3.jpg" alt="삼중음속 풍동 측면 전개도" loading="lazy"></figure>
+          </span></span>
+          <span class="view-toggle" role="group" aria-label="보기 전환">
+            <button type="button" data-view-btn="model" aria-pressed="true">Model</button>
+            <button type="button" data-view-btn="photo" aria-pressed="false">Photo</button>
+          </span>
+        </span>
       <span class="body">
         <span class="tag mono"><i></i>Facility 01</span>
         <h3>삼중음속 풍동</h3>
@@ -719,15 +802,26 @@ button{ font:inherit; color:inherit; background:none; border:0; cursor:pointer; 
         </dl>
         <span class="lnk">상세 사양 보기 <span>→</span></span>
       </span>
-    </button>
+    </div>
 
-    <button class="pan" data-i="1" aria-expanded="false">
+    <div class="pan" data-i="1" role="button" tabindex="0" aria-expanded="false">
       <span class="bg" style="background-image:url('assets/a-eq2.jpg')"></span>
       <span class="vlabel">극초음속 풍동</span>
-      <span class="shots">
-        <span class="sh"><img src="assets/a-hyp2.jpg" alt="극초음속 풍동 진공탱크"></span>
-        <span class="sh wide"><img src="assets/a-hyp3.jpg" alt="극초음속 풍동 측면 선도면"></span>
-      </span>
+      <span class="pan-media" data-view="model">
+          <span class="model-stage">
+            <img class="model-poster" alt="" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==">
+            <span class="model-slot"></span>
+            <span class="model-loading">3D 모형 불러오는 중</span>
+          </span>
+          <span class="media-photo"><span class="poster-grid">
+            <figure><span class="poster-label">a</span><img class="is-contain" src="assets/a-hyp2.jpg" alt="극초음속 풍동 진공탱크" loading="lazy"></figure>
+            <figure><span class="poster-label">b</span><img class="is-contain" src="assets/a-hyp3.jpg" alt="극초음속 풍동 측면 선도면" loading="lazy"></figure>
+          </span></span>
+          <span class="view-toggle" role="group" aria-label="보기 전환">
+            <button type="button" data-view-btn="model" aria-pressed="true">Model</button>
+            <button type="button" data-view-btn="photo" aria-pressed="false">Photo</button>
+          </span>
+        </span>
       <span class="body">
         <span class="tag mono"><i></i>Facility 02</span>
         <h3>극초음속 풍동</h3>
@@ -741,11 +835,23 @@ button{ font:inherit; color:inherit; background:none; border:0; cursor:pointer; 
         </dl>
         <span class="lnk">상세 사양 보기 <span>→</span></span>
       </span>
-    </button>
+    </div>
 
-    <button class="pan" data-i="2" aria-expanded="false">
+    <div class="pan" data-i="2" role="button" tabindex="0" aria-expanded="false">
       <span class="bg nobg"></span>
       <span class="vlabel">발리스틱 레인지</span>
+      <span class="pan-media" data-view="model">
+          <span class="model-stage">
+            <img class="model-poster" alt="" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==">
+            <span class="model-slot"></span>
+            <span class="model-loading">3D 모형 불러오는 중</span>
+          </span>
+          <span class="media-photo"><span class="no-photo">현장 도판 준비 중</span></span>
+          <span class="view-toggle" role="group" aria-label="보기 전환">
+            <button type="button" data-view-btn="model" aria-pressed="true">Model</button>
+            <button type="button" data-view-btn="photo" aria-pressed="false">Photo</button>
+          </span>
+        </span>
       <span class="body">
         <span class="tag mono"><i></i>Facility 03</span>
         <h3>발리스틱 레인지</h3>
@@ -759,7 +865,7 @@ button{ font:inherit; color:inherit; background:none; border:0; cursor:pointer; 
         </dl>
         <span class="lnk">상세 사양 보기 <span>→</span></span>
       </span>
-    </button>
+    </div>
   </div>
 </section>
 
@@ -819,7 +925,7 @@ button{ font:inherit; color:inherit; background:none; border:0; cursor:pointer; 
 </section>
 
 <!-- ============ 06 찾아오시는 길 ============ -->
-<section class="paper" id="loc">
+<section class="paper" id="loc" style="padding-bottom:80px">
   <div class="wrap">
     <div class="shead rv">
       <div>
@@ -856,7 +962,7 @@ button{ font:inherit; color:inherit; background:none; border:0; cursor:pointer; 
     </div>
   </div>
 </section>
-<div style="height:80px"></div>
+
 
 <!-- ============ 푸터 ============ -->
 <footer class="ink ft">
@@ -942,16 +1048,7 @@ button{ font:inherit; color:inherit; background:none; border:0; cursor:pointer; 
   }, { threshold:0.1, rootMargin:'0px 0px -7% 0px' });
   document.querySelectorAll('.rv, .seq, .lines').forEach(function(el){ io.observe(el); });
 
-  /* 아코디언 */
-  var pans = Array.prototype.slice.call(document.querySelectorAll('#acc .pan'));
-  pans.forEach(function(p){
-    function open(){
-      pans.forEach(function(q){ q.classList.remove('on'); q.setAttribute('aria-expanded','false'); });
-      p.classList.add('on'); p.setAttribute('aria-expanded','true');
-    }
-    p.addEventListener('click', open);
-    p.addEventListener('focus', open);
-  });
+  /* 아코디언은 설비 3D 스크립트가 함께 맡는다 */
 
 
   /* 히어로 2컷 캐러셀 */
@@ -973,6 +1070,641 @@ button{ font:inherit; color:inherit; background:none; border:0; cursor:pointer; 
     go(0);
     if (!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches)) play();
   })();
+})();
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+
+/* ============================================================
+   설비 구조 3D — 시안 B 의 무대를 아코디언에 맞춰 옮겨 왔다.
+   패널을 펼치면 그 칸으로 렌더러를 옮기고, 접힌 칸은 직전 화면을
+   포스터로 띄워 둔다. 캔버스는 하나만 쓴다.
+   ============================================================ */
+(function () {
+  'use strict';
+
+  var REDUCED = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function clamp(v, a, b) { return v < a ? a : (v > b ? b : v); }
+
+  var pin = document.getElementById('acc');
+  if (!pin) return;
+  var panels = Array.prototype.slice.call(pin.querySelectorAll('.pan'));
+  var STEPS = panels.length;
+  var step = 0;
+  var setStep = function () {};
+
+  /* ---------- 아코디언 : 한 칸만 펼친다 ---------- */
+  function open(i) {
+    if (i === step && panels[i].classList.contains('on')) return;
+    panels.forEach(function (p, k) {
+      p.classList.toggle('on', k === i);
+      p.setAttribute('aria-expanded', k === i ? 'true' : 'false');
+    });
+    setStep(i);
+  }
+  panels.forEach(function (p, i) {
+    p.addEventListener('click', function (e) {
+      /* 무대 안의 조작부(토글·HUD)와 캔버스는 칸을 여는 동작에서 제외한다 */
+      if (e.target.closest('.pan-media') && p.classList.contains('on')) return;
+      open(i);
+    });
+    p.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') { e.preventDefault(); open(i); }
+    });
+    p.addEventListener('focus', function () { open(i); });
+  });
+
+/* ---------------------------------------------- 3. three.js */
+  var booted = false;
+  var io = new IntersectionObserver(function (es) {
+    es.forEach(function (e) { if (e.isIntersecting && !booted) { booted = true; io.disconnect(); boot(); } });
+  }, { rootMargin: '400px 0px' });
+  io.observe(pin);
+
+  function fail(msg) {
+    panels.forEach(function (p) {
+      var l = p.querySelector('.model-loading'); if (l) { l.textContent = msg; l.style.display = ''; }
+    });
+  }
+  function boot() {
+    if (typeof THREE === 'undefined') { fail('3D 모형을 불러오지 못했습니다'); return; }
+    try { init(); } catch (err) { fail('3D 모형을 표시할 수 없습니다'); }
+  }
+
+  function init() {
+    var ACCENT = 0xC0362B;
+    var live = document.getElementById('model-live');
+    var scaleEl = document.getElementById('model-scale');
+    var raycaster = new THREE.Raycaster(), ndc = new THREE.Vector2();
+    var models = {}, current = null, parts = [], selected = -1;
+    var spin = true, visible = true;
+    var cam = { theta: .9, phi: 1.1, radius: 44, target: new THREE.Vector3(0, 2.5, 0) };
+    var goal = { theta: .9, phi: 1.1, radius: 44, target: new THREE.Vector3(0, 2.5, 0) };
+    var clip = new THREE.Plane(new THREE.Vector3(0, 0, -1), 100);
+
+    var EQUIP = [
+      { id: 'trisonic', span: '전장 약 27,450 mm', cam: { theta: .85, phi: 1.12, radius: 42, ty: 2.6 } },
+      { id: 'hypersonic', span: '노즐 출구 Ø300 mm', cam: { theta: .90, phi: 1.08, radius: 47, ty: 2.8 } },
+      { id: 'ballistic', span: '발사부 8 m · 시험부 4.5 m', cam: { theta: .95, phi: 1.14, radius: 53, ty: 2.2 } }
+    ];
+
+    var renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.localClippingEnabled = true;
+    live.insertBefore(renderer.domElement, live.firstChild);
+
+    var scene = new THREE.Scene();
+    var camera = new THREE.PerspectiveCamera(38, 1, .5, 400);
+
+    scene.add(new THREE.HemisphereLight(0xEDF2F0, 0x33403D, 1.02));
+    var key = new THREE.DirectionalLight(0xffffff, 1.0);
+    key.position.set(26, 34, 22); key.castShadow = true;
+    key.shadow.mapSize.set(1024, 1024);
+    var dd = 34;
+    key.shadow.camera.left = -dd; key.shadow.camera.right = dd;
+    key.shadow.camera.top = dd; key.shadow.camera.bottom = -dd;
+    key.shadow.camera.near = 1; key.shadow.camera.far = 120;
+    scene.add(key);
+    var fillL = new THREE.DirectionalLight(0xBCCCC9, .34);
+    fillL.position.set(-24, 14, -18); scene.add(fillL);
+
+    var grid = new THREE.GridHelper(120, 60, 0x8B9996, 0x8B9996);
+    grid.material.transparent = true; grid.material.opacity = .24;
+    scene.add(grid);
+    var floor = new THREE.Mesh(new THREE.PlaneGeometry(200, 200), new THREE.ShadowMaterial({ opacity: .15 }));
+    floor.rotation.x = -Math.PI / 2; floor.position.y = -.01; floor.receiveShadow = true;
+    scene.add(floor);
+
+    function M(c, m, r, o) {
+      return new THREE.MeshStandardMaterial(Object.assign(
+        { color: c, metalness: m, roughness: r, clippingPlanes: [clip], clipShadows: true }, o || {}));
+    }
+    var mk = {
+      duct: function () { return M(0xC3CCC9, .72, .34); },
+      duct2: function () { return M(0xA7B2AF, .78, .40); },
+      tank: function () { return M(0x9CA7A4, .62, .46); },
+      frame: function () { return M(0x67736F, .35, .72); },
+      dark: function () { return M(0x515D5A, .45, .62); },
+      model: function () { return M(0xEDF1F0, .28, .45); },
+      hot: function () { return M(0x9A6A5E, .50, .58); },
+      glass: function () { return M(0xAFC6C4, .05, .08, { transparent: true, opacity: .25, side: THREE.DoubleSide, depthWrite: false }); }
+    };
+    function fixTY(m) { m.translateY = function (y) { this.position.y += y; return this; }; return m; }
+    function cyl(x, len, rN, rP, mat, seg) {
+      var m = new THREE.Mesh(new THREE.CylinderGeometry(rP, rN, len, seg || 36, 1, false), mat);
+      m.rotation.z = -Math.PI / 2; m.position.x = x; m.castShadow = true; m.receiveShadow = true; return fixTY(m);
+    }
+    function ringM(x, r, t, mat) {
+      var m = new THREE.Mesh(new THREE.TorusGeometry(r, t, 10, 40), mat);
+      m.rotation.y = Math.PI / 2; m.position.x = x; m.castShadow = true; return m;
+    }
+    function box(x, y, z, w, h, dp, mat) {
+      var m = new THREE.Mesh(new THREE.BoxGeometry(w, h, dp), mat);
+      m.position.set(x, y, z); m.castShadow = true; m.receiveShadow = true; return m;
+    }
+    function lathe(x, len, rA, rB, curve, mat) {
+      var pts = [], N = 26;
+      for (var i = 0; i <= N; i++) {
+        var t = i / N, r = rA + (rB - rA) * Math.pow(t, curve);
+        pts.push(new THREE.Vector2(Math.max(r, .02), t * len));
+      }
+      var m = new THREE.Mesh(new THREE.LatheGeometry(pts, 48), mat);
+      m.rotation.z = -Math.PI / 2; m.position.x = x; m.castShadow = true; m.receiveShadow = true; return fixTY(m);
+    }
+    function legs(g, x0, x1, axisY, r, stp) {
+      var mat = mk.frame();
+      for (var x = x0; x <= x1 + .001; x += (stp || 4)) {
+        var h = axisY - r; if (h <= .2) continue;
+        g.add(box(x, h / 2, 0, .5, h, 1.8, mat));
+      }
+    }
+    function testModel(x, y, sc, mat) {
+      var g = new THREE.Group();
+      var body = new THREE.Mesh(new THREE.CylinderGeometry(.06, .16, 1.5, 20), mat);
+      body.rotation.z = Math.PI / 2; g.add(body);
+      var nose = new THREE.Mesh(new THREE.ConeGeometry(.16, .7, 20), mat);
+      nose.rotation.z = -Math.PI / 2; nose.position.x = 1.05; g.add(nose);
+      var wing = new THREE.Mesh(new THREE.BoxGeometry(.55, .035, 1.5), mat);
+      wing.position.x = -.25; g.add(wing);
+      var fin = new THREE.Mesh(new THREE.BoxGeometry(.42, .55, .035), mat);
+      fin.position.set(-.6, .28, 0); g.add(fin);
+      g.traverse(function (o) { if (o.isMesh) o.castShadow = true; });
+      g.scale.setScalar(sc); g.position.set(x, y, 0); return g;
+    }
+
+    /* ---------- 모델 1 · 삼중음속 ---------- */
+    function buildTrisonic() {
+      var root = new THREE.Group(), list = [], AX = 2.6;
+      function part(o) { o.group.userData.part = o; list.push(o); root.add(o.group); }
+
+      (function () {
+        var g = new THREE.Group(), mat = mk.tank();
+        [-2.6, 0, 2.6].forEach(function (z) {
+          var t = cyl(-13.5, 9, 1.15, 1.15, mat, 32); t.position.y = 1.6; t.position.z = z; g.add(t);
+          [-1.15, 1.15].forEach(function (sg) {
+            var cap = new THREE.Mesh(new THREE.SphereGeometry(1.15, 24, 16, 0, Math.PI * 2, 0, Math.PI / 2), mat);
+            cap.rotation.z = sg > 0 ? -Math.PI / 2 : Math.PI / 2;
+            cap.position.set(-13.5 + sg * 4.5, 1.6, z); cap.castShadow = true; g.add(cap);
+          });
+          [-16.5, -13.5, -10.5].forEach(function (x) { g.add(box(x, .25, z, .7, .5, 2.6, mk.frame())); });
+        });
+        g.add(cyl(-8.6, 2.6, .34, .34, mk.duct2(), 20).translateY(1.6));
+        part({ id: 't1', no: '01', name: '고압 공기 저장탱크', en: 'High-Pressure Air Storage', group: g,
+          label: new THREE.Vector3(-13.5, 3.2, 0),
+          desc: '압축기로 충전한 건조 공기를 저장하는 축압 설비다. 취출식 풍동의 구동 에너지원으로, 저장 압력이 시험 가능 마하수와 지속시간을 결정한다.',
+          spec: [['구성', '200㎥ × 3기 (600㎥)'], ['저장압력', '최대 40 bar'], ['질량유량', '60 – 200 kg/s']] });
+      })();
+
+      (function () {
+        var g = new THREE.Group(), mat = mk.dark();
+        g.add(box(-6.9, 1.6, 0, 1.5, 1.5, 1.5, mat));
+        g.add(cyl(-6.9, 1.7, .42, .42, mk.duct2(), 24).translateY(1.6));
+        var stem = new THREE.Mesh(new THREE.CylinderGeometry(.09, .09, 1.1, 12), mat);
+        stem.position.set(-6.9, 2.75, 0); stem.castShadow = true; g.add(stem);
+        var wheel = new THREE.Mesh(new THREE.TorusGeometry(.42, .07, 8, 28), mat);
+        wheel.rotation.x = Math.PI / 2; wheel.position.set(-6.9, 3.3, 0); g.add(wheel);
+        var pipe = cyl(-5.3, 2.2, .42, .55, mk.duct(), 24); pipe.position.y = 1.6; g.add(pipe);
+        var riser = new THREE.Mesh(new THREE.CylinderGeometry(.55, .55, 1.2, 24), mk.duct());
+        riser.position.set(-4.3, 2.1, 0); riser.castShadow = true; g.add(riser);
+        part({ id: 't2', no: '02', name: '대유량 조절 시스템', en: 'Mass-Flow Control System', group: g,
+          label: new THREE.Vector3(-6.9, 3.9, 0),
+          desc: '시험 중 세틀링 챔버의 총압을 일정하게 유지하는 제어 밸브다. 마하수 안정도와 데이터 재현성을 좌우한다.',
+          spec: [['제어', '총압 폐루프'], ['응답', '고속 서보 구동'], ['연계', '마하수·받음각 제어반']] });
+      })();
+
+      (function () {
+        var g = new THREE.Group(), mat = mk.duct();
+        g.add(cyl(-2.6, 4.2, 1.5, 1.5, mat, 40).translateY(AX));
+        g.add(ringM(-4.7, 1.52, .09, mk.duct2()).translateY(AX));
+        g.add(ringM(-0.5, 1.52, .09, mk.duct2()).translateY(AX));
+        [-3.6, -2.8, -2.0].forEach(function (x) {
+          var scr = new THREE.Mesh(new THREE.CircleGeometry(1.45, 36), mk.glass());
+          scr.rotation.y = Math.PI / 2; scr.position.set(x, AX, 0); g.add(scr);
+        });
+        var hc = new THREE.Mesh(new THREE.CylinderGeometry(1.42, 1.42, .5, 36, 1, true), mk.dark());
+        hc.rotation.z = -Math.PI / 2; hc.position.set(-4.2, AX, 0); g.add(hc);
+        legs(g, -4.2, -1.0, AX, 1.5, 3.2);
+        part({ id: 't3', no: '03', name: '정체실', en: 'Settling Chamber', group: g,
+          label: new THREE.Vector3(-2.6, AX + 2.1, 0),
+          desc: '허니콤과 다단 스크린으로 난류와 와류를 걸러 균일한 유동을 만드는 구간이다. 이 구간의 성능이 시험부 유동 품질을 결정한다.',
+          spec: [['내부', '허니콤 + 스크린 3단'], ['길이', '약 8,000 mm'], ['기능', '유동 균일화']] });
+      })();
+
+      (function () {
+        var g = new THREE.Group();
+        g.add(lathe(-0.4, 1.9, 1.5, .55, 1.5, mk.duct2()).translateY(AX));
+        g.add(lathe(1.5, 1.1, .55, .8, .8, mk.duct2()).translateY(AX));
+        [-0.35, 0.6].forEach(function (x) {
+          [-1, 1].forEach(function (sg) { g.add(box(x, AX + sg * 1.25, 0, .7, .22, 1.3, mk.frame())); });
+        });
+        legs(g, .6, .6, AX, .8, 4);
+        part({ id: 't4', no: '04', name: '가변노즐', en: 'Variable Nozzle', group: g,
+          label: new THREE.Vector3(0.6, AX + 1.9, 0),
+          desc: '유연판과 액추에이터로 목(throat) 면적을 바꿔 아음속부터 초음속까지 마하수를 연속 가변하는 구간이다.',
+          spec: [['방식', '가변 노즐 실시간 제어'], ['마하수', 'M 0.5 – 3 급 이상'], ['길이', '약 6,300 mm']] });
+      })();
+
+      (function () {
+        var g = new THREE.Group();
+        g.add(box(3.6, AX, 0, 3.6, 1.9, 1.9, mk.glass()));
+        var f = mk.frame();
+        [1.8, 5.4].forEach(function (x) { g.add(box(x, AX, 0, .22, 2.1, 2.1, f)); });
+        [[0, 1.02], [0, -1.02]].forEach(function (p) { g.add(box(3.6, AX + p[1] * .95, 0, 3.4, .14, 2.05, f)); });
+        var win = new THREE.Mesh(new THREE.RingGeometry(.45, .58, 32), mk.dark());
+        win.position.set(3.6, AX, .99); g.add(win);
+        var sting = cyl(4.6, 2.0, .12, .12, mk.dark(), 16); sting.position.y = AX; g.add(sting);
+        g.add(testModel(3.3, AX, 1.0, mk.model()));
+        legs(g, 2.2, 5.0, AX, .95, 2.8);
+        part({ id: 't5', no: '05', name: '시험부 · 모형지지', en: 'Test Section & Model Support', group: g,
+          label: new THREE.Vector3(3.6, AX + 1.85, 0),
+          desc: '모형을 스팅에 장착하고 받음각·옆미끄럼각을 제어하며 공력계수를 계측하는 핵심 구간이다. 광학창으로 슐리렌·PIV 계측이 가능하다.',
+          spec: [['단면', '500 × 500 mm'], ['받음각', '−10° ~ +15°'], ['시험시간', '~ 60 초']] });
+      })();
+
+      (function () {
+        var g = new THREE.Group();
+        g.add(lathe(5.6, 4.6, .9, 1.55, 1.0, mk.duct()).translateY(AX));
+        g.add(cyl(11.2, 1.6, 1.55, 1.55, mk.duct(), 32).translateY(AX));
+        g.add(ringM(10.4, 1.58, .09, mk.duct2()).translateY(AX));
+        legs(g, 7.0, 11.0, AX, 1.3, 3.0);
+        part({ id: 't6', no: '06', name: '디퓨저 및 이젝터', en: 'Diffuser & Ejector', group: g,
+          label: new THREE.Vector3(8.4, AX + 2.1, 0),
+          desc: '시험부를 지난 초음속 유동을 감속하며 압력을 회복시키는 확대관이다. 회복 성능이 좋을수록 같은 압력에서 시험 지속시간이 길어진다.',
+          spec: [['길이', '약 9,500 mm'], ['기능', '압력 회복 · 충격파 안정화']] });
+      })();
+
+      (function () {
+        var g = new THREE.Group(), mat = mk.duct2();
+        var el = new THREE.Mesh(new THREE.TorusGeometry(1.6, 1.5, 16, 28, Math.PI / 2), mat);
+        el.position.set(12.0, AX + 1.6, 0); el.rotation.set(0, Math.PI, Math.PI); el.castShadow = true;
+        var tower = new THREE.Mesh(new THREE.CylinderGeometry(1.7, 1.9, 6.4, 32), mat);
+        tower.position.set(13.6, 5.8, 0); tower.castShadow = true;
+        var cap = new THREE.Mesh(new THREE.CylinderGeometry(2.1, 2.1, .4, 32), mk.frame());
+        cap.position.set(13.6, 9.2, 0); cap.castShadow = true;
+        g.add(el, tower, cap);
+        for (var i = 0; i < 3; i++) {
+          var r = new THREE.Mesh(new THREE.TorusGeometry(1.78, .07, 8, 36), mk.frame());
+          r.rotation.x = Math.PI / 2; r.position.set(13.6, 4.0 + i * 1.9, 0); g.add(r);
+        }
+        part({ id: 't7', no: '07', name: '소음저감장치', en: 'Noise Reduction', group: g,
+          label: new THREE.Vector3(13.6, 10.0, 0),
+          desc: '시험 공기를 대기로 방출하며 소음을 저감하는 설비다. 캠퍼스 내 설치 특성상 소음 규제 대응이 중요한 부위다.',
+          spec: [['형식', '흡음형 + 수직 배기'], ['높이', '약 9 m']] });
+      })();
+
+      return { root: root, parts: list };
+    }
+
+    /* ---------- 모델 2 · 극초음속 ---------- */
+    function buildHypersonic() {
+      var root = new THREE.Group(), list = [], AX = 3.0;
+      function part(o) { o.group.userData.part = o; list.push(o); root.add(o.group); }
+
+      (function () {
+        var g = new THREE.Group(), mat = mk.tank();
+        [-1.6, 1.6].forEach(function (z) {
+          var t = cyl(-14.5, 6.4, .95, .95, mat, 28); t.position.set(-14.5, 1.5, z); g.add(t);
+          [-0.95, 0.95].forEach(function (sg) {
+            var cap = new THREE.Mesh(new THREE.SphereGeometry(.95, 20, 14, 0, Math.PI * 2, 0, Math.PI / 2), mat);
+            cap.rotation.z = sg > 0 ? -Math.PI / 2 : Math.PI / 2;
+            cap.position.set(-14.5 + sg * 3.2, 1.5, z); cap.castShadow = true; g.add(cap);
+          });
+          [-16.6, -14.5, -12.4].forEach(function (x) { g.add(box(x, .22, z, .6, .44, 1.7, mk.frame())); });
+        });
+        g.add(cyl(-10.6, 2.6, .3, .3, mk.duct2(), 20).translateY(1.5));
+        part({ id: 'h1', no: '01', name: '고압 공기 공급부', en: 'High-Pressure Air Supply', group: g,
+          label: new THREE.Vector3(-14.5, 3.0, 0),
+          desc: '건조·정제된 고압 공기를 저장·공급하는 구간이다. 극초음속 영역은 노즐 팽창비가 커 삼중음속보다 높은 공급 압력이 필요하다.',
+          spec: [['정체압력', '10 – 24 atm'], ['질량유량', '1 – 2.9 kg/s']] });
+      })();
+
+      (function () {
+        var g = new THREE.Group(), mat = mk.hot();
+        var body = new THREE.Mesh(new THREE.CylinderGeometry(1.35, 1.35, 6.2, 32), mat);
+        body.position.set(-8.6, 3.6, 0); body.castShadow = true; g.add(body);
+        var dome = new THREE.Mesh(new THREE.SphereGeometry(1.35, 28, 16, 0, Math.PI * 2, 0, Math.PI / 2), mat);
+        dome.position.set(-8.6, 6.7, 0); dome.castShadow = true; g.add(dome);
+        g.add(box(-8.6, .3, 0, 3.4, .6, 3.4, mk.frame()));
+        for (var i = 0; i < 4; i++) {
+          var r = new THREE.Mesh(new THREE.TorusGeometry(1.42, .08, 8, 36), mk.dark());
+          r.rotation.x = Math.PI / 2; r.position.set(-8.6, 1.6 + i * 1.5, 0); g.add(r);
+        }
+        var el = cyl(-7.0, 1.6, .45, .45, mk.duct2(), 20); el.position.y = 6.2; g.add(el);
+        var down = new THREE.Mesh(new THREE.CylinderGeometry(.45, .45, 3.3, 20), mk.duct2());
+        down.position.set(-6.1, 4.6, 0); down.castShadow = true; g.add(down);
+        part({ id: 'h2', no: '02', name: '전기히터', en: 'Electric Heater', group: g,
+          label: new THREE.Vector3(-8.6, 7.6, 0),
+          desc: '축열체에 열을 저장했다가 통과하는 공기를 가열하는 설비다. 노즐에서 급팽창할 때 공기가 액화되는 것을 막기 위해 필수적이다.',
+          spec: [['방식', '전기히터 가열식'], ['목적', '노즐 팽창 시 응축 방지'], ['계측', '정체압 · 정체온도']] });
+      })();
+
+      (function () {
+        var g = new THREE.Group();
+        g.add(cyl(-3.9, 2.8, .95, .95, mk.duct(), 32).translateY(AX));
+        g.add(ringM(-5.3, .98, .08, mk.duct2()).translateY(AX));
+        g.add(ringM(-2.5, .98, .08, mk.duct2()).translateY(AX));
+        var scr = new THREE.Mesh(new THREE.CircleGeometry(.9, 32), mk.glass());
+        scr.rotation.y = Math.PI / 2; scr.position.set(-3.4, AX, 0); g.add(scr);
+        var el = new THREE.Mesh(new THREE.TorusGeometry(1.0, .45, 14, 24, Math.PI / 2), mk.duct2());
+        el.position.set(-6.1, AX, 0); el.rotation.set(Math.PI / 2, 0, Math.PI); el.castShadow = true; g.add(el);
+        legs(g, -4.6, -2.8, AX, .95, 2.0);
+        part({ id: 'h3', no: '03', name: '정체실', en: 'Stagnation Chamber', group: g,
+          label: new THREE.Vector3(-3.9, AX + 1.6, 0),
+          desc: '노즐 직전에서 총압·총온을 안정화하는 구간이다. 이 지점의 계측값이 시험 마하수 산출의 기준이 된다.',
+          spec: [['계측', '총압 · 총온 프로브'], ['기능', '유동 균일화']] });
+      })();
+
+      (function () {
+        var g = new THREE.Group();
+        var conv = lathe(-2.4, 1.3, .95, .18, 1.4, mk.duct2()); conv.position.y = AX; g.add(conv);
+        var noz = lathe(-1.1, 4.6, .18, 1.75, .55, mk.duct2()); noz.position.y = AX; g.add(noz);
+        [0.2, 1.8, 3.3].forEach(function (dx) {
+          var rr = .18 + (1.75 - .18) * Math.pow(dx / 4.6, .55);
+          g.add(ringM(-1.1 + dx, rr + .04, .07, mk.frame()).translateY(AX));
+        });
+        legs(g, 2.0, 3.2, AX, 1.5, 2.0);
+        part({ id: 'h4', no: '04', name: '교체형 노즐', en: 'Contoured Type Nozzle', group: g,
+          label: new THREE.Vector3(1.0, AX + 2.1, 0),
+          desc: '마하수별로 설계된 곡면 노즐이다. 교체식 구성으로 M5·M7·M10 목표 마하수를 구현하며, 균일한 코어 유동 확보가 설계 목표다.',
+          spec: [['방식', 'Contoured 교체형'], ['마하수', 'M 7.0 급 (설계 M5–10)'], ['출구경', 'Ø300 mm']] });
+      })();
+
+      (function () {
+        var g = new THREE.Group();
+        var shell = cyl(6.4, 5.2, 2.0, 2.0, mk.glass(), 40); shell.position.y = AX; g.add(shell);
+        g.add(ringM(3.8, 2.02, .12, mk.frame()).translateY(AX));
+        g.add(ringM(9.0, 2.02, .12, mk.frame()).translateY(AX));
+        var win = new THREE.Mesh(new THREE.TorusGeometry(.72, .1, 10, 32), mk.dark());
+        win.position.set(6.4, AX, 1.95); g.add(win);
+        var win2 = win.clone(); win2.position.z = -1.95; g.add(win2);
+        g.add(box(7.6, AX - .9, 0, .3, 1.5, .9, mk.dark()));
+        g.add(testModel(6.4, AX, .85, mk.model()));
+        g.add(box(6.4, .55, 0, 5.4, 1.1, 4.4, mk.frame()));
+        part({ id: 'h5', no: '05', name: '진공 시험부', en: 'Test Section / Vacuum Chamber', group: g,
+          label: new THREE.Vector3(6.4, AX + 2.4, 0),
+          desc: '진공 상태에서 모형을 유동에 노출시키는 챔버다. 모형 급속 삽입 기구로 기동 충격 이후에 모형을 투입해 열하중을 줄인다.',
+          spec: [['받음각', '−10° ~ +10°'], ['시험시간', '~ 30 초'], ['계측', '슐리렌 · 다점 압력레이크']] });
+      })();
+
+      (function () {
+        var g = new THREE.Group();
+        g.add(lathe(9.1, 3.2, 1.2, 1.9, 1.0, mk.duct()).translateY(AX));
+        var sph = new THREE.Mesh(new THREE.SphereGeometry(3.1, 36, 24), mk.tank());
+        sph.position.set(15.6, 3.6, 0); sph.castShadow = true; g.add(sph);
+        g.add(cyl(13.0, 2.2, 1.0, 1.0, mk.duct(), 24).translateY(AX));
+        [[-2, -2], [2, -2], [-2, 2], [2, 2]].forEach(function (p) {
+          g.add(box(15.6 + p[0], .7, p[1], .4, 1.4, .4, mk.frame()));
+        });
+        g.add(box(19.8, .9, 0, 2.2, 1.8, 2.2, mk.dark()));
+        g.add(cyl(18.4, 1.4, .45, .45, mk.duct2(), 20).translateY(1.6));
+        part({ id: 'h6', no: '06', name: '진공탱크 · 진공펌프', en: 'Vacuum Sphere & Pump', group: g,
+          label: new THREE.Vector3(15.6, 7.3, 0),
+          desc: '시험 전 계통을 저압으로 배기하고 시험 중 유동을 흡입하는 설비다. 진공탱크 용량이 시험 지속시간을 결정한다.',
+          spec: [['진공탱크', 'Ø12.5 m · 1,022 ㎥'], ['진공펌프', '2,700 ㎥/hr (0.5 torr)'], ['운전', '압력–진공 블로다운']] });
+      })();
+
+      return { root: root, parts: list };
+    }
+
+    /* ---------- 모델 3 · 발리스틱 ---------- */
+    function buildBallistic() {
+      var root = new THREE.Group(), list = [], AX = 2.0;
+      function part(o) { o.group.userData.part = o; list.push(o); root.add(o.group); }
+
+      (function () {
+        var g = new THREE.Group();
+        g.add(cyl(-19.0, 3.4, .75, .75, mk.dark(), 28).translateY(AX));
+        g.add(ringM(-17.4, .82, .12, mk.frame()).translateY(AX));
+        g.add(cyl(-21.0, .6, .9, .9, mk.frame(), 24).translateY(AX));
+        g.add(cyl(-13.6, 7.2, .6, .6, mk.duct2(), 28).translateY(AX));
+        var piston = cyl(-15.6, 1.0, .55, .55, mk.hot(), 24); piston.position.y = AX; g.add(piston);
+        legs(g, -20.0, -10.6, AX, .6, 2.4);
+        part({ id: 'b1', no: '01', name: '1단 화약실 · 펌프튜브', en: 'Powder Chamber & Pump Tube', group: g,
+          label: new THREE.Vector3(-16.5, AX + 1.6, 0),
+          desc: '화약 연소 가스가 피스톤을 가속시키고, 피스톤이 펌프튜브 안의 경가스를 단열 압축하는 1단 구간이다.',
+          spec: [['방식', '2단 경가스 발사기'], ['작동가스', '헬륨 / 수소'], ['구동', '화약 연소 + 피스톤']] });
+      })();
+
+      (function () {
+        var g = new THREE.Group();
+        g.add(lathe(-9.9, 1.6, .6, .22, 1.6, mk.duct2()).translateY(AX));
+        g.add(cyl(-9.0, 1.2, .9, .9, mk.frame(), 24).translateY(AX));
+        g.add(cyl(-5.4, 6.0, .2, .2, mk.duct(), 20).translateY(AX));
+        for (var i = 0; i < 4; i++) { g.add(ringM(-7.8 + i * 1.7, .3, .09, mk.frame()).translateY(AX)); }
+        legs(g, -8.2, -2.8, AX, .2, 2.7);
+        part({ id: 'b2', no: '02', name: '발사부', en: 'Launch Tube', group: g,
+          label: new THREE.Vector3(-6.2, AX + 1.4, 0),
+          desc: '압축된 경가스가 파열판을 터뜨리며 발사관 안의 모형을 가속하는 구간이다. 여기서 최종 발사속도가 결정된다.',
+          spec: [['탄도직경', 'Ø12.7 mm'], ['발사속도', '최대 4 km/s'], ['발사부 길이', '8 m']] });
+      })();
+
+      (function () {
+        var g = new THREE.Group();
+        var t = cyl(-1.0, 3.2, 1.5, 1.5, mk.duct(), 32); t.position.y = AX; g.add(t);
+        g.add(ringM(-2.6, 1.55, .12, mk.frame()).translateY(AX));
+        g.add(ringM(0.6, 1.55, .12, mk.frame()).translateY(AX));
+        var cone = lathe(0.6, 1.4, 1.5, .8, 1.0, mk.duct2()); cone.position.y = AX; g.add(cone);
+        g.add(box(-1.0, .35, 0, 2.6, .7, 3.4, mk.frame()));
+        part({ id: 'b3', no: '03', name: '블라스트 탱크 · 사보 분리부', en: 'Blast Tank & Sabot Stripper', group: g,
+          label: new THREE.Vector3(-1.0, AX + 2.0, 0),
+          desc: '발사 가스와 사보 파편을 모형에서 분리·포집하는 구간이다. 모형만 온전히 자유비행 구간으로 진입하게 한다.',
+          spec: [['기능', '사보 분리 · 가스 차단'], ['구성', '분리판 + 포집 챔버']] });
+      })();
+
+      (function () {
+        var g = new THREE.Group();
+        var tube = cyl(9.5, 16.0, 1.15, 1.15, mk.glass(), 40); tube.position.y = AX; g.add(tube);
+        for (var i = 0; i < 5; i++) {
+          var x = 3.0 + i * 3.4;
+          g.add(ringM(x, 1.2, .13, mk.frame()).translateY(AX));
+          g.add(box(x, AX + 1.7, 0, .7, .7, .7, mk.dark()));
+          g.add(box(x, AX - 1.7, 0, .7, .7, .7, mk.dark()));
+          g.add(box(x, AX, 1.7, .6, .6, .6, mk.duct2()));
+          var w = new THREE.Mesh(new THREE.CircleGeometry(.42, 24), mk.dark());
+          w.rotation.x = -Math.PI / 2; w.position.set(x, AX + 1.33, 0); g.add(w);
+        }
+        legs(g, 2.6, 16.2, AX, 1.15, 3.4);
+        var proj = new THREE.Mesh(new THREE.ConeGeometry(.12, .42, 16), mk.model());
+        proj.rotation.z = -Math.PI / 2; proj.position.set(8.0, AX, 0); proj.castShadow = true; g.add(proj);
+        part({ id: 'b4', no: '04', name: '자유비행 시험부', en: 'Free-Flight Test Section', group: g,
+          label: new THREE.Vector3(9.5, AX + 2.6, 0),
+          desc: '감압된 관 내부를 모형이 자유비행하는 구간이다. 일정 간격의 스테이션에서 직교 2방향 섀도그래프로 자세와 궤적을 기록해 공력계수를 산출한다.',
+          spec: [['시험부 길이', '4.5 m'], ['관측창', 'Ø500 mm'], ['시험모델', '최대 Ø10 mm']] });
+      })();
+
+      (function () {
+        var g = new THREE.Group();
+        g.add(cyl(19.6, 3.4, 1.7, 1.7, mk.duct2(), 32).translateY(AX));
+        g.add(ringM(17.9, 1.75, .13, mk.frame()).translateY(AX));
+        var cap = new THREE.Mesh(new THREE.SphereGeometry(1.7, 28, 16, 0, Math.PI * 2, 0, Math.PI / 2), mk.duct2());
+        cap.rotation.z = -Math.PI / 2; cap.position.set(21.3, AX, 0); cap.castShadow = true; g.add(cap);
+        var target = new THREE.Mesh(new THREE.BoxGeometry(.4, 1.6, 1.6), mk.hot());
+        target.position.set(18.6, AX, 0); target.castShadow = true; g.add(target);
+        g.add(box(19.6, .4, 0, 3.0, .8, 3.8, mk.frame()));
+        part({ id: 'b5', no: '05', name: '표적부 · 포집 탱크', en: 'Target Section & Catch Tank', group: g,
+          label: new THREE.Vector3(19.6, AX + 2.2, 0),
+          desc: '충돌 시험용 표적을 설치하거나 비행을 마친 모형을 안전하게 포집하는 구간이다. 우주 파편 충돌 시험의 핵심 부위다.',
+          spec: [['용도', '초고속 충돌 · 모형 회수'], ['표적', '교체형 시편 홀더']] });
+      })();
+
+      return { root: root, parts: list };
+    }
+
+    var BUILDERS = { trisonic: buildTrisonic, hypersonic: buildHypersonic, ballistic: buildBallistic };
+
+    /* ---------- 치수 / 거리 보정 ---------- */
+    var lastFit = 0;
+    function slotBox() { return panels[step].querySelector('.model-slot').getBoundingClientRect(); }
+    function fitMul() {
+      var r = slotBox();
+      var a = r.width / Math.max(1, r.height);
+      return a >= 1.6 ? 1 : Math.min(1.9, 1.6 / Math.max(.45, a));
+    }
+    function clampR() { goal.radius = Math.max(9, Math.min(95, goal.radius)); }
+    function resize() {
+      var r = slotBox();
+      if (!r.width || !r.height) return;
+      renderer.setSize(r.width, r.height, false);
+      camera.aspect = r.width / r.height; camera.updateProjectionMatrix();
+      var f = fitMul();
+      if (lastFit && f !== lastFit) { goal.radius *= f / lastFit; clampR(); }
+      lastFit = f;
+    }
+
+    /* ---------- 설비 전환 ---------- */
+    function selectEquip(i, instant) {
+      var eq = EQUIP[i];
+      if (!models[eq.id]) { models[eq.id] = BUILDERS[eq.id](); scene.add(models[eq.id].root); }
+      current = models[eq.id];
+      Object.keys(models).forEach(function (k) { models[k].root.visible = (k === eq.id); });
+      parts = current.parts; selected = -1;
+      goal.theta = eq.cam.theta; goal.phi = eq.cam.phi; goal.radius = eq.cam.radius * fitMul();
+      goal.target.set(0, eq.cam.ty, 0);
+      if (instant) { cam.theta = goal.theta; cam.phi = goal.phi; cam.radius = goal.radius; cam.target.copy(goal.target); }
+      scaleEl.textContent = eq.span;
+    }    function capture(i) {
+      var img = panels[i].querySelector('.model-poster');
+      if (!img) return;
+      try { img.src = renderer.domElement.toDataURL('image/png'); } catch (e) { /* noop */ }
+    }
+    function moveLive(i) {
+      var slot = panels[i].querySelector('.model-slot');
+      if (live.parentNode !== slot) slot.appendChild(live);
+      panels.forEach(function (p, k) { p.classList.toggle('is-active', k === i); });
+    }
+
+    /* ---------- 조작 ---------- */
+    var el = renderer.domElement, pointers = {}, last = null, pinchD = 0, moved = 0;
+    var spinBtn = document.getElementById('model-spin');
+    function dist(a, b) { var x = a.x - b.x, y = a.y - b.y; return Math.sqrt(x * x + y * y); }
+
+    el.addEventListener('pointerdown', function (e) {
+      el.setPointerCapture(e.pointerId);
+      pointers[e.pointerId] = { x: e.clientX, y: e.clientY };
+      last = { x: e.clientX, y: e.clientY }; moved = 0;
+      spin = false; spinBtn.setAttribute('aria-pressed', 'false');
+      var ids = Object.keys(pointers);
+      if (ids.length === 2) pinchD = dist(pointers[ids[0]], pointers[ids[1]]);
+    });
+    el.addEventListener('pointermove', function (e) {
+      if (!pointers[e.pointerId]) return;
+      var ids = Object.keys(pointers);
+      if (ids.length >= 2) {
+        pointers[e.pointerId] = { x: e.clientX, y: e.clientY };
+        var nd = dist(pointers[ids[0]], pointers[ids[1]]);
+        if (pinchD > 0) { goal.radius *= pinchD / nd; clampR(); }
+        pinchD = nd; return;
+      }
+      var dx = e.clientX - last.x, dy = e.clientY - last.y;
+      moved += Math.abs(dx) + Math.abs(dy);
+      goal.theta -= dx * .006;
+      goal.phi = Math.max(.18, Math.min(1.52, goal.phi - dy * .005));
+      last = { x: e.clientX, y: e.clientY }; pointers[e.pointerId] = last;
+    });
+    function endP(e) {
+      if (pointers[e.pointerId]) { delete pointers[e.pointerId]; }
+      pinchD = 0;
+    }
+    el.addEventListener('pointerup', endP);
+    el.addEventListener('pointercancel', endP);
+    /* 핀 구간에서는 휠을 페이지에 양보한다. 확대는 Ctrl/⌘ + 휠 */
+    el.addEventListener('wheel', function (e) {
+      if (!(e.ctrlKey || e.metaKey)) return;
+      e.preventDefault();
+      goal.radius *= (1 + Math.sign(e.deltaY) * .1); clampR();
+    }, { passive: false });
+
+    /* ---------- Model / Photo 보기 전환 ---------- */
+    panels.forEach(function (p) {
+      var med = p.querySelector('.pan-media');
+      var btns = Array.prototype.slice.call(p.querySelectorAll('[data-view-btn]'));
+      btns.forEach(function (b) {
+        b.addEventListener('click', function () {
+          var v = b.getAttribute('data-view-btn');
+          med.setAttribute('data-view', v);
+          btns.forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
+          if (v === 'model') resize();
+        });
+      });
+    });
+    function modelView() {
+      var med = panels[step].querySelector('.pan-media');
+      return !med || med.getAttribute('data-view') !== 'photo';
+    }
+
+    document.getElementById('model-reset').addEventListener('click', function () { selectEquip(step, true); });
+    spinBtn.addEventListener('click', function () {
+      spin = !spin; spinBtn.setAttribute('aria-pressed', spin ? 'true' : 'false');
+    });
+
+    /* ---------- 스텝 전환 ---------- */
+    setStep = function (i) {
+      capture(step);
+      step = i;
+      moveLive(i);
+      resize();
+      selectEquip(i, true);
+    };
+
+    /* ---------- 루프 ---------- */
+    new IntersectionObserver(function (es) { visible = es[0].isIntersecting; }, { threshold: 0 }).observe(pin);
+    window.addEventListener('resize', function () { resize(); }, { passive: true });
+
+    var proj = new THREE.Vector3();
+    function tick() {
+      requestAnimationFrame(tick);
+      if (!visible || !modelView()) return;
+      if (spin && !REDUCED) goal.theta += .0016;
+      cam.theta += (goal.theta - cam.theta) * .1;
+      cam.phi += (goal.phi - cam.phi) * .1;
+      cam.radius += (goal.radius - cam.radius) * .08;
+      cam.target.lerp(goal.target, .08);
+
+      var sp = Math.sin(cam.phi), cp = Math.cos(cam.phi);
+      camera.position.set(
+        cam.target.x + cam.radius * sp * Math.sin(cam.theta),
+        cam.target.y + cam.radius * cp,
+        cam.target.z + cam.radius * sp * Math.cos(cam.theta));
+      camera.lookAt(cam.target);
+      renderer.render(scene, camera);    }
+
+    /* 최초 : 세 모형을 한 번씩 렌더해 포스터를 만들어 둔다 */
+    moveLive(0); resize();
+    for (var i = STEPS - 1; i >= 0; i--) {
+      selectEquip(i, true);
+      var s0 = Math.sin(cam.phi), c0 = Math.cos(cam.phi);
+      camera.position.set(cam.radius * s0 * Math.sin(cam.theta),
+        cam.target.y + cam.radius * c0, cam.radius * s0 * Math.cos(cam.theta));
+      camera.lookAt(cam.target);
+      renderer.render(scene, camera);
+      capture(i);
+    }
+    step = 0; moveLive(0); resize(); selectEquip(0, true);
+    panels.forEach(function (p) { var l = p.querySelector('.model-loading'); if (l) l.style.display = 'none'; });
+    tick();
+  }
 })();
 </script>
 

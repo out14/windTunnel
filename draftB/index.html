@@ -11,920 +11,213 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@200;300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 
-<style>
-/* ============================================================
-   시안 B-2 · TEST RECORD (계측 기록지)
-   문법 : 웹페이지가 아니라 시험 성적서. 카드·그림자·둥근 모서리 전면 금지.
-          괘선 / 여백 주석 / Fig. 번호 / 점선 리더만으로 구성.
-          명도 : 종이 L*91  ↔  엄버 L*13  완전 교차.
-   ============================================================ */
-*,*::before,*::after{ box-sizing:border-box; margin:0; padding:0; }
-/* 모서리·그림자는 이 시안의 규칙상 쓰지 않는다. 전역 !important 대신 기본값만 0 으로 둔다 */
-button,input,select,textarea{ border-radius:0; }
-
-:root{
-  --paper:#F2F4F3;     /* 차가운 회백 — 베이지 아님 */
-  --paper-2:#E5E9E7;
-  --umber:#18211F;     /* 그래파이트 — 블랙 아님, 청록기 */
-  --umber-2:#253230;
-  --ink:#121A18;
-  --ink-2:#4F5C59;
-  --on-umber:#E9EEEC;
-  --on-umber-2:#93A29F;
-  --red:#0F0F70;       /* CI 남색 — 계측 표기 전용 */
-  --red-on-dark:#8C93FF;
-  --rule:rgba(18,26,24,.30);
-  --rule-soft:rgba(18,26,24,.15);
-  --rule-d:rgba(233,238,236,.26);
-  --rule-d-soft:rgba(233,238,236,.13);
-  --sans:'IBM Plex Sans KR','Noto Sans KR',system-ui,-apple-system,sans-serif;
-  --mono:'IBM Plex Mono',ui-monospace,'Courier New',monospace;
-  --gut:clamp(18px,4vw,76px);
-  --rail:clamp(0px,80x,80px);
-}
-
-html{ scroll-behavior:smooth; -webkit-text-size-adjust:100%; }
-body{
-  font-family:var(--sans); font-weight:400; line-height:1.82; letter-spacing:-.012em;
-  background:var(--paper); color:var(--ink); overflow-x:hidden;
-  -webkit-font-smoothing:antialiased;
-}
-img{ display:block; max-width:100%; }
-a{ color:inherit; text-decoration:none; }
-button{ font:inherit; color:inherit; background:none; border:0; cursor:pointer; }
-
-/* 전면 모노 라벨 */
-.m{ font-family:var(--mono); font-weight:500; font-size:10.5px; letter-spacing:.2em; text-transform:uppercase; }
-.m-s{ font-family:var(--mono); font-weight:400; font-size:11.5px; letter-spacing:.06em; }
-
-/* 지면 */
-.sheet{ padding-left:var(--rail); }
-.pg{ padding-inline:var(--gut); }
-html{ word-break:keep-all; overflow-wrap:break-word; }
-
-.paper-s{ background:var(--paper); color:var(--ink); }
-.paper-s .sub{ color:var(--ink-2); }
-.paper-s hr,.paper-s .hr{ border:0; border-top:1px solid var(--rule); }
-.paper-s .hrs{ border:0; border-top:1px solid var(--rule-soft); }
-.dark-s{ background:var(--umber); color:var(--on-umber); }
-.dark-s .sub{ color:var(--on-umber-2); }
-.dark-s hr,.dark-s .hr{ border:0; border-top:1px solid var(--rule-d); }
-.dark-s .hrs{ border:0; border-top:1px solid var(--rule-d-soft); }
-
-/* ============ 좌측 측정 레일 ============ */
-.rail{
-  position:fixed; right:0; top:0; bottom:0; width:var(--rail); z-index:50;
-  border-left:1px solid var(--rule); background:var(--paper);
-  display:flex; flex-direction:column; align-items:center; justify-content:space-between;
-  padding:88px 0 22px; transition:background .5s, border-color .5s, color .5s;
-}
-.rail.on-dark{ background:var(--umber); border-right-color:var(--rule-d); color:var(--on-umber); }
-.rail .tick{ flex:1; width:1px; background:currentColor; opacity:.2; position:relative; margin:18px 0; }
-.rail .tick i{ position:absolute; left:-3px; width:7px; height:1px; background:currentColor; opacity:.9; }
-.rail .fill{ position:absolute; left:-1px; width:3px; top:0; background:var(--red); transition:height .12s linear; }
-.rail .vtx{ writing-mode:vertical-rl; font-family:var(--mono); font-size:9.5px; letter-spacing:.34em; text-transform:uppercase; opacity:.55; }
-@media (max-width:860px){ .rail{ display:none; } :root{ --rail:0px; } }
-
-/* ============ 문서 머리글 ============ */
-.dochd{
-  position:fixed; 
-  top:0; 
-  /* left:var(--rail);  */
-  left:0; 
-  right:0; z-index:48; height:78px;
-  display:flex; align-items:center; gap:14px; padding-inline:var(--gut);
-  background:var(--paper); border-bottom:1px solid var(--rule);
-  font-family:var(--mono); font-size:10.5px; letter-spacing:.14em; text-transform:uppercase;
-  transition:background .5s, border-color .5s, color .5s;
-}
-.dochd.on-dark{ background:var(--umber); border-bottom-color:var(--rule-d); color:var(--on-umber); }
-
-.dochd .t{ display:flex; align-items:center; }
-.lgm{ height:54px; width:auto; }
-.lgm{ transition:opacity .5s; }
-.lgm-d{ position:absolute; opacity:0; }
-.dochd.on-dark .lgm:not(.lgm-d){ opacity:0; }
-.dochd.on-dark .lgm-d{ opacity:1; }
-.dochd .t{ position:relative; }
-.ftlogo{ height:46px; width:auto; margin-bottom:12px; }
-.dochd .t{ font-family:var(--sans); font-size:13.5px; font-weight:600; letter-spacing:-.01em; text-transform:none; white-space:nowrap; }
-.lang{ display:flex; align-items:center; gap:6px; margin-left:clamp(12px,2.4vw,30px);
-  font-family:var(--mono); font-size:13px; letter-spacing:.1em; }
-.lang span{ opacity:.28; }
-.lang a{ opacity:.45; padding:3px 2px; border-bottom:1px solid transparent; transition:.2s; }
-.lang a:hover{ opacity:.9; }
-.lang a[aria-current="true"]{ opacity:1; font-weight:600; color:var(--red); border-bottom-color:currentColor; }
-.dochd.on-dark .lang a[aria-current="true"]{ color:var(--red-on-dark); }
-@media (max-width:720px){ .lang{ margin-left:auto; } }
-/* GNB 2뎁스 */
-.dochd nav{ display:flex; gap:clamp(10px,1.8vw,26px); margin-left:auto; align-self:stretch; }
-.nvi{ position:relative; display:flex; align-items:center; }
-.nvi > a{ display:inline-flex; align-items:center; gap:7px; font-size:16px; letter-spacing:.04em; }
-.nvi > a i{ width:0; height:0; border-left:3px solid transparent; border-right:3px solid transparent;
-  border-top:3.5px solid currentColor; opacity:.5; transition:transform .25s, opacity .25s; }
-.nvi:hover > a, .nvi:focus-within > a{ opacity:1; border-bottom-color:var(--red); }
-.nvi:hover > a i, .nvi:focus-within > a i{ transform:rotate(180deg); opacity:1; }
-.nvi .sub{ position:absolute; top:100%; left:-14px; min-width:214px; z-index:70;
-  display:flex; flex-direction:column; background:var(--paper);
-  border:1px solid var(--rule); border-top:2px solid var(--red);
-  opacity:0; visibility:hidden; transform:translateY(-7px);
-  transition:opacity .2s, transform .26s cubic-bezier(.2,.8,.3,1), visibility .2s; }
-.nvi:hover .sub, .nvi:focus-within .sub{ opacity:1; visibility:visible; transform:none; }
-.nvi .sub a{ display:flex; align-items:baseline; gap:10px; padding:9px 16px;
-  font-family:var(--sans); font-size:14px; letter-spacing:-.012em; text-transform:none;
-  color:var(--ink); opacity:1; white-space:nowrap;
-  border-bottom:1px solid var(--rule-soft); transition:background .18s, color .18s, padding-left .24s; }
-.nvi .sub a:last-child{ border-bottom:0; }
-.nvi .sub a b{ font-family:var(--mono); font-size:9.5px; font-weight:500;
-  letter-spacing:.1em; color:var(--ink-2); }
-.nvi .sub a:hover{ background:var(--paper-2); color:var(--red); padding-left:21px; }
-.nvi .sub a:hover b{ color:var(--red); }
-.dochd nav a{ opacity:.62; padding-block:4px; border-bottom:1px solid transparent; transition:.2s; }
-.dochd nav a:hover{ opacity:1; border-bottom-color:var(--red); }
-.dochd .rev{ opacity:.45; margin-left:clamp(12px,2.4vw,34px); }
-@media (max-width:720px){ .dochd nav{ display:none; } }
-
-/* ============ 표제지 ============ */
-.cover{ 
-  position:relative; 
-  min-height:90svh; 
-  /* display:grid; 
-  grid-template-columns:minmax(0,1fr) minmax(0,1.24fr); */
-  display: flex;
-  align-items:center; 
-  gap:clamp(20px,4vw,60px); 
-  padding:75px 20px 64px var(--gut); 
-}
-.cover .cls{ display:flex; align-items:center; gap:12px; color:var(--red); margin-bottom:34px; }
-.cover .cls i{ display:block; width:46px; height:1px; background:var(--red); font-style:normal; }
-.cover h1{
-  font-weight:700; font-size:clamp(27px,4.25vw,61px); line-height:1.16; letter-spacing:-.05em;
-}
-.cover h1 .thin{ font-weight:200; color:var(--ink-2); }
-.cover h1 .ul{ box-shadow:none; border-bottom:4px solid var(--red); padding-bottom:2px; }
-.cover .abs{ margin-top:30px; font-size:clamp(14.5px,1.2vw,17px); font-weight:300; line-height:2.0; color:var(--ink-2); }
-.cover .meta{ margin-top:clamp(24px,4vh,46px); max-width:470px; }
-.cover .meta .r{ display:grid; grid-template-columns:116px 1fr; gap:16px; padding:11px 0; border-top:1px solid var(--rule-soft); }
-.cover .meta .r:last-child{ border-bottom:1px solid var(--rule-soft); }
-.cover .meta dt{ font-family:var(--mono); font-size:9.5px; letter-spacing:.18em; text-transform:uppercase; color:var(--ink-2); padding-top:5px; }
-.cover .meta dd{ font-family:var(--mono); font-size:13px; letter-spacing:.02em; }
-.cover .seq.in{
-  position: absolute;
-  left:var(--gut);
-  z-index: 2;
-  background: var(--paper);;
-  width:700px;
-  padding:40px 40px 40px 0;
-  box-sizing: border-box;
-}
-
-/* 표제지 우측 도판 — 지면 밖으로 흘림 */
-.cover .plate-lead{ 
-  position:relative; 
-  height:64vh;
-  /* margin-right:calc(var(--gut) * -1.9);  */
-  will-change:transform; 
-  width:70%;
-  margin-left: auto;
-}
-.cover .plate-lead img{ width:100%; border:1px solid rgba(18,26,24,.22); }
-.cover .plate-lead .cap{ margin-top:10px; padding-right:clamp(18px,4vw,76px); }
-
-/* 도판 캡션 공통 */
-.cap{ font-family:var(--mono); font-size:10.5px; letter-spacing:.07em; line-height:1.75; color:var(--ink-2); display:flex; gap:10px; }
-.cap b{ color:var(--red); font-weight:600; white-space:nowrap; }
-.dark-s .cap{ color:var(--on-umber-2); }
-.dark-s .cap b{ color:var(--red-on-dark); }
-.dark-s .plate img,.dark-s .plate-lead img{ border-color:rgba(233,238,236,.3); }
-
-/* ============ 절 머리 ============ */
-.sec{ padding-block:clamp(52px,7.4vh,112px); }
-.sechd{ 
-  /* display:grid; 
-  grid-template-columns:clamp(74px,10vw,150px) minmax(0,1fr) auto; 
-  gap:clamp(14px,2.5vw,36px); */
-  align-items:baseline; padding-bottom:20px; 
-}
-.sechd .sn{ font-family:var(--mono); font-weight:600; font-size:clamp(12px,1.1vw,13px); letter-spacing:.16em; }
-.sechd h2{ font-size:clamp(23px,3.2vw,44px); font-weight:700; letter-spacing:-.042em; line-height:1.22; }
-.sechd .en{ font-family:var(--mono); font-size:10px; letter-spacing:.24em; text-transform:uppercase; opacity:.5; }
-.doublerule{ position:relative; border-top:2px solid currentColor; opacity:1; }
-.doublerule{ border-top-color:rgba(18,26,24,.34); }
-.dark-s .doublerule{ border-top-color:rgba(233,238,236,.3); }
-.doublerule::after{ content:''; position:absolute; left:0; top:-2px; width:clamp(48px,7vw,104px); height:2px; background:var(--red); }
-.dark-s .doublerule::after{ background:var(--red-on-dark); }
-
-/* 본문 2단 : 좌 주석단 / 우 본문단 */
-.cols{ display:grid; grid-template-columns:clamp(74px,10vw,150px) minmax(0,1fr); gap:clamp(14px,2.5vw,36px); }
-.cols.three{ grid-template-columns:clamp(74px,10vw,150px) minmax(0,1fr) minmax(0,.52fr); }
-@media (max-width:1180px){ .cols.three{ grid-template-columns:clamp(74px,10vw,150px) minmax(0,1fr); } .cols.three .margintbl{ display:none; } }
-/* 여백단 대조표 */
-.margintbl{ padding-top:10px; }
-.margintbl h5{ font-family:var(--mono); font-size:9.5px; font-weight:600; letter-spacing:.2em; text-transform:uppercase; opacity:.58; padding-bottom:10px; border-bottom:1px solid currentColor; }
-.margintbl .r{ display:flex; align-items:baseline; gap:10px; padding:10px 0; border-bottom:1px solid var(--rule-d-soft); font-family:var(--mono); font-size:13px; }
-.margintbl .r b{ font-weight:600; white-space:nowrap; }
-.margintbl .r span{ margin-left:auto; font-family:var(--sans); font-size:12.5px; font-weight:400; opacity:.85; white-space:nowrap; }
-.margintbl .r.hi b,.margintbl .r.hi span{ color:var(--red-on-dark); opacity:1; }
-.margintbl p{ margin-top:16px; font-family:var(--mono); font-size:9.5px; line-height:1.9; letter-spacing:.06em; opacity:.5; }
-.note{ font-family:var(--mono); font-size:10px; letter-spacing:.08em; line-height:1.95; opacity:.62; padding-top:9px; }
-.note b{ display:block; font-weight:600; letter-spacing:.16em; text-transform:uppercase; opacity:.85; margin-bottom:5px; }
-.bodytxt{ font-size:clamp(15px,1.25vw,17.5px); font-weight:300; line-height:1.95; max-width:60ch; }
-.bodytxt + .bodytxt{ margin-top:1.5em; }
-.bodytxt strong{ font-weight:600; }
-
-/* 인용 — 적색 괄호 매달기 */
-.pull{ position:relative; margin:clamp(22px,3.6vh,42px) 0; padding-left:34px; max-width:52ch; }
-.pull::before{ content:'['; position:absolute; left:0; top:-.06em; font-family:var(--mono); font-size:3.2em; line-height:.86; color:var(--red); }
-.dark-s .pull::before{ color:var(--red-on-dark); }
-.pull p{ font-size:clamp(18px,2.1vw,28px); font-weight:400; line-height:1.5; letter-spacing:-.04em; }
-.pull cite{ display:block; margin-top:14px; font-family:var(--mono); font-size:10.5px; letter-spacing:.16em; text-transform:uppercase; font-style:normal; opacity:.6; }
-
-/* ============ 설비 항목 ============ */
-.item{ display:grid; grid-template-columns:clamp(74px,10vw,150px) minmax(0,1fr); gap:clamp(14px,2.5vw,36px);
-  padding-block:clamp(36px,5.5vh,66px); border-top:1px solid var(--rule-soft); }
-.dark-s .item{ border-top-color:var(--rule-d-soft); }
-.item .inner{ display:grid; grid-template-columns:minmax(0,.78fr) minmax(0,1fr); gap:clamp(18px,3.4vw,54px); align-items:start; }
-.item.flip .inner{ grid-template-columns:minmax(0,1fr) minmax(0,.78fr); }
-.item.flip .plate{ order:2; }
-.plate{ will-change:transform; }
-.plate img{ width:100%; border:1px solid rgba(18,26,24,.22); }
-.plate .cap{ margin-top:10px; }
-.item h3{ font-size:clamp(20px,2.5vw,33px); font-weight:700; letter-spacing:-.04em; line-height:1.3; }
-.item h3 small{ display:block; font-family:var(--mono); font-size:10.5px; font-weight:500; letter-spacing:.2em; text-transform:uppercase; opacity:.52; margin-bottom:9px; }
-.item p{ margin-top:14px; font-size:14.8px; font-weight:300; line-height:1.95; max-width:46ch; }
-.spec{ margin-top:26px; }
-.spec .r{ display:flex; align-items:baseline; gap:10px; padding:9px 0; border-top:1px solid var(--rule-soft); font-family:var(--mono); font-size:12px; }
-.dark-s .spec .r{ border-top-color:var(--rule-d-soft); }
-.spec .r:last-child{ border-bottom:1px solid var(--rule-soft); }
-.dark-s .spec .r:last-child{ border-bottom-color:var(--rule-d-soft); }
-.spec dt{ letter-spacing:.14em; text-transform:uppercase; font-size:9.5px; opacity:.6; white-space:nowrap; }
-.spec .dots{ flex:1; border-bottom:1px dotted currentColor; opacity:.34; transform:translateY(-3px); }
-.spec dd{ font-weight:600; letter-spacing:-.01em; white-space:nowrap; }
-
-/* ============ 도면 플레이트 (어두운 바탕 위 미색 판) ============ */
-
-/* §03 브로큰 그리드 : 원본 비율을 살린 비대칭 배치 */
-#s3{
-  position:relative;
-  height:calc(5 * 100svh);
-}
-
-#s3 .bg{
-  position:sticky;
-  top:0;
-
-  height:100svh;
-
-  margin-top:0;
-
-  overflow:hidden;
-
-  align-items:center;
-}
-
-.data-pin{
-  position:relative;
-  height:calc(5 * 100svh);
-}
-
-
-/* 화면에 고정되는 영역 */
-.data-pin > .bg{
-  position:sticky;
-  top:0;
-
-  height:100svh;
-
-  margin-top:0;
-
-  display:flex;
-  align-items:center;
-
-  overflow:hidden;
-
-  column-gap:clamp(10px,1.2vw,20px);
-  row-gap:clamp(14px,2vh,30px);
-}
-
-
-.bg{ 
-  /* 
-  display:grid; 
-  grid-template-columns:repeat(12,1fr);
-  */
-  column-gap:clamp(10px,1.2vw,20px); 
-  row-gap:clamp(14px,2vh,30px);
-   
-  align-items:start;
-  margin-top:clamp(20px,3vh,38px); 
-  display: flex;
-  
-}
-.bg .rv{ transition-delay:var(--d,0s); }
-
-/* 섹션 세로 키워드 */
-.colA{ display:flex; flex-direction:column; }
-.colA > .vrail:first-child{ margin-top:0; }
-.vrail{ flex:1; min-height:clamp(170px,28vh,400px); margin-top:clamp(18px,3vh,36px); }
-.vrail span{ position:sticky; top:28vh; display:block; writing-mode:vertical-rl;
-  font-family:var(--sans); font-weight:600; text-transform:uppercase; letter-spacing:.02em;
-  font-size:clamp(28px,4vw,60px); line-height:1; margin-left:-.1em;
-  color:var(--on-umber); opacity:.1; white-space:nowrap; }
-@media (max-width:1000px){ .vrail{ display:none; } }
-.data_img{ 
-  display:flex;
-  align-items:center;
-  justify-content:flex-start;
-  gap:10px;
-  width:calc(100% - 700px);
-  flex:1 1 auto;
-  min-width:0;
-  overflow:hidden;
-  will-change:transform;
-}
-.bgrail{ 
-  /* grid-column:1/2; grid-row:1/4; align-self:stretch; position:relative;  */
-  position: relative;
-  z-index: 11;
-  flex: 0 0 clamp(40px, 5vw, 80px);
-
-  background: var(--umber);
-}
-.bgrail span{ position:sticky; top:26vh; display:block; writing-mode:vertical-rl;
-  font-family:var(--sans); font-weight:600; text-transform:uppercase;
-  letter-spacing:.02em; font-size:clamp(30px,4.4vw,66px); line-height:1;
-  margin-left:-.12em; color:var(--on-umber); opacity:.1; white-space:nowrap; }
-.bglead{ grid-column:2/5; grid-row:1; padding-top:4px; }
-.bglead p{ font-size:13.6px; font-weight:300; line-height:1.95; color:var(--on-umber-2); }
-.bglead p + p{ margin-top:1.1em; }
-.bgfig{
-   min-width:0; 
-   flex: 0 0 100%;
-}
-.bgfig .ph{ background:var(--paper); padding:clamp(9px,1.1vw,16px); }
-.bgfig img{ display:block; width:100%; height:auto; }
-.bgfig .cap{ margin-top:8px; align-items:flex-start; }
-.bgfig .cap i{ display:block; margin-top:4px; font-style:normal; opacity:.6; }
-.bgtext{ 
-  /* grid-column:2/6; grid-row:1/5; position:sticky; top:17vh; align-self:start;  */
-  width:400px;
-  position: relative;
-  z-index: 10;
-  flex: 0 0 400px;
-  width: 400px;
-  background: var(--umber);
-}
-.bgtext .lead{ font-size:13.6px; font-weight:300; line-height:1.95; color:var(--on-umber-2); }
-.bgtext .lead + .lead{ margin-top:1.1em; }
-.tlist{ margin-top:clamp(20px,3.4vh,40px); border-top:1px solid var(--red-on-dark); padding-top:12px; }
-.tlist .t{ font-family:var(--mono); font-size:10.5px; letter-spacing:.14em;
-  text-transform:uppercase; color:var(--red-on-dark); margin-bottom:4px; }
-.tlist .r{ display:flex; align-items:baseline; gap:8px; padding:7px 0;
-  border-bottom:1px solid var(--rule-d-soft); font-size:12.5px; color:var(--on-umber); }
-.tlist .r .dots{ flex:1; border-bottom:1px dotted currentColor; opacity:.28; transform:translateY(-3px); }
-.p1{ grid-column:6/9;  grid-row:1; }
-.p2{ grid-column:9/13; grid-row:1; margin-top:clamp(20px,3.6vh,46px); }
-.p3{ grid-column:6/11; grid-row:2; }
-.p4{ grid-column:8/12; grid-row:3; }
-.p5{ grid-column:6/11; grid-row:4; margin-top:clamp(6px,1.2vh,16px); }
-
-@media (max-width:1100px){
-  .bgtext{ grid-column:2/13; grid-row:1; position:static; }
-  .p1{ grid-column:2/7;  grid-row:2; }
-  .p2{ grid-column:7/13; grid-row:2; margin-top:clamp(18px,3vh,40px); }
-  .p3{ grid-column:2/9;  grid-row:3; margin-top:0; }
-  .p4{ grid-column:9/13; grid-row:3; margin-top:clamp(16px,2.6vh,34px); }
-  .p5{ grid-column:2/10; grid-row:4; margin-top:0; }
-}
-@media (max-width:760px){
-  .bg{ grid-template-columns:1fr; row-gap:30px; }
-  .bgrail{ grid-column:1; grid-row:auto; }
-  .bgrail span{ position:static; writing-mode:horizontal-tb; letter-spacing:.3em; }
-  .bgtext,.p1,.p2,.p3,.p4,.p5{ grid-column:1; grid-row:auto; margin-top:0; position:static; }
-}
-
-.plates{ display:grid; grid-template-columns:minmax(0,1.32fr) minmax(0,1fr); gap:clamp(14px,2.4vw,34px); align-items:start; }
-.card-plate{ background:var(--paper); padding:clamp(14px,2vw,26px) clamp(14px,2vw,26px) clamp(10px,1.4vw,16px);
-  border:1px solid rgba(233,238,236,.22); will-change:transform; }
-.card-plate img{ display:block; width:auto; max-width:100%; max-height:23vh; margin:0 auto; }
-.card-plate .cap{ color:var(--ink-2); margin-top:9px; padding-top:9px; border-top:1px solid var(--rule-soft); }
-.card-plate .cap b{ color:var(--red); }
-.plates .col{ display:flex; flex-direction:column; gap:clamp(14px,2.4vw,34px); }
-
-/* ============ 기록(소식) — 점선 리더 대장 ============ */
-.reg{ margin-top:8px; }
-.reg a{ display:flex; align-items:baseline; gap:12px; padding:15px 0; border-top:1px solid var(--rule-soft);
-  font-family:var(--mono); font-size:12px; transition:padding-left .4s cubic-bezier(.2,.8,.3,1), color .25s; }
-.reg a:last-child{ border-bottom:1px solid var(--rule-soft); }
-.reg a:hover{ padding-left:14px; color:var(--red); }
-.reg .no{ opacity:.45; letter-spacing:.1em; }
-.reg .dt{ opacity:.62; letter-spacing:.04em; }
-.reg .ti{ font-family:var(--sans); font-size:clamp(14.5px,1.45vw,18px); font-weight:500; letter-spacing:-.03em; }
-.reg .dots{ flex:1; border-bottom:1px dotted currentColor; opacity:.3; transform:translateY(-4px); min-width:24px; }
-.reg .kd{ font-size:9.5px; letter-spacing:.18em; text-transform:uppercase; opacity:.62; border:1px solid currentColor; padding:3px 7px 2px; }
-@media (max-width:720px){ .reg .dt,.reg .kd{ display:none; } }
-
-/* ============ 소재지 ============ */
-.site{ display:grid; grid-template-columns:minmax(0,1.1fr) minmax(0,1fr); gap:clamp(18px,3vw,48px); align-items:stretch; }
-.mapbox{ position:relative; min-height:clamp(300px,46vh,460px); border:1px solid var(--rule-d); background:var(--umber-2); }
-.mapbox .kmaphost{ position:absolute; inset:0; overflow:hidden;
-  display:flex; align-items:center; justify-content:center; }
-.mapbox .kmaphost .root_daum_roughmap{ width:100% !important; }
-.mapbox .kmaphost .root_daum_roughmap .wrap_map{ width:100% !important; }
-.mapfall{ position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px;
-  text-align:center; padding:26px; background:url('assets/fig-site.jpg') center/cover no-repeat; }
-.mapfall::before{ content:''; position:absolute; inset:0; background:rgba(24,33,31,.78); }
-.mapfall > *{ position:relative; }
-.mapfall b{ font-size:16px; font-weight:600; }
-.siteinfo .r{ display:grid; grid-template-columns:96px 1fr; gap:14px; padding:13px 0; border-top:1px solid var(--rule-d-soft); }
-.siteinfo .r:last-of-type{ border-bottom:1px solid var(--rule-d-soft); }
-.siteinfo dt{ font-family:var(--mono); font-size:9.5px; letter-spacing:.17em; text-transform:uppercase; opacity:.58; padding-top:5px; }
-.siteinfo dd{ font-size:14.5px; font-weight:300; line-height:1.85; }
-.siteinfo .addr{ font-size:clamp(17px,1.9vw,24px); font-weight:600; letter-spacing:-.035em; line-height:1.5; margin-bottom:22px; }
-
-/* 스탬프형 조치 — 알약 아님 */
-.stamp{
-  display:inline-flex; align-items:center; gap:11px; margin-top:28px;
-  padding:14px 22px 12px; border:1.5px solid currentColor;
-  font-family:var(--mono); font-size:11.5px; font-weight:600; letter-spacing:.17em; text-transform:uppercase;
-  transition:background .25s, color .25s;
-}
-.stamp i{ font-style:normal; }
-.paper-s .stamp:hover{ background:var(--ink); color:var(--paper); }
-.dark-s .stamp:hover{ background:var(--on-umber); color:var(--umber); }
-
-/* ============ 발행 정보(푸터) ============ */
-.colophon{ background:var(--paper-2); color:var(--ink); padding-block:clamp(44px,6.5vh,78px); }
-.colophon .grid{ display:grid; grid-template-columns:minmax(0,1.25fr) repeat(auto-fit,minmax(118px,1fr)); gap:clamp(20px,3vw,46px); }
-.colophon h4{ font-family:var(--mono); font-size:9.5px; letter-spacing:.2em; text-transform:uppercase; opacity:.55; margin-bottom:13px; }
-.colophon a{ display:block; font-size:13.5px; font-weight:300; padding:4px 0; transition:color .2s, padding-left .3s; }
-.colophon a:hover{ color:var(--red); padding-left:5px; }
-.colophon .issue{ font-size:13.5px; font-weight:300; line-height:1.95; }
-.colophon .issue b{ display:block; font-weight:600; font-size:15.5px; letter-spacing:-.02em; margin-bottom:9px; }
-.colophon .base{ display:flex; flex-wrap:wrap; gap:8px 24px; align-items:center;
-  margin-top:clamp(28px,4vh,48px); padding-top:17px; border-top:1px solid var(--rule);
-  font-family:var(--mono); font-size:10px; letter-spacing:.12em; text-transform:uppercase; opacity:.62; }
-
-
-/* ============ 텍스트 등장 ============ */
-/* .seq : 직계 자식이 순서대로 올라온다 */
-.seq > *{ opacity:0; transform:translateY(14px);
-  transition:opacity .26s ease, transform .26s ease; }          /* 퇴장 */
-.seq.in > *{ opacity:1; transform:none;
-  transition:opacity .62s cubic-bezier(.2,.7,.3,1), transform .62s cubic-bezier(.2,.7,.3,1); }
-.seq.in > *:nth-child(1){ transition-delay:.04s; }
-.seq.in > *:nth-child(2){ transition-delay:.12s; }
-.seq.in > *:nth-child(3){ transition-delay:.20s; }
-.seq.in > *:nth-child(4){ transition-delay:.28s; }
-.seq.in > *:nth-child(5){ transition-delay:.36s; }
-.seq.in > *:nth-child(6){ transition-delay:.44s; }
-.seq.in > *:nth-child(7){ transition-delay:.52s; }
-.seq.in > *:nth-child(8){ transition-delay:.60s; }
-.seq.in > *:nth-child(9){ transition-delay:.68s; }
-.seq.in > *:nth-child(10){ transition-delay:.76s; }
-
-/* .lines : 제목을 행 단위로 밀어 올린다 */
-.lines .ln{ display:block; overflow:hidden; padding-bottom:7px; margin-bottom:-7px; }
-.lines .ln > span{ display:inline-block; opacity:0; transform:translateY(112%);
-  transition:transform .3s ease, opacity .2s ease; }            /* 퇴장 */
-.lines.in .ln > span{ opacity:1; transform:none;
-  transition:transform .85s cubic-bezier(.19,.86,.26,1), opacity .45s linear .06s; }
-.lines.in .ln:nth-child(1) > span{ transition-delay:.06s, .10s; }
-.lines.in .ln:nth-child(2) > span{ transition-delay:.17s, .21s; }
-.lines.in .ln:nth-child(3) > span{ transition-delay:.28s, .32s; }
-.lines.in .ln:nth-child(4) > span{ transition-delay:.39s, .43s; }
-
-@media (prefers-reduced-motion:reduce){
-  .seq > *{ opacity:1 !important; transform:none !important; transition:none !important; }
-  .lines .ln > span{ opacity:1 !important; transform:none !important; transition:none !important; }
-}
-
-/* ============ 표제지 도판 슬라이더 ============ */
-.slider .slides{ position:relative; height:100%; }
-.slider .slide{ position:absolute; height: 100%;; inset:0; opacity:0; transition:opacity .9s cubic-bezier(.3,.7,.3,1); }
-.slider .slide:first-child{ position:relative; }
-.slider .slide.on{ opacity:1; }
-.slider .slide img{ width:100%; height:100%; display:block; border:1px solid rgba(18,26,24,.22); }
-.slider .scap{ position:relative; margin-top:10px; min-height:40px; padding-right:clamp(18px,4vw,76px); }
-.slider .scap .cap{ position:absolute; inset:0; opacity:0; transition:opacity .45s; }
-.slider .scap .cap.on{ opacity:1; }
-.slider .sctl{ position:absolute; z-index:3; left:14px; bottom:14px;
-  display:flex; align-items:center; gap:10px; padding:7px 11px 6px;
-  background:rgba(242,244,243,.9); border:1px solid rgba(18,26,24,.18); backdrop-filter:blur(6px); }
-.slider .sbtn{ font-family:var(--mono); font-size:13px; line-height:1; padding:3px 5px; color:var(--ink-2); transition:color .2s; }
-.slider .sbtn:hover{ color:var(--red); }
-.slider .snum{ display:flex; align-items:center; gap:9px; font-family:var(--mono); font-size:10.5px; letter-spacing:.14em; }
-.slider .snum b{ color:var(--ink); font-weight:600; }
-.slider .snum em{ font-style:normal; color:var(--ink-2); opacity:.6; }
-.slider .snum i{ display:block; width:34px; height:1px; background:rgba(18,26,24,.28); position:relative; }
-.slider .snum i::after{ content:''; position:absolute; left:0; top:0; height:1px; width:var(--p,50%); background:var(--red);
-  transition:width .5s cubic-bezier(.3,.7,.3,1); }
-
-/* ============ §02 수평 핀 ============ */
-.pin{ position:relative; height:calc(3 * 100svh); }
-.pinstage{ position:sticky; top:0; height:100svh; overflow:hidden; display:flex; flex-direction:column; }
-.pinhd{ flex:0 0 auto; display:flex; align-items:center; gap:clamp(12px,2vw,28px);
-  padding:clamp(66px,8vh,84px) var(--gut) 0; }
-.pinhd .sn{ font-family:var(--mono); font-weight:600; font-size:12px; letter-spacing:.16em; white-space:nowrap; }
-.pinprog{ flex:1 1 auto; height:1px; background:rgba(18,26,24,.2); position:relative; min-width:40px; }
-.pinprog i{ position:absolute; left:0; top:0; height:1px; width:var(--prog,0%); background:var(--red); }
-
-.eqtabs{ display:flex; overflow-x:auto; }
-.eqtabs button:first-child{ padding-left:0; }
-.eqtabs button{ flex:0 0 auto; display:flex; align-items:baseline; gap:9px; white-space:nowrap;
-  padding:8px 16px 9px; font-size:15px; font-weight:500; letter-spacing:-.025em;
-  color:var(--ink-2); border-bottom:2px solid transparent; transition:color .2s, border-color .2s; }
-.eqtabs button:first-child{ padding-left:0; }
-.eqtabs button .ix{ font-family:var(--mono); font-size:9.5px; letter-spacing:.16em; opacity:.55; }
-.eqtabs button:hover{ color:var(--ink); }
-.eqtabs button[aria-selected="true"]{ color:var(--red); border-bottom-color:var(--red); }
-.eqtabs button[aria-selected="true"] .ix{ opacity:1; }
-
-.pintrack{ flex:1 1 auto; display:flex; min-height:0; will-change:transform; }
-.ppanel{ 
-  flex:0 0 100%; 
-  min-width:0; 
-  /* display:grid; */
-  /* grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);  */
-  display: flex;;
-  gap:clamp(18px,3vw,52px);
-  padding:clamp(14px,2.2vh,26px) var(--gut) clamp(18px,3vh,34px); 
-  
-}
-
-.pleft{ display:flex; flex-direction:column; min-height:0; width: 40vw; }
-.pmedia{ display:flex; flex-direction:column; flex:1 1 auto; min-height:0; gap:9px; }
-.pbox{ position:relative; 
-  /* flex:1 1 auto;  */
-  width:40vw;
-  height:40vw;
-  min-height:0; }
-.eqstage{ position:absolute; inset:0; overflow:hidden;
-  border:1px solid rgba(18,26,24,.2); background:linear-gradient(168deg,#EBEEED 0%,#D6DDDB 100%);
-  opacity:1; visibility:visible; transition:opacity .4s, visibility 0s; }
-.pphoto{ position:absolute; inset:0; overflow:hidden; border:1px solid rgba(18,26,24,.22);
-  opacity:0; visibility:hidden; transition:opacity .4s, visibility 0s linear .4s; }
-.pphoto img{ width:100%; height:100%; object-fit:cover; display:block; }
-.pgrid{ position:absolute; inset:0; display:grid; gap:7px; padding:10px; box-sizing:border-box;
-  grid-template-columns:1fr 1fr; grid-template-rows:1.42fr 1fr; }
-.pgrid figure{ position:relative; overflow:hidden; border:1px solid rgba(18,26,24,.22); background:#fff; }
-.pgrid figure:first-child{ grid-column:1 / -1; }
-.pgrid img{ width:100%; height:100%; object-fit:cover; display:block; }
-.pgrid img.fitc{ object-fit:contain; padding:7px; }
-.pgrid .lb{ position:absolute; left:0; top:0; z-index:2; font-family:var(--mono); font-weight:600;
-  font-size:9px; letter-spacing:.1em; text-transform:uppercase; padding:3px 7px 2px;
-  background:rgba(242,244,243,.94); color:var(--ink);
-  border-right:1px solid rgba(18,26,24,.2); border-bottom:1px solid rgba(18,26,24,.2); }
-.pgrid.pnone{ grid-template-columns:1fr; grid-template-rows:1fr; }
-.noteplate{ display:flex; flex-direction:column; justify-content:center; gap:10px;
-  padding:clamp(20px,3vw,44px); border:1px dashed rgba(18,26,24,.3); background:var(--paper); }
-.noteplate b{ font-family:var(--mono); font-size:10px; font-weight:600; letter-spacing:.2em;
-  text-transform:uppercase; color:var(--red); }
-.noteplate span{ font-size:13px; font-weight:300; line-height:1.85; color:var(--ink-2); max-width:34ch; }
-.pmedia[data-view="photo"] .eqstage{ opacity:0; visibility:hidden; transition:opacity .4s, visibility 0s linear .4s; }
-.pmedia[data-view="photo"] .pphoto{ opacity:1; visibility:visible; transition:opacity .4s, visibility 0s; }
-
-/* 보기 전환 토글 — 이미지 영역 안쪽 위 */
-.vtoggle{ position:absolute; z-index:6; top:12px; right:12px; display:flex;
-  border:1px solid rgba(18,26,24,.24); background:rgba(242,244,243,.9); backdrop-filter:blur(6px); }
-.vtoggle button{ font-family:var(--mono); font-size:9.5px; font-weight:600; letter-spacing:.14em;
-  text-transform:uppercase; padding:7px 13px 6px; color:var(--ink-2);
-  border-left:1px solid rgba(18,26,24,.18); transition:background .2s, color .2s; }
-.vtoggle button:first-child{ border-left:0; }
-.vtoggle button:hover{ color:var(--red); }
-.vtoggle button[aria-pressed="true"]{ background:var(--ink); color:var(--paper); }
-
-.pcap{ position:relative; flex:0 0 auto; min-height:34px; }
-.pcap .cap{ position:absolute; inset:0; opacity:0; transition:opacity .35s; }
-.pmedia[data-view="model"] .pcap .c-model{ opacity:1; }
-.pmedia[data-view="photo"] .pcap .c-photo{ opacity:1; }
-.eqstage .poster{ position:absolute; inset:0; width:100%; height:100%; object-fit:contain;
-  opacity:1; transition:opacity .25s; }
-.ppanel.active .eqstage .poster{ opacity:0; }
-.eqstage .slot{ position:absolute; inset:0; }
-.eqload{ position:absolute; inset:0; display:grid; place-items:center; z-index:4;
-  font-family:var(--mono); font-size:10.5px; letter-spacing:.16em; text-transform:uppercase; color:var(--ink-2); }
-#eqLive{ position:absolute; inset:0; }
-#eqLive canvas{ display:block; width:100%; height:100%; touch-action:pan-y; }
-@media (pointer:fine){ #eqLive canvas{ touch-action:none; } }
-.eqvig{ position:absolute; inset:0; pointer-events:none;
-  background:radial-gradient(ellipse at 50% 58%,transparent 38%,rgba(18,26,24,.10) 100%); }
-.eqscale{ position:absolute; left:12px; top:12px; padding-left:9px; border-left:1px solid rgba(18,26,24,.3);
-  font-family:var(--mono); font-size:9.5px; letter-spacing:.14em; color:var(--ink-2); }
-.eqhint{ position:absolute; right:12px; bottom:12px; font-size:9px; letter-spacing:.1em;
-  color:var(--ink-2); opacity:.7; text-align:right; pointer-events:none; }
-.eqhud{ position:absolute; left:12px; bottom:12px; z-index:3; display:flex; gap:6px; flex-wrap:wrap; }
-.eqhud button{ font-family:var(--mono); font-size:9.5px; letter-spacing:.12em; text-transform:uppercase;
-  padding:7px 10px 6px; border:1px solid rgba(18,26,24,.22); background:rgba(242,244,243,.86); color:var(--ink-2);
-  transition:border-color .2s, color .2s, background .2s; }
-.eqhud button:hover{ border-color:var(--red); color:var(--red); }
-.eqhud button[aria-pressed="true"]{ background:var(--ink); border-color:var(--ink); color:var(--paper); }
-
-.eqlabels{ position:absolute; inset:0; overflow:hidden; pointer-events:none; z-index:2; }
-.eqlabels .lab{ position:absolute; transform:translate(-50%,-50%); display:flex; align-items:center; gap:5px;
-  white-space:nowrap; cursor:pointer; pointer-events:auto; }
-.eqlabels .lab .pin{ width:5px; height:5px; background:var(--red); box-shadow:0 0 0 3px rgba(15,15,112,.22); }
-.eqlabels .lab .n{ font-family:var(--mono); font-size:9px; font-weight:600; letter-spacing:.1em; padding:2px 5px 1px;
-  background:rgba(242,244,243,.94); border:1px solid rgba(18,26,24,.26); color:var(--ink-2); transition:.2s; }
-.eqlabels .lab .txt{ font-family:var(--mono); font-size:9.5px; letter-spacing:.06em; padding:3px 7px 2px;
-  background:rgba(242,244,243,.95); border:1px solid rgba(18,26,24,.2); color:var(--ink-2);
-  opacity:0; transform:translateX(-5px); transition:opacity .2s, transform .25s; pointer-events:none; }
-.eqlabels .lab:hover .n,.eqlabels .lab.on .n{ border-color:var(--red); color:var(--red); }
-.eqlabels .lab:hover .txt,.eqlabels .lab.on .txt{ opacity:1; transform:none; }
-.eqlabels .lab.on .txt{ border-color:var(--red); color:var(--red); }
-
-
-.pright{ display:flex; flex-direction:column; min-height:0; }
-.pright > *{ opacity:0; transform:translateY(12px);
-  transition:opacity .55s cubic-bezier(.2,.7,.3,1), transform .55s cubic-bezier(.2,.7,.3,1); }
-.ppanel.active .pright > *{ opacity:1; transform:none; }
-.ppanel.active .pright > *:nth-child(1){ transition-delay:.04s; }
-.ppanel.active .pright > *:nth-child(2){ transition-delay:.10s; }
-.ppanel.active .pright > *:nth-child(3){ transition-delay:.15s; }
-.ppanel.active .pright > *:nth-child(4){ transition-delay:.21s; }
-.ppanel.active .pright > *:nth-child(5){ transition-delay:.28s; }
-.ppanel.active .pright > *:nth-child(6){ transition-delay:.34s; }
-.ppanel.active .pright > *:nth-child(7){ transition-delay:.41s; }
-.ppanel.active .pright > *:nth-child(8){ transition-delay:.47s; }
-.pno{ font-family:var(--mono); font-size:9.5px; letter-spacing:.2em; text-transform:uppercase; color:var(--red); }
-.pright .spec .r{ padding:6px 0; }
-.pright h3{ margin-top:8px; font-size:clamp(22px,2.6vw,38px); font-weight:700; letter-spacing:-.045em; line-height:1.14; }
-.pen{ font-family:var(--mono); font-size:10px; letter-spacing:.14em; opacity:.5; margin-top:5px; }
-.pdesc{ margin-top:14px; font-size:14.2px; font-weight:300; line-height:1.85; }
-.spectitle{ margin-top:clamp(14px,2.4vh,26px); padding-bottom:8px; border-bottom:1px solid var(--rule);
-  font-family:var(--mono); font-size:9.5px; font-weight:600; letter-spacing:.18em; text-transform:uppercase; opacity:.7; }
-.plisttitle{ display:flex; align-items:baseline; justify-content:space-between; gap:10px;
-  margin-top:clamp(14px,2.4vh,26px); padding-bottom:8px; border-bottom:1px solid var(--rule);
-  font-family:var(--mono); font-size:9.5px; font-weight:600; letter-spacing:.18em; text-transform:uppercase; opacity:.7; }
-.plisttitle span{ font-weight:400; text-transform:none; letter-spacing:.02em; font-size:9.5px; opacity:.8; }
-.plist{ display:flex; flex-direction:column; min-height:0; overflow:auto; }
-.plist button{ position:relative; width:100%; display:flex; gap:10px; align-items:baseline; text-align:left;
-  padding:8px 0; border-bottom:1px solid var(--rule-soft); font-size:12.6px; letter-spacing:-.02em;
-  color:var(--ink-2); transition:color .2s, padding-left .3s cubic-bezier(.2,.8,.3,1); }
-.plist button:hover{ color:var(--ink); padding-left:8px; }
-.plist .no{ font-family:var(--mono); font-size:9.5px; letter-spacing:.14em; opacity:.55; min-width:18px; }
-.plist button[aria-current="true"]{ color:var(--red); font-weight:500; padding-left:10px; }
-.plist button[aria-current="true"] .no{ opacity:1; }
-.plist button[aria-current="true"]::before{ content:''; position:absolute; left:0; top:7px; bottom:7px; width:2px; background:var(--red); }
-
-/* 폴백 : 좁거나 낮은 화면, 모션 최소화 → 핀 해제하고 세로 적층 */
-@media (max-width:980px), (max-height:620px), (prefers-reduced-motion:reduce){
-  .pin{ height:auto; }
-  .pinstage{ position:static; height:auto; overflow:visible; }
-  .pinhd{ padding-top:0; flex-wrap:wrap; }
-  .pinprog{ display:none; }
-  .pintrack{ flex-direction:column; transform:none !important; }
-  .ppanel{ flex:0 0 auto; grid-template-columns:1fr; padding-block:clamp(26px,4vh,46px);
-    border-top:1px solid var(--rule-soft); }
-  .ppanel .pbox{ aspect-ratio:4/3; flex:none; min-height:0; }
-  .plist{ overflow:visible; }
-  .pright > *{ opacity:1 !important; transform:none !important; transition:none !important; }
-  .eqhint{ display:none; }
-}
-
-/* 섹션 스냅 : mandatory 아님 — 경계 근처에서만 살짝 붙는다 */
-@media (min-width:981px) and (min-height:700px) and (prefers-reduced-motion:no-preference){
-  html{ scroll-snap-type:y proximity; scroll-padding-top:78px; }
-  #top,#s1,#s3,#s4,#s5{ scroll-snap-align:start; }
-}
-
-/* ---------- 등장 ---------- */
-.rv{ opacity:0; transform:translateY(20px); transition:opacity .26s ease, transform .26s ease; }
-.rv.in{ opacity:1; transform:none; transition:opacity .8s cubic-bezier(.2,.7,.3,1), transform .8s cubic-bezier(.2,.7,.3,1); }
-@media (prefers-reduced-motion:reduce){ .rv{ opacity:1; transform:none; } html{ scroll-behavior:auto; } }
-
-/* ---------- 반응형 ---------- */
-@media (max-width:980px){
-  .cover{ grid-template-columns:1fr; padding-top:100px; }
-  .cover .plate-lead{ margin-right:0; order:-1; max-width:460px; }
-  .item .inner,.item.flip .inner{ grid-template-columns:1fr; }
-  .item.flip .plate{ order:0; }
-  .plates,.site{ grid-template-columns:1fr; }
-  .sechd,.cols,.item{ grid-template-columns:1fr; }
-  .sechd .en{ display:none; }
-  .note{ display:flex; flex-wrap:wrap; gap:0 22px; padding-top:0; padding-bottom:10px; }
-}
-</style>
+<link rel="stylesheet" href="assets/style.css">
 
 <!-- ============ 좌측 레일 ============ -->
-<div class="rail" id="rail" aria-hidden="true">
-  <span class="m" style="font-size:9px">SNU</span>
-  <span class="tick"><i style="top:0"></i><i style="top:25%"></i><i style="top:50%"></i><i style="top:75%"></i><i style="top:100%"></i><span class="fill" id="fill" style="height:0"></span></span>
-  <span class="vtx">Test Record 2026</span>
+<div class="side-rail" id="side-rail">
+  <span class="mono-txt" style="font-size:9px">SNU</span>
+    <span class="rail-tick" id="rail-tick" role="scrollbar" aria-orientation="vertical"
+        aria-label="페이지 스크롤" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"
+        tabindex="0"><i style="top:0"></i><i style="top:25%"></i><i style="top:50%"></i><i style="top:75%"></i><i style="top:100%"></i><span class="rail-fill" id="rail-fill" style="height:0"></span></span>
+  <span class="rail-vtext">Test Record 2026</span>
 </div>
 
 <!-- ============ 문서 머리글 ============ -->
-<header class="dochd" id="dochd">
-  <a class="t" href="#top"><img class="lgm" src="assets/logo-h.png" alt="서울대학교 우주항공 통합 풍동센터"><img class="lgm lgm-d" src="assets/logo-h-light.png" alt=""></a>
+<header class="site-header" id="site-header">
+  <a class="site-logo" href="#top"><img class="logo-img" src="assets/logo-ci.png" alt="서울대학교 우주항공 통합 풍동센터"><img class="logo-img logo-img-dark" src="assets/logo-ci-light.png" alt=""></a>
   <nav>
-    <div class="nvi"><a href="#s1">센터 소개<i></i></a><div class="sub"><a href="#"><b>01</b>센터장 인사말</a><a href="#"><b>02</b>센터 비전 및 목표</a><a href="#"><b>03</b>설립목적 및 연혁</a><a href="#"><b>04</b>조직도</a><a href="#"><b>05</b>구성원</a><a href="#"><b>06</b>시설 전경 갤러리</a><a href="#"><b>07</b>CI 및 브랜드 소개</a><a href="#"><b>08</b>찾아오시는 길</a></div></div>
-    <div class="nvi"><a href="#s2">연구 장비<i></i></a><div class="sub"><a href="#"><b>01</b>삼중음속 풍동</a><a href="#"><b>02</b>극초음속 풍동</a><a href="#"><b>03</b>발리스틱레인지</a><a href="#"><b>04</b>장비별 세부 사양 및 참고 사례</a><a href="#"><b>05</b>이용 절차 안내</a></div></div>
-    <div class="nvi"><a href="#s3">연구 성과</a></div>
-    <div class="nvi"><a href="#s4">센터 소식<i></i></a><div class="sub"><a href="#"><b>01</b>공지사항</a><a href="#"><b>02</b>행사</a></div></div>
-    <div class="nvi"><a href="#s5">찾아오시는 길<i></i></a><div class="sub"><a href="#"><b>01</b>센터 위치</a><a href="#"><b>02</b>센터별 컨택</a><a href="#"><b>03</b>행정 문의</a></div></div>
+    <div class="gnb-item"><a href="#overview">센터 소개<i></i></a><div class="gnb-sub"><a href="#"><b>01</b>센터장 인사말</a><a href="#"><b>02</b>센터 비전 및 목표</a><a href="#"><b>03</b>설립목적 및 연혁</a><a href="#"><b>04</b>조직도</a><a href="#"><b>05</b>구성원</a><a href="#"><b>06</b>시설 전경 갤러리</a><a href="#"><b>07</b>CI 및 브랜드 소개</a><a href="#"><b>08</b>찾아오시는 길</a></div></div>
+    <div class="gnb-item"><a href="#facilities">연구 장비<i></i></a><div class="gnb-sub"><a href="#"><b>01</b>삼중음속 풍동</a><a href="#"><b>02</b>극초음속 풍동</a><a href="#"><b>03</b>발리스틱레인지</a><a href="#"><b>04</b>장비별 세부 사양 및 참고 사례</a><a href="#"><b>05</b>이용 절차 안내</a></div></div>
+    
+    <div class="gnb-item"><a href="#news">센터 소식<i></i></a><div class="gnb-sub"><a href="#"><b>01</b>공지사항</a><a href="#"><b>02</b>행사</a></div></div>
+    <div class="gnb-item"><a href="#location">찾아오시는 길<i></i></a><div class="gnb-sub"><a href="#"><b>01</b>센터 위치</a><a href="#"><b>02</b>센터별 컨택</a><a href="#"><b>03</b>행정 문의</a></div></div>
   </nav>
-  <div class="lang" role="group" aria-label="언어 전환">
+  <div class="lang-switch" role="group" aria-label="언어 전환">
     <a href="/ko/" aria-current="true" lang="ko">KO</a><span>/</span><a href="/en/" lang="en">EN</a>
   </div>
 </header>
 
-<div class="sheet">
+<div class="doc-sheet">
 
 <!-- ============ 표제지 ============ -->
-<section class="paper-s pg cover" id="top">
-  <div class="seq">
-    <p class="cls m"><i></i>Aerospace Integrated Wind Tunnel Center</p>
-    <h1 class="lines"><span class="ln"><span><span class="thin">다양한</span> 속도 영역의</span></span><span class="ln"><span class="ul"><span>공기역학 환경을</span></span></span><span class="ln"><span class="thin">지상에서 재현한다</span></span></h1>
-    <p class="abs">서울대학교 우주항공 통합 풍동센터는 다양한 속도 영역의 고난이도 공기역학 환경을 지상에서 재현합니다. 국가 우주개발 사업과 우주방산 산업체의 시험을 지원합니다.</p>
-  </div>
-  <figure class="plate-lead slider" id="pl0">
-    <div class="slides">
-      <div class="slide on"><img src="assets/slide-1.jpg" alt="시험부 유동 가시화"></div>
-      <div class="slide"><img src="assets/slide-2.jpg" alt="공력 해석 콘솔"></div>
-      <div class="slide"><img src="assets/slide-3.jpg" alt="터보팬 엔진 단면"></div>
-      <div class="sctl">
-        <button type="button" class="sbtn" data-prev aria-label="이전 도판">&#8592;</button>
-        <span class="snum"><b id="slideNo">01</b><i id="slideBar" style="--p:33%"></i><em>03</em></span>
-        <button type="button" class="sbtn" data-next aria-label="다음 도판">&#8594;</button>
+<section class="theme-paper container hero" id="top">
+  <p class="hero-mark" aria-hidden="true">Aerospace Wind Tunnel</p>
+  <div class="reveal-seq">
+    <p class="hero-kicker mono-txt"><i></i>Aerospace Integrated Wind Tunnel Center</p>
+    <h1 class="reveal-lines"><span class="reveal-line"><span><span class="txt-thin">다양한</span> 속도 영역의</span></span><span class="reveal-line"><span>공기역학 환경을</span></span><span class="reveal-line"><span class="txt-thin">지상에서 재현한다</span></span></h1>
+    <p class="hero-lead">서울대학교 우주항공 통합 풍동센터는 다양한 속도 영역의 고난이도 공기역학 환경을 지상에서 재현합니다. 국가 우주개발 사업과 우주방산 산업체의 시험을 지원합니다.</p>
+    <div class="slider-ctrl">
+        <button type="button" class="slider-btn" data-prev aria-label="이전 도판">&#8592;</button>
+        <span class="slider-count"><b id="slider-no">01</b><i id="slider-bar" style="--p:50%"></i><em>02</em></span>
+        <button type="button" class="slider-btn" data-next aria-label="다음 도판">&#8594;</button>
       </div>
+  </div>
+  <figure class="hero-figure slider" id="hero-figure">
+    <div class="slider-track">
+            <div class="slider-item is-on"><img src="assets/slide-1.jpg" alt="풍동 시험부의 항공기 모형"></div>
+      <div class="slider-item"><img src="assets/slide-2.jpg" alt="발사체 발사 장면"></div>
+      
     </div>
   </figure>
 </section>
 
 <!-- ============ §01 개요 (어두운 지면) ============ -->
-<section class="dark-s pg sec" id="s1">
-  <div class="sechd rv">
-    <!-- <span class="sn">§ 01</span> -->
-     <span class="en">Overview</span>
-    <h2 class="lines">
-      <span class="ln"><span>다양한 속도 영역을</span></span><span class="ln"><span>지상에서 재현한다</span></span>
+<section class="theme-dark container page-section" id="overview">
+  <div class="section-head reveal">
+    <!-- <span class="section-no">§ 01</span> -->
+     <span class="section-en">Overview</span>
+    <h2 class="reveal-lines">
+      <span class="reveal-line"><span>다양한 속도 영역을</span></span><span class="reveal-line"><span>지상에서 재현한다</span></span>
     </h2>
     
   </div>
-  <div class="doublerule rv"></div>
+  <div class="rule-double reveal"></div>
 
-  <div class="cols three" style="margin-top:clamp(28px,4.4vh,54px)">
-    <div class="colA">
-      <div class="vrail rv"><span>Continuum</span></div>
+  <div class="col-set col-set-3" style="margin-top:clamp(28px,4.4vh,54px)">
+    <div class="col-rail">
+      <div class="v-keyword reveal"><span>Continuum</span></div>
     </div>
-    <div class="seq">
-      <p class="bodytxt">삼중음속 풍동은 아음속(M&lt;1)·천음속(0.8≤M≤1.2)·초음속(1.2&lt;M&lt;5)의 삼중 속도 영역을 모사합니다. 극초음속 풍동은 M5 이상의 비행 환경을 지상에서 모사하고, 발리스틱 레인지는 지지대가 없는 자유비행 조건을 담당합니다.</p>
-      <p class="bodytxt">센터는 <strong>고아음속·천음속·초음속 유동환경을 구현하는 삼중음속 풍동장치(마하 0.5~3 급)</strong>와 <strong>극초음속 풍동장치(마하 7 급)</strong>로 구성됩니다. 이를 기반으로 연구개발과 성능시험을 수행합니다.</p>
+    <div class="reveal-seq">
+      <p class="body-txt">삼중음속 풍동은 아음속(M&lt;1)·천음속(0.8≤M≤1.2)·초음속(1.2&lt;M&lt;5)의 삼중 속도 영역을 모사합니다. 극초음속 풍동은 M5 이상의 비행 환경을 지상에서 모사하고, 발리스틱 레인지는 지지대가 없는 자유비행 조건을 담당합니다.</p>
+      <p class="body-txt">센터는 <strong>고아음속·천음속·초음속 유동환경을 구현하는 삼중음속 풍동장치(마하 0.5~3 급)</strong>와 <strong>극초음속 풍동장치(마하 7 급)</strong>로 구성됩니다. 이를 기반으로 연구개발과 성능시험을 수행합니다.</p>
 
-      <p class="bodytxt">세 설비 모두 압력·힘·진동 등 주요 공력 데이터를 획득합니다.</p>
-      <a class="stamp" href="#s5">이용 문의 <i>→</i></a>
+      <p class="body-txt">세 설비 모두 압력·힘·진동 등 주요 공력 데이터를 획득합니다.</p>
+      <a class="btn-stamp" href="#location">이용 문의 <i>→</i></a>
     </div>
 
-    <aside class="margintbl seq">
+    <aside class="margin-table reveal-seq">
       <h5>Tab. 1.1 속도 영역 대조</h5>
-      <div class="r"><b>M &lt; 1</b><span>아음속</span></div>
-      <div class="r"><b>0.8 ≤ M ≤ 1.2</b><span>천음속</span></div>
-      <div class="r"><b>1.2 &lt; M &lt; 5</b><span>초음속</span></div>
-      <div class="r hi"><b>M 5 이상</b><span>극초음속</span></div>
-      <div class="r"><b>최대 4 km/s</b><span>자유비행</span></div>
+      <div class="row"><b>M &lt; 1</b><span>아음속</span></div>
+      <div class="row"><b>0.8 ≤ M ≤ 1.2</b><span>천음속</span></div>
+      <div class="row"><b>1.2 &lt; M &lt; 5</b><span>초음속</span></div>
+      <div class="row is-hl"><b>M 5 이상</b><span>극초음속</span></div>
+      <div class="row"><b>최대 4 km/s</b><span>자유비행</span></div>
       <p>삼중음속 풍동 M 0.5~3 급 이상, 극초음속 풍동 M 7 급. 극초음속 풍동은 향후 M5~M10 확보가 가능한 설계를 반영했다.</p>
     </aside>
   </div>
 </section>
 
 <!-- ============ §02 설비 일람 ============ -->
-<section class="paper-s pg sec" id="s2" style="padding-bottom:0">
-  <div class="sechd rv">
-    <span class="en">Facilities</span>
-    <h2 class="lines"><span class="ln"><span>설비 일람</span></span></h2>
+<section class="theme-paper container page-section" id="facilities" style="padding-bottom:0">
+  <div class="section-head reveal">
+    <span class="section-en">Facilities</span>
+    <h2 class="reveal-lines"><span class="reveal-line"><span>설비 일람</span></span></h2>
     
   </div>
-  <div class="doublerule rv"></div>
-  <!-- <div class="cols" style="margin-top:clamp(24px,3.4vh,40px)"> -->
-    
-  </div>
+  <div class="rule-double reveal"></div>
 </section>
 
-<section class="paper-s pin" id="s2pin" aria-label="설비 일람">
-  <div class="pinstage">
-    <div class="pinhd">
-      <div class="eqtabs" id="eqTabs" role="tablist"></div>
-      <span class="pinprog" aria-hidden="true"><i></i></span>
+<section class="theme-paper facility-pin" id="facilities-pin" aria-label="설비 일람">
+  <div class="pin-stage">
+    <div class="pin-head">
+      <div class="facility-tabs" id="facility-tabs" role="tablist"></div>
+      <span class="pin-prog" aria-hidden="true"><i></i></span>
     </div>
-    <div class="pintrack">
-      <article class="ppanel active">
-        <div class="pleft">
-          <figure class="pmedia" data-view="model">
-            <div class="pbox">
-              <div class="eqstage">
-                <img class="poster" alt="" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==">
-                <div class="slot"><div id="eqLive">
-            <div class="eqlabels" id="eqLabels"></div>
-            <div class="eqvig"></div>
-            <p class="eqscale" id="eqScale"></p>
-            <div class="eqhud">
-              <button type="button" id="eqReset">시점 초기화</button>
-              <button type="button" id="eqSpin" aria-pressed="true">자동 회전</button>
-              <button type="button" id="eqLabBtn" aria-pressed="true">부위 라벨</button>
+    <div class="pin-track">
+      <article class="facility-panel is-active">
+        <div class="panel-media-col">
+          <figure class="panel-figure" data-view="model">
+            <div class="media-box">
+              <div class="model-stage">
+                <img class="model-poster" alt="" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==">
+                <div class="model-slot"><div id="model-live">
+            <div class="model-labels" id="model-labels"></div>
+            <div class="model-vignette"></div>
+            <p class="model-scale" id="model-scale"></p>
+            <div class="model-hud">
+              <button type="button" id="model-reset">시점 초기화</button>
+              <button type="button" id="model-spin" aria-pressed="true">자동 회전</button>
+              <button type="button" id="model-label-btn" aria-pressed="true">부위 라벨</button>
             </div>
-            <p class="eqhint mono">드래그 회전 · Ctrl/⌘+휠 확대 · 클릭 선택</p>
+            <p class="model-hint">드래그 회전 · Ctrl/⌘+휠 확대 · 클릭 선택</p>
           </div></div>
-                <p class="eqload">3D 모형 불러오는 중</p>
+                <p class="model-loading">3D 모형 불러오는 중</p>
               </div>
-              <div class="pphoto"><div class="pgrid">
-                <figure><span class="lb">a</span><img class="fitc" src="assets/tri-a.jpg" alt="삼중음속 풍동 전체 구성 모델" loading="lazy"></figure>
-                <figure><span class="lb">b</span><img class="fitc" src="assets/tri-b.jpg" alt="삼중음속 풍동 측면 전개도" loading="lazy"></figure>
-                <figure><span class="lb">c</span><img class="fitc" src="assets/tri-c.jpg" alt="삼중음속 풍동 공기 공급 계통도" loading="lazy"></figure>
+              <div class="media-photo"><div class="poster-grid">
+                <figure><span class="poster-label">a</span><img class="is-contain" src="assets/tri-a.jpg" alt="삼중음속 풍동 전체 구성 모델" loading="lazy"></figure>
+                <figure><span class="poster-label">b</span><img class="is-contain" src="assets/tri-b.jpg" alt="삼중음속 풍동 측면 전개도" loading="lazy"></figure>
+                <figure><span class="poster-label">c</span><img class="is-contain" src="assets/tri-c.jpg" alt="삼중음속 풍동 공기 공급 계통도" loading="lazy"></figure>
               </div></div>
-              <div class="vtoggle" role="group" aria-label="보기 전환">
+              <div class="view-toggle" role="group" aria-label="보기 전환">
                 <button type="button" data-view-btn="model" aria-pressed="true">Model</button>
                 <button type="button" data-view-btn="photo" aria-pressed="false">Photo</button>
               </div>
             </div>
-            <figcaption class="pcap">
-              <span class="cap c-model"><b>Fig. 2.1a</b><span>설비 구조 모형. 드래그로 회전, 부위를 누르면 사양이 바뀝니다.</span></span>
-              <span class="cap c-photo"><b>Fig. 2.1b</b><span>(a) 전체 구성 모델  (b) 측면 전개도  (c) 공기 공급 계통도</span></span>
-            </figcaption>
           </figure>
         </div>
-        <div class="pright">
-          <p class="pno">Unit 2.1</p>
+        <div class="panel-text-col">
+          <p class="panel-no">Unit 2.1</p>
           <h3>삼중음속 풍동</h3>
-          <p class="pen">Trisonic Wind Tunnel</p>
-          <p class="pdesc">아음속·천음속·초음속의 삼중 속도 영역을 모사합니다. 가변 노즐 실시간 제어로 마하수를 연속 가변하며, 압력·힘·진동 등 주요 공력 데이터를 획득합니다.</p>
-          <p class="spectitle" data-spectitle>설비 사양</p>
-          <dl class="spec" data-spec><div class="r"><dt>Mach</dt><span class="dots"></span><dd>0.5 – 3 급 이상</dd></div><div class="r"><dt>Test Section</dt><span class="dots"></span><dd>500 × 500 mm</dd></div><div class="r"><dt>Run Time</dt><span class="dots"></span><dd>~ 60 초</dd></div><div class="r"><dt>Mass Flow</dt><span class="dots"></span><dd>60 – 200 kg/s</dd></div><div class="r"><dt>Overall Length</dt><span class="dots"></span><dd>약 27,450 mm</dd></div></dl>
-          <p class="plisttitle">구성 부위 <span>클릭하면 모형에서 강조</span></p>
-          <div class="plist" data-plist></div>
+          <p class="panel-en">Trisonic Wind Tunnel</p>
+          <p class="panel-desc">아음속·천음속·초음속의 삼중 속도 영역을 모사합니다. 가변 노즐 실시간 제어로 마하수를 연속 가변하며, 압력·힘·진동 등 주요 공력 데이터를 획득합니다.</p>
+          <p class="spec-title" data-spectitle>설비 사양</p>
+          <dl class="spec" data-spec><div class="row"><dt>Mach</dt><span class="dots"></span><dd>0.5 – 3 급 이상</dd></div><div class="row"><dt>Test Section</dt><span class="dots"></span><dd>500 × 500 mm</dd></div><div class="row"><dt>Run Time</dt><span class="dots"></span><dd>~ 60 초</dd></div><div class="row"><dt>Mass Flow</dt><span class="dots"></span><dd>60 – 200 kg/s</dd></div><div class="row"><dt>Overall Length</dt><span class="dots"></span><dd>약 27,450 mm</dd></div></dl>
+          <p class="part-list-title">구성 부위 <span>클릭하면 모형에서 강조</span></p>
+          <div class="part-list" data-plist></div>
         </div>
       </article>
-      <article class="ppanel">
-        <div class="pleft">
-          <figure class="pmedia" data-view="model">
-            <div class="pbox">
-              <div class="eqstage">
-                <img class="poster" alt="" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==">
-                <div class="slot"></div>
-                <p class="eqload">3D 모형 불러오는 중</p>
+      <article class="facility-panel">
+        <div class="panel-media-col">
+          <figure class="panel-figure" data-view="model">
+            <div class="media-box">
+              <div class="model-stage">
+                <img class="model-poster" alt="" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==">
+                <div class="model-slot"></div>
+                <p class="model-loading">3D 모형 불러오는 중</p>
               </div>
-              <div class="pphoto"><div class="pgrid">
-                <figure><span class="lb">a</span><img class="fitc" src="assets/hyp-a.jpg" alt="극초음속 풍동 설치 구성" loading="lazy"></figure>
-                <figure><span class="lb">b</span><img src="assets/hyp-b.jpg" alt="교체형 노즐 실물" loading="lazy"></figure>
-                <figure><span class="lb">c</span><img class="fitc" src="assets/hyp-c.jpg" alt="극초음속 풍동 계통도" loading="lazy"></figure>
+              <div class="media-photo"><div class="poster-grid">
+                <figure><span class="poster-label">a</span><img class="is-contain" src="assets/hyp-a.jpg" alt="극초음속 풍동 설치 구성" loading="lazy"></figure>
+                <figure><span class="poster-label">b</span><img src="assets/hyp-b.jpg" alt="교체형 노즐 실물" loading="lazy"></figure>
+                <figure><span class="poster-label">c</span><img class="is-contain" src="assets/hyp-c.jpg" alt="극초음속 풍동 계통도" loading="lazy"></figure>
               </div></div>
-              <div class="vtoggle" role="group" aria-label="보기 전환">
+              <div class="view-toggle" role="group" aria-label="보기 전환">
                 <button type="button" data-view-btn="model" aria-pressed="true">Model</button>
                 <button type="button" data-view-btn="photo" aria-pressed="false">Photo</button>
               </div>
             </div>
-            <figcaption class="pcap">
-              <span class="cap c-model"><b>Fig. 2.2a</b><span>설비 구조 모형. 드래그로 회전, 부위를 누르면 사양이 바뀝니다.</span></span>
-              <span class="cap c-photo"><b>Fig. 2.2b</b><span>(a) 전체 구성과 진공탱크  (b) 교체형 노즐 실물  (c) 공기·진공 계통도</span></span>
-            </figcaption>
           </figure>
         </div>
-        <div class="pright">
-          <p class="pno">Unit 2.2</p>
+        <div class="panel-text-col">
+          <p class="panel-no">Unit 2.2</p>
           <h3>극초음속 풍동</h3>
-          <p class="pen">Hypersonic Wind Tunnel</p>
-          <p class="pdesc">M5 이상의 비행 환경을 지상에서 모사합니다. 전기히터 가열식 불어내기(Pressure–Vacuum Blowdown) 방식이며, 발사체의 공력현상과 우주탐사선의 하강·착륙 시 발생하는 비행안정성 문제를 연구합니다.</p>
-          <p class="spectitle" data-spectitle>설비 사양</p>
-          <dl class="spec" data-spec><div class="r"><dt>Mach</dt><span class="dots"></span><dd>7.0 급 (설계 M5–10)</dd></div><div class="r"><dt>Nozzle Exit</dt><span class="dots"></span><dd>Ø300 mm</dd></div><div class="r"><dt>Run Time</dt><span class="dots"></span><dd>~ 30 초</dd></div><div class="r"><dt>Total Pressure</dt><span class="dots"></span><dd>10 – 24 atm</dd></div><div class="r"><dt>Mass Flow</dt><span class="dots"></span><dd>1 – 2.9 kg/s</dd></div></dl>
-          <p class="plisttitle">구성 부위 <span>클릭하면 모형에서 강조</span></p>
-          <div class="plist" data-plist></div>
+          <p class="panel-en">Hypersonic Wind Tunnel</p>
+          <p class="panel-desc">M5 이상의 비행 환경을 지상에서 모사합니다. 전기히터 가열식 불어내기(Pressure–Vacuum Blowdown) 방식이며, 발사체의 공력현상과 우주탐사선의 하강·착륙 시 발생하는 비행안정성 문제를 연구합니다.</p>
+          <p class="spec-title" data-spectitle>설비 사양</p>
+          <dl class="spec" data-spec><div class="row"><dt>Mach</dt><span class="dots"></span><dd>7.0 급 (설계 M5–10)</dd></div><div class="row"><dt>Nozzle Exit</dt><span class="dots"></span><dd>Ø300 mm</dd></div><div class="row"><dt>Run Time</dt><span class="dots"></span><dd>~ 30 초</dd></div><div class="row"><dt>Total Pressure</dt><span class="dots"></span><dd>10 – 24 atm</dd></div><div class="row"><dt>Mass Flow</dt><span class="dots"></span><dd>1 – 2.9 kg/s</dd></div></dl>
+          <p class="part-list-title">구성 부위 <span>클릭하면 모형에서 강조</span></p>
+          <div class="part-list" data-plist></div>
         </div>
       </article>
-      <article class="ppanel">
-        <div class="pleft">
-          <figure class="pmedia" data-view="model">
-            <div class="pbox">
-              <div class="eqstage">
-                <img class="poster" alt="" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==">
-                <div class="slot"></div>
-                <p class="eqload">3D 모형 불러오는 중</p>
+      <article class="facility-panel">
+        <div class="panel-media-col">
+          <figure class="panel-figure" data-view="model">
+            <div class="media-box">
+              <div class="model-stage">
+                <img class="model-poster" alt="" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==">
+                <div class="model-slot"></div>
+                <p class="model-loading">3D 모형 불러오는 중</p>
               </div>
-              <div class="pphoto"><div class="pgrid pnone">
-                <div class="noteplate">
-                  <b>현장 도판 미수령</b>
-                  <span>제공 자료에는 해외 참고 시설(NASA Ames · Texas A&amp;M · JAXA · AEDC · ISL) 사진만 포함되어
-                  센터 설비 도판으로 쓸 수 없습니다. 설계도·현장 사진 요청 중.</span>
+              <div class="media-photo"><div class="poster-grid poster-grid-1">
+                <div class="empty-plate">
+                  <span>설계도·현장 사진 요청 중</span>
                 </div>
               </div></div>
-              <div class="vtoggle" role="group" aria-label="보기 전환">
+              <div class="view-toggle" role="group" aria-label="보기 전환">
                 <button type="button" data-view-btn="model" aria-pressed="true">Model</button>
                 <button type="button" data-view-btn="photo" aria-pressed="false">Photo</button>
               </div>
             </div>
-            <figcaption class="pcap">
-              <span class="cap c-model"><b>Fig. 2.3a</b><span>설비 구조 모형. 드래그로 회전, 부위를 누르면 사양이 바뀝니다.</span></span>
-              <span class="cap c-photo"><b>Fig. 2.3b</b><span>자료 수급 후 교체 예정.</span></span>
-            </figcaption>
           </figure>
         </div>
-        <div class="pright">
-          <p class="pno">Unit 2.3</p>
+        <div class="panel-text-col">
+          <p class="panel-no">Unit 2.3</p>
           <h3>발리스틱 레인지</h3>
-          <p class="pen">Ballistic Range</p>
-          <p class="pdesc">2단 경가스 발사기(Two-stage light gas gun)로 모형을 가속해 천음속·초음속·극초음속 자유비행 공력 실험을 수행합니다. 비행체 후류 유동 계측과 쉴리렌 유동 가시화가 가능합니다.</p>
-          <p class="spectitle" data-spectitle>설비 사양</p>
-          <dl class="spec" data-spec><div class="r"><dt>Velocity</dt><span class="dots"></span><dd>최대 4 km/s</dd></div><div class="r"><dt>Launcher</dt><span class="dots"></span><dd>2단 경가스 발사기</dd></div><div class="r"><dt>Bore</dt><span class="dots"></span><dd>Ø12.7 mm</dd></div><div class="r"><dt>Test Section</dt><span class="dots"></span><dd>4.5 m</dd></div><div class="r"><dt>Viewport</dt><span class="dots"></span><dd>Ø500 mm</dd></div></dl>
-          <p class="plisttitle">구성 부위 <span>클릭하면 모형에서 강조</span></p>
-          <div class="plist" data-plist></div>
+          <p class="panel-en">Ballistic Range</p>
+          <p class="panel-desc">2단 경가스 발사기(Two-stage light gas gun)로 모형을 가속해 천음속·초음속·극초음속 자유비행 공력 실험을 수행합니다. 비행체 후류 유동 계측과 슐리렌 유동 가시화가 가능합니다.</p>
+          <p class="spec-title" data-spectitle>설비 사양</p>
+          <dl class="spec" data-spec><div class="row"><dt>Velocity</dt><span class="dots"></span><dd>최대 4 km/s</dd></div><div class="row"><dt>Launcher</dt><span class="dots"></span><dd>2단 경가스 발사기</dd></div><div class="row"><dt>Bore</dt><span class="dots"></span><dd>Ø12.7 mm</dd></div><div class="row"><dt>Test Section</dt><span class="dots"></span><dd>4.5 m</dd></div><div class="row"><dt>Viewport</dt><span class="dots"></span><dd>Ø500 mm</dd></div></dl>
+          <p class="part-list-title">구성 부위 <span>클릭하면 모형에서 강조</span></p>
+          <div class="part-list" data-plist></div>
         </div>
       </article>
     </div>
@@ -934,151 +227,152 @@ html{ word-break:keep-all; overflow-wrap:break-word; }
 
 
 <!-- ============ §03 계측 자료 (어두운 지면 + 미색 도판) ============ -->
-<section class="dark-s pg sec" id="s3">
-  <div class="sechd rv">
-    <span class="en">Data</span>
-    <h2 class="lines"><span class="ln"><span>계측 자료</span></span></h2>
-  </div>
-  <div class="doublerule rv"></div>
+<section class="theme-dark container page-section" id="data">
+    <div class="figure-pin">
+    <div class="fig-stage">
 
-  <div class="pinhd">
-      <span class="pinprog" aria-hidden="true"><i></i></span>
-  </div>
-  <div class="data-pin">
-    <div class="bg">
+            <div class="section-head">
+        <span class="section-en">Data</span>
+        <h2 class="reveal-lines is-in"><span class="reveal-line"><span>계측 자료</span></span></h2>
+      </div>
+      <div class="rule-double"></div>
 
-      <div class="bgrail rv"><span>Measurement</span></div>
+      <div class="fig-row">
+      <div class="fig-rail reveal"><span>Measurement</span></div>
 
-      <div class="bgtext rv" style="--d:.05s">
+      <div class="fig-text reveal" style="--d:.05s">
         <p class="lead">압력 · 힘 · 진동 등 주요 공력 데이터를 획득합니다. 정체압과 정체온도 계측을 기반으로 하며,
           다점 압력레이크와 슐리렌을 보조 검증 수단으로 씁니다.</p>
         <p class="lead">긴 시험시간을 통해 대량의 공력 데이터를 확보합니다.</p>
-        <div class="tlist">
-          <p class="t">가능한 시험 유형</p>
-          <div class="r"><span>기본공력계수 획득 시험</span><span class="dots"></span></div>
-          <div class="r"><span>Isolated Intake Test</span><span class="dots"></span></div>
-          <div class="r"><span>Stage Separation Test</span><span class="dots"></span></div>
-          <div class="r"><span>극초음속 천이 연구</span><span class="dots"></span></div>
-          <div class="r"><span>쉴리렌 가시화 시험</span><span class="dots"></span></div>
-          <div class="r"><span>자유비행 공력 실험</span><span class="dots"></span></div>
-          <div class="r"><span>비행체 후류 유동 계측</span><span class="dots"></span></div>
+        <div class="test-list">
+          <p class="test-list-title">가능한 시험 유형</p>
+          <div class="row"><span>기본공력계수 획득 시험</span><span class="dots"></span></div>
+          <div class="row"><span>Isolated Intake Test</span><span class="dots"></span></div>
+          <div class="row"><span>Stage Separation Test</span><span class="dots"></span></div>
+          <div class="row"><span>극초음속 천이 연구</span><span class="dots"></span></div>
+          <div class="row"><span>슐리렌 가시화 시험</span><span class="dots"></span></div>
+          <div class="row"><span>자유비행 공력 실험</span><span class="dots"></span></div>
+          <div class="row"><span>비행체 후류 유동 계측</span><span class="dots"></span></div>
         </div>
       </div>
 
-      <div class="data_img">
-        <figure class="bgfig">
-          <div class="ph"><img src="assets/fig-schlieren.jpg" alt="슐리렌 가시화 기록"></div>
+      <div class="fig-col">
+      <div class="fig-track">
+        <figure class="fig-slide">
+          <div class="fig-plate"><img src="assets/fig-schlieren.jpg" alt="슐리렌 가시화 기록"></div>
           <figcaption class="cap"><span>HB-2 표준 모델 슐리렌 가시화.</span></figcaption>
         </figure>
 
-        <figure class="bgfig">
-          <div class="ph"><img src="assets/fig-cfd.jpg" alt="시험부 내부 유동 해석"></div>
+        <figure class="fig-slide">
+          <div class="fig-plate"><img src="assets/fig-cfd.jpg" alt="시험부 내부 유동 해석"></div>
           <figcaption class="cap"><span>정체실 확산과 시험부 유입 속도장.</span></figcaption>
         </figure>
 
-        <figure class="bgfig">
-          <div class="ph"><img src="assets/fig-flow.jpg" alt="삼중음속 풍동 구간별 유동 전개"></div>
+        <figure class="fig-slide">
+          <div class="fig-plate"><img src="assets/fig-flow.jpg" alt="삼중음속 풍동 구간별 유동 전개"></div>
           <figcaption class="cap"><span>유입류 · 가변노즐 · 시험부 · 초크 · 디퓨저 구간의 유동 전개.</span></figcaption>
         </figure>
 
-        <figure class="bgfig">
-          <div class="ph"><img src="assets/fig-envelope.png" alt="설비별 시험 운용 영역"></div>
+        <figure class="fig-slide">
+          <div class="fig-plate"><img src="assets/fig-envelope.png" alt="설비별 시험 운용 영역"></div>
           <figcaption class="cap"><span>설비별 시험 운용 영역. 점선은 극초음속 풍동 증설 설계 범위.</span></figcaption>
         </figure>
 
-        <figure class="bgfig">
-          <div class="ph"><img src="assets/fig-section.jpg" alt="극초음속 풍동 단면 선도면"></div>
+        <figure class="fig-slide">
+          <div class="fig-plate"><img src="assets/fig-section.jpg" alt="극초음속 풍동 단면 선도면"></div>
           <figcaption class="cap"><span>정체실 · 노즐 · 시험부 · 확산부 축방향 배치.</span></figcaption>
         </figure>
+      </div>
+      <div class="pin-head"> <span class="pin-prog" aria-hidden="true"><i></i></span> </div>
       </div>
 
       
 
       <!-- 
-    <figure class="bgfig p1 rv" style="--d:.1s">
-      <div class="ph"><img src="assets/fig-schlieren.jpg" alt="슐리렌 가시화 기록"></div>
+    <figure class="fig-slide reveal" style="--d:.1s">
+      <div class="fig-plate"><img src="assets/fig-schlieren.jpg" alt="슐리렌 가시화 기록"></div>
       <figcaption class="cap"><b>Fig. 3.1</b><span>HB-2 표준 모델 슐리렌 가시화.</span></figcaption>
     </figure>
 
-    <figure class="bgfig p2 rv" style="--d:.18s">
-      <div class="ph"><img src="assets/fig-cfd.jpg" alt="시험부 내부 유동 해석"></div>
+    <figure class="fig-slide reveal" style="--d:.18s">
+      <div class="fig-plate"><img src="assets/fig-cfd.jpg" alt="시험부 내부 유동 해석"></div>
       <figcaption class="cap"><b>Fig. 3.2</b><span>정체실 확산과 시험부 유입 속도장.</span></figcaption>
     </figure>
 
-    <figure class="bgfig p3 rv" style="--d:.1s">
-      <div class="ph"><img src="assets/fig-flow.jpg" alt="삼중음속 풍동 구간별 유동 전개"></div>
+    <figure class="fig-slide reveal" style="--d:.1s">
+      <div class="fig-plate"><img src="assets/fig-flow.jpg" alt="삼중음속 풍동 구간별 유동 전개"></div>
       <figcaption class="cap"><b>Fig. 3.3</b><span>유입류 · 가변노즐 · 시험부 · 초크 · 디퓨저 구간의 유동 전개.</span></figcaption>
     </figure>
 
-    <figure class="bgfig p4 rv" style="--d:.18s">
-      <div class="ph"><img src="assets/fig-envelope.png" alt="설비별 시험 운용 영역"></div>
+    <figure class="fig-slide reveal" style="--d:.18s">
+      <div class="fig-plate"><img src="assets/fig-envelope.png" alt="설비별 시험 운용 영역"></div>
       <figcaption class="cap"><b>Fig. 3.4</b><span>설비별 시험 운용 영역. 점선은 극초음속 풍동 증설 설계 범위.</span></figcaption>
     </figure>
 
-    <figure class="bgfig p5 rv" style="--d:.18s">
-      <div class="ph"><img src="assets/fig-section.jpg" alt="극초음속 풍동 단면 선도면"></div>
+    <figure class="fig-slide reveal" style="--d:.18s">
+      <div class="fig-plate"><img src="assets/fig-section.jpg" alt="극초음속 풍동 단면 선도면"></div>
       <figcaption class="cap"><b>Fig. 3.5</b><span>정체실 · 노즐 · 시험부 · 확산부 축방향 배치.</span></figcaption>
     </figure> 
     -->
 
     </div>
+</div>
   </div>
 </section>
 
 <!-- ============ §04 기록 ============ -->
-<section class="paper-s pg sec" id="s4">
-  <div class="sechd rv">
-    <span class="en">News</span>
-    <h2 class="lines"><span class="ln"><span>센터 소식</span></span></h2>
-    
+<section class="theme-paper container page-section" id="news">
+  <div class="section-head reveal">
+    <span class="section-en">News</span>
+        <h2 class="reveal-lines"><span class="reveal-line"><span>센터 소식</span></span></h2>
+    <a class="btn-stamp" href="#">공지사항 전체보기 <i>→</i></a>
   </div>
-  <div class="doublerule rv"></div>
-  <div class="reg rv" style="margin-top:clamp(22px,3.4vh,40px)">
-    <a><span class="no">001</span><span class="dt">2026.09.24</span><span class="ti">2026년 하반기 풍동 시험 설비 이용 신청 안내</span><span class="dots"></span><span class="kd">공지</span></a>
-    <a><span class="no">002</span><span class="dt">2026.09.11</span><span class="ti">극초음속 풍동 정기 점검에 따른 운용 일정 변경</span><span class="dots"></span><span class="kd">운영</span></a>
-    <a><span class="no">003</span><span class="dt">2026.08.29</span><span class="ti">제1회 통합풍동 기술교류회 개최 결과</span><span class="dots"></span><span class="kd">행사</span></a>
-    <a><span class="no">004</span><span class="dt">2026.08.14</span><span class="ti">산업체 공동연구 파트너 모집 공고</span><span class="dots"></span><span class="kd">모집</span></a>
-    <a><span class="no">005</span><span class="dt">2026.07.30</span><span class="ti">발리스틱 레인지 고속 촬영 장비 증설</span><span class="dots"></span><span class="kd">설비</span></a>
+  <div class="rule-double reveal"></div>
+  <div class="news-list reveal" style="margin-top:clamp(22px,3.4vh,40px)">
+    <a><span class="news-tag">공지</span><span class="news-title">2026년 하반기 풍동 시험 설비 이용 신청 안내</span><span class="dots"></span><span class="news-date">2026.09.24</span></a>
+    <a><span class="news-tag">운영</span><span class="news-title">극초음속 풍동 정기 점검에 따른 운용 일정 변경</span><span class="dots"></span><span class="news-date">2026.09.11</span></a>
+    <a><span class="news-tag">행사</span><span class="news-title">제1회 통합풍동 기술교류회 개최 결과</span><span class="dots"></span><span class="news-date">2026.08.29</span></a>
+    <a><span class="news-tag">모집</span><span class="news-title">산업체 공동연구 파트너 모집 공고</span><span class="dots"></span><span class="news-date">2026.08.14</span></a>
+    <a><span class="news-tag">설비</span><span class="news-title">발리스틱 레인지 고속 촬영 장비 증설</span><span class="dots"></span><span class="news-date">2026.07.30</span></a>
   </div>
-  <a class="stamp rv" href="#">공지사항 전체보기 <i>→</i></a>
 </section>
 
 <!-- ============ §05 소재지 ============ -->
-<section class="dark-s pg sec" id="s5">
-  <div class="sechd rv">
-    <span class="en">Location</span>
-    <h2 class="lines"><span class="ln"><span>소재지</span></span></h2>
+<section class="theme-dark container page-section" id="location">
+  <div class="section-head reveal">
+    <span class="section-en">Location</span>
+    <h2 class="reveal-lines"><span class="reveal-line"><span>소재지</span></span></h2>
     
   </div>
-  <div class="doublerule rv"></div>
-  <div class="site rv" style="margin-top:clamp(26px,4vh,48px)">
-    <div class="mapbox">
-      <div class="kmaphost" id="kmapHost">
+  <div class="rule-double reveal"></div>
+  <div class="location reveal" style="margin-top:clamp(26px,4vh,48px)">
+    <div class="map-box">
+      <div class="map-host" id="map-host">
         <div id="daumRoughmapContainer1790835790291" class="root_daum_roughmap root_daum_roughmap_landing"></div>
       </div>
-      <div class="mapfall" id="mapfall">
+      <div class="map-fallback" id="map-fallback">
         <b>서울대학교 시흥캠퍼스</b>
-        <span class="m">(15011) 경기도 시흥시 서울대학로 173</span>
+        <span class="mono-txt">(15011) 경기도 시흥시 서울대학로 173</span>
       </div>
     </div>
-    <div class="siteinfo">
-      <p class="addr">(15011) 경기도 시흥시 서울대학로 173<br>서울대학교 시흥캠퍼스</p>
+    <div class="location-info">
+      <p class="location-addr">(15011) 경기도 시흥시 서울대학로 173<br>서울대학교 시흥캠퍼스</p>
       <dl>
-        <div class="r"><dt>소속</dt><dd>서울대학교 시흥캠퍼스</dd></div>
-        <div class="r"><dt>영문명</dt><dd>Aerospace Integrated Wind Tunnel Center</dd></div>
-        <div class="r"><dt>운영시간</dt><dd>평일 09:00 – 18:00 (점심 12:00 – 13:00)</dd></div>
-        <div class="r"><dt>문의</dt><dd>031-5176-2640 · aerowtc@snu.ac.kr</dd></div>
+        <div class="row"><dt>소속</dt><dd>서울대학교 시흥캠퍼스</dd></div>
+        <div class="row"><dt>영문명</dt><dd>Aerospace Integrated Wind Tunnel Center</dd></div>
+        <div class="row"><dt>운영시간</dt><dd>평일 09:00 – 18:00 (점심 12:00 – 13:00)</dd></div>
+        <div class="row"><dt>문의</dt><dd>031-5176-2640 · aerowtc@snu.ac.kr</dd></div>
       </dl>
-      <a class="stamp" href="#">시험 이용 문의 <i>→</i></a>
+      <a class="btn-stamp" href="#">시험 이용 문의 <i>→</i></a>
     </div>
   </div>
 </section>
 
 <!-- ============ 발행 정보 ============ -->
-<footer class="colophon pg">
-  <div class="grid">
-    <div class="issue">
-      <img class="ftlogo" src="assets/logo-h.png" alt="서울대학교 우주항공 통합 풍동센터">
+<footer class="site-footer container">
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <img class="footer-logo" src="assets/logo-ci.png" alt="서울대학교 우주항공 통합 풍동센터">
       경기도 시흥시 서울대학로 173<br>
       서울대학교 시흥캠퍼스<br>
       TEL 031-5176-2640 · aerowtc@snu.ac.kr
@@ -1088,7 +382,7 @@ html{ word-break:keep-all; overflow-wrap:break-word; }
     <div><h4>이용 안내</h4><a href="#">이용 절차 안내</a><a href="#">사용료 안내</a><a href="#">장비별 세부 사양</a></div>
     <div><h4>문의</h4><a href="#">센터 위치</a><a href="#">행정 문의</a><a href="#">센터별 컨택</a></div>
   </div>
-  <div class="base">
+  <div class="footer-base">
     <span>© 2026 Seoul National University</span>
     <a href="#">개인정보처리방침</a>
     <a href="#">사이트맵</a>
@@ -1101,7 +395,7 @@ html{ word-break:keep-all; overflow-wrap:break-word; }
 <script charset="UTF-8" class="daum_roughmap_loader_script" src="https://t1.kakaocdn.net/kakaomapweb/roughmap/loader/prod/roughmapLoader.js"></script>
 <script>
 (function () {
-  var host = document.getElementById('kmapHost');
+  var host = document.getElementById('map-host');
   if (!host || !window.daum || !daum.roughmap) return;   // 차단·오프라인 → 대체 화면 유지
   try {
     new daum.roughmap.Lander({
@@ -1110,9 +404,70 @@ html{ word-break:keep-all; overflow-wrap:break-word; }
       mapWidth: String(Math.max(320, Math.round(host.clientWidth))),
       mapHeight: String(Math.max(240, Math.round(host.clientHeight) - 34))
     }).render();
-    var fb = document.getElementById('mapfall');
+    var fb = document.getElementById('map-fallback');
     if (fb) fb.style.display = 'none';
   } catch (e) { /* 실패하면 대체 화면 유지 */ }
+})();
+</script>
+<script>
+/* ============================================================
+   측정 레일 = 스크롤바
+   눈금 위를 누르거나 끌면 그 비율로 문서가 움직인다.
+   넓은 화면에서는 브라우저 기본 스크롤바를 감추고 이것이 대신한다.
+   ============================================================ */
+(function () {
+  'use strict';
+  var tick = document.getElementById('rail-tick');
+  if (!tick || !window.PointerEvent) return;
+
+  var root = document.documentElement;
+  function maxScroll() {
+    return Math.max(1, root.scrollHeight - window.innerHeight);
+  }
+  function ratioAt(clientY) {
+    var r = tick.getBoundingClientRect();
+    return Math.max(0, Math.min(1, (clientY - r.top) / Math.max(1, r.height)));
+  }
+  function jump(clientY) {
+    window.scrollTo(0, ratioAt(clientY) * maxScroll());
+  }
+
+  var dragging = false;
+
+  tick.addEventListener('pointerdown', function (e) {
+    if (e.button !== 0 && e.pointerType === 'mouse') return;
+    dragging = true;
+    root.classList.add('rail-dragging');
+    try { tick.setPointerCapture(e.pointerId); } catch (_) {}
+    jump(e.clientY);
+    e.preventDefault();
+  });
+
+  tick.addEventListener('pointermove', function (e) {
+    if (dragging) jump(e.clientY);
+  });
+
+  function release(e) {
+    if (!dragging) return;
+    dragging = false;
+    root.classList.remove('rail-dragging');
+    try { tick.releasePointerCapture(e.pointerId); } catch (_) {}
+  }
+  tick.addEventListener('pointerup', release);
+  tick.addEventListener('pointercancel', release);
+
+  tick.addEventListener('keydown', function (e) {
+    var vh = window.innerHeight, y = window.scrollY || 0, to = null;
+    if (e.key === 'ArrowDown')      to = y + vh * 0.12;
+    else if (e.key === 'ArrowUp')   to = y - vh * 0.12;
+    else if (e.key === 'PageDown')  to = y + vh * 0.9;
+    else if (e.key === 'PageUp')    to = y - vh * 0.9;
+    else if (e.key === 'Home')      to = 0;
+    else if (e.key === 'End')       to = maxScroll();
+    if (to === null) return;
+    e.preventDefault();
+    window.scrollTo(0, Math.max(0, Math.min(maxScroll(), to)));
+  });
 })();
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -1124,14 +479,15 @@ html{ word-break:keep-all; overflow-wrap:break-word; }
   (function (){
       'use strict';
 
-  var section = document.getElementById('s3');
+  var section = document.getElementById('data');
   if (!section) return;
 
-  var pin = section.querySelector('.data-pin');
-  var bg = section.querySelector('.bg');
-  var track = section.querySelector('.data_img');
+  var pin = section.querySelector('.figure-pin');
+  var bg = section.querySelector('.fig-stage');
+  var track = section.querySelector('.fig-track');
+  var prog  = section.querySelector('.pin-prog i');
   var panels = Array.prototype.slice.call(
-    section.querySelectorAll('.bgfig')
+    section.querySelectorAll('.fig-slide')
   );
 
   if (!pin || !bg || !track || !panels.length) return;
@@ -1194,11 +550,14 @@ html{ word-break:keep-all; overflow-wrap:break-word; }
      * progress 1
      * → 5번
      */
-    var x = -progress * (STEPS - 1) * 100;
-
+        var last = panels[STEPS - 1];
+    var contentW = last.offsetLeft + last.offsetWidth;
+    var shift = Math.max(0, contentW - track.clientWidth);
 
     track.style.transform =
-      'translate3d(' + x + '%, 0, 0)';
+      'translate3d(' + (-progress * shift) + 'px, 0, 0)';
+
+    if (prog) prog.style.setProperty('--prog', (progress * 100) + '%');
   }
 
 
@@ -1241,11 +600,12 @@ html{ word-break:keep-all; overflow-wrap:break-word; }
 (function(){
   'use strict';
 
-  var rail   = document.getElementById('rail');
-  var dochd  = document.getElementById('dochd');
-  var fill   = document.getElementById('fill');
-  var darks  = Array.prototype.slice.call(document.querySelectorAll('.dark-s'));
-  var plates = ['pl0','pl1','pl2','pl3','pl4'].map(function(id){ return document.getElementById(id); }).filter(Boolean);
+  var rail   = document.getElementById('side-rail');
+  var dochd  = document.getElementById('site-header');
+    var fill   = document.getElementById('rail-fill');
+  var tickEl = document.getElementById('rail-tick');
+  var darks  = Array.prototype.slice.call(document.querySelectorAll('.theme-dark'));
+  var plates = ['hero-figure'].map(function(id){ return document.getElementById(id); }).filter(Boolean);
   var ticking = false;
 
   function frame(){
@@ -1254,15 +614,17 @@ html{ word-break:keep-all; overflow-wrap:break-word; }
     var dh = document.body.scrollHeight - vh;
 
     /* 측정 레일 진행 */
-    if (fill) fill.style.height = Math.max(0, Math.min(1, dh ? y / dh : 0)) * 100 + '%';
+        var ratio = Math.max(0, Math.min(1, dh ? y / dh : 0));
+    if (fill) fill.style.height = ratio * 100 + '%';
+    if (tickEl) tickEl.setAttribute('aria-valuenow', Math.round(ratio * 100));
 
     /* 머리글·레일이 어두운 지면 위에 올라오면 반전 */
     var onDark = darks.some(function(s){
       var r = s.getBoundingClientRect();
       return r.top <= 56 && r.bottom > 56;
     });
-    if (rail)  rail.classList.toggle('on-dark', onDark);
-    if (dochd) dochd.classList.toggle('on-dark', onDark);
+    if (rail)  rail.classList.toggle('is-on-dark', onDark);
+    if (dochd) dochd.classList.toggle('is-on-dark', onDark);
 
     /* 도판 패럴랙스 — 서로 다른 속도 */
     plates.forEach(function(el, i){
@@ -1283,9 +645,9 @@ html{ word-break:keep-all; overflow-wrap:break-word; }
 
   /* 등장·퇴장 — 화면에 들어오면 재생하고, 완전히 벗어나면 되감는다 */
   var reveal = new IntersectionObserver(function (entries) {
-    entries.forEach(function (e) { e.target.classList.toggle('in', e.isIntersecting); });
+    entries.forEach(function (e) { e.target.classList.toggle('is-in', e.isIntersecting); });
   }, { threshold: 0, rootMargin: '0px 0px -12% 0px' });
-  document.querySelectorAll('.rv, .seq, .lines').forEach(function (el) { reveal.observe(el); });
+  document.querySelectorAll('.reveal, .reveal-seq, .reveal-lines').forEach(function (el) { reveal.observe(el); });
 
 })();
 </script>
@@ -1306,19 +668,17 @@ html{ word-break:keep-all; overflow-wrap:break-word; }
 
   /* ---------------------------------------------- 1. 표제지 슬라이더 */
   (function () {
-    var fig = document.getElementById('pl0');
+    var fig = document.getElementById('hero-figure');
     if (!fig) return;
-    var slides = fig.querySelectorAll('.slide'),
-        caps = fig.querySelectorAll('.scap .cap'),
-        noEl = document.getElementById('slideNo'),
-        barEl = document.getElementById('slideBar');
+    var slides = fig.querySelectorAll('.slider-item'),
+        noEl = document.getElementById('slider-no'),
+        barEl = document.getElementById('slider-bar');
     var n = slides.length, i = 0, timer = null;
 
     function go(k) {
       i = (k + n) % n;
       for (var j = 0; j < n; j++) {
-        slides[j].classList.toggle('on', j === i);
-        if (caps[j]) caps[j].classList.toggle('on', j === i);
+        slides[j].classList.toggle('is-on', j === i);
       }
       if (noEl) noEl.textContent = '0' + (i + 1);
       if (barEl) barEl.style.setProperty('--p', ((i + 1) / n * 100) + '%');
@@ -1326,8 +686,8 @@ html{ word-break:keep-all; overflow-wrap:break-word; }
     function play() { if (!REDUCED && !timer) timer = setInterval(function () { go(i + 1); }, 6200); }
     function stop() { if (timer) { clearInterval(timer); timer = null; } }
 
-    fig.querySelector('[data-prev]').addEventListener('click', function () { go(i - 1); stop(); play(); });
-    fig.querySelector('[data-next]').addEventListener('click', function () { go(i + 1); stop(); play(); });
+    document.querySelector('[data-prev]').addEventListener('click', function () { go(i - 1); stop(); play(); });
+    document.querySelector('[data-next]').addEventListener('click', function () { go(i + 1); stop(); play(); });
     fig.addEventListener('mouseenter', stop);
     fig.addEventListener('mouseleave', play);
     fig.addEventListener('focusin', stop);
@@ -1335,12 +695,12 @@ html{ word-break:keep-all; overflow-wrap:break-word; }
   })();
 
   /* ---------------------------------------------- 2. §02 수평 핀 */
-  var pin = document.getElementById('s2pin');
+  var pin = document.getElementById('facilities-pin');
   if (!pin) return;
-  var stageEl = pin.querySelector('.pinstage');
-  var track = pin.querySelector('.pintrack');
-  var panels = Array.prototype.slice.call(pin.querySelectorAll('.ppanel'));
-  var tabsEl = document.getElementById('eqTabs');
+  var stageEl = pin.querySelector('.pin-stage');
+  var track = pin.querySelector('.pin-track');
+  var panels = Array.prototype.slice.call(pin.querySelectorAll('.facility-panel'));
+  var tabsEl = document.getElementById('facility-tabs');
   var STEPS = panels.length;
   var step = 0, pinOn = null, progress = 0;
 
@@ -1349,7 +709,7 @@ html{ word-break:keep-all; overflow-wrap:break-word; }
     var b = document.createElement('button');
     b.type = 'button'; b.setAttribute('role', 'tab');
     b.setAttribute('aria-selected', i === 0 ? 'true' : 'false');
-    b.innerHTML = '<span class="ix">0' + (i + 1) + '</span>' + nm;
+    b.innerHTML = '<span class="tab-no">0' + (i + 1) + '</span>' + nm;
     b.addEventListener('click', function () { jumpTo(i); });
     tabsEl.appendChild(b);
   });
@@ -1407,7 +767,7 @@ html{ word-break:keep-all; overflow-wrap:break-word; }
 
   function fail(msg) {
     panels.forEach(function (p) {
-      var l = p.querySelector('.eqload'); if (l) { l.textContent = msg; l.style.display = ''; }
+      var l = p.querySelector('.model-loading'); if (l) { l.textContent = msg; l.style.display = ''; }
     });
   }
   function boot() {
@@ -1417,9 +777,9 @@ html{ word-break:keep-all; overflow-wrap:break-word; }
 
   function init() {
     var ACCENT = 0xC0362B;
-    var live = document.getElementById('eqLive');
-    var labelsEl = document.getElementById('eqLabels');
-    var scaleEl = document.getElementById('eqScale');
+    var live = document.getElementById('model-live');
+    var labelsEl = document.getElementById('model-labels');
+    var scaleEl = document.getElementById('model-scale');
     var raycaster = new THREE.Raycaster(), ndc = new THREE.Vector2();
     var models = {}, current = null, parts = [], selected = -1, labelDivs = [];
     var spin = true, showLabels = window.innerWidth > 1000, visible = true;
@@ -1841,7 +1201,7 @@ html{ word-break:keep-all; overflow-wrap:break-word; }
 
     /* ---------- 치수 / 거리 보정 ---------- */
     var lastFit = 0;
-    function slotBox() { return panels[step].querySelector('.slot').getBoundingClientRect(); }
+    function slotBox() { return panels[step].querySelector('.model-slot').getBoundingClientRect(); }
     function fitMul() {
       var r = slotBox();
       var a = r.width / Math.max(1, r.height);
@@ -1874,7 +1234,7 @@ html{ word-break:keep-all; overflow-wrap:break-word; }
 
     function specRows(rows) {
       return rows.map(function (r) {
-        return '<div class="r"><dt>' + r[0] + '</dt><span class="dots"></span><dd>' + r[1] + '</dd></div>';
+        return '<div class="row"><dt>' + r[0] + '</dt><span class="dots"></span><dd>' + r[1] + '</dd></div>';
       }).join('');
     }
     var defaultSpec = panels.map(function (p) { return p.querySelector('[data-spec]').innerHTML; });
@@ -1891,7 +1251,7 @@ html{ word-break:keep-all; overflow-wrap:break-word; }
       parts.forEach(function (p, k) {
         var b = document.createElement('button');
         b.type = 'button';
-        b.innerHTML = '<span class="no">' + p.no + '</span><span>' + p.name + '</span>';
+        b.innerHTML = '<span class="part-no">' + p.no + '</span><span>' + p.name + '</span>';
         b.addEventListener('click', function () { selectPart(k === selected ? -1 : k); });
         host.appendChild(b);
       });
@@ -1911,7 +1271,7 @@ html{ word-break:keep-all; overflow-wrap:break-word; }
       Array.prototype.forEach.call(host.children, function (b, j) {
         b.setAttribute('aria-current', j === k ? 'true' : 'false');
       });
-      labelDivs.forEach(function (l, j) { l.classList.toggle('on', j === k); });
+      labelDivs.forEach(function (l, j) { l.classList.toggle('is-on', j === k); });
       var eq = EQUIP[step];
       if (k >= 0) {
         setEmissive(parts[k], true);
@@ -1929,8 +1289,8 @@ html{ word-break:keep-all; overflow-wrap:break-word; }
       labelsEl.innerHTML = ''; labelDivs = [];
       parts.forEach(function (p, k) {
         var el2 = document.createElement('span');
-        el2.className = 'lab';
-        el2.innerHTML = '<span class="pin"></span><span class="n">' + p.no + '</span><span class="txt">' + p.name + '</span>';
+        el2.className = 'model-label';
+        el2.innerHTML = '<span class="label-dot"></span><span class="label-no">' + p.no + '</span><span class="label-txt">' + p.name + '</span>';
         el2.addEventListener('click', function () { selectPart(k === selected ? -1 : k); });
         labelsEl.appendChild(el2); labelDivs.push(el2);
       });
@@ -1939,19 +1299,19 @@ html{ word-break:keep-all; overflow-wrap:break-word; }
 
     /* ---------- 포스터 : 전환 중 빈 무대 방지 ---------- */
     function capture(i) {
-      var img = panels[i].querySelector('.poster');
+      var img = panels[i].querySelector('.model-poster');
       if (!img) return;
       try { img.src = renderer.domElement.toDataURL('image/png'); } catch (e) { /* noop */ }
     }
     function moveLive(i) {
-      var slot = panels[i].querySelector('.slot');
+      var slot = panels[i].querySelector('.model-slot');
       if (live.parentNode !== slot) slot.appendChild(live);
-      panels.forEach(function (p, k) { p.classList.toggle('active', k === i); });
+      panels.forEach(function (p, k) { p.classList.toggle('is-active', k === i); });
     }
 
     /* ---------- 조작 ---------- */
     var el = renderer.domElement, pointers = {}, last = null, pinchD = 0, moved = 0;
-    var spinBtn = document.getElementById('eqSpin');
+    var spinBtn = document.getElementById('model-spin');
     function dist(a, b) { var x = a.x - b.x, y = a.y - b.y; return Math.sqrt(x * x + y * y); }
 
     el.addEventListener('pointerdown', function (e) {
@@ -2007,7 +1367,7 @@ html{ word-break:keep-all; overflow-wrap:break-word; }
 
     /* ---------- Model / Photo 보기 전환 ---------- */
     panels.forEach(function (p) {
-      var med = p.querySelector('.pmedia');
+      var med = p.querySelector('.panel-figure');
       var btns = Array.prototype.slice.call(p.querySelectorAll('[data-view-btn]'));
       btns.forEach(function (b) {
         b.addEventListener('click', function () {
@@ -2019,15 +1379,15 @@ html{ word-break:keep-all; overflow-wrap:break-word; }
       });
     });
     function modelView() {
-      var med = panels[step].querySelector('.pmedia');
+      var med = panels[step].querySelector('.panel-figure');
       return !med || med.getAttribute('data-view') !== 'photo';
     }
 
-    document.getElementById('eqReset').addEventListener('click', function () { selectPart(-1); });
+    document.getElementById('model-reset').addEventListener('click', function () { selectPart(-1); });
     spinBtn.addEventListener('click', function () {
       spin = !spin; spinBtn.setAttribute('aria-pressed', spin ? 'true' : 'false');
     });
-    var labBtn = document.getElementById('eqLabBtn');
+    var labBtn = document.getElementById('model-label-btn');
     labBtn.setAttribute('aria-pressed', showLabels ? 'true' : 'false');
     labBtn.addEventListener('click', function () {
       showLabels = !showLabels;
@@ -2092,7 +1452,7 @@ html{ word-break:keep-all; overflow-wrap:break-word; }
       capture(i);
     }
     step = 0; moveLive(0); resize(); selectEquip(0, true);
-    panels.forEach(function (p) { var l = p.querySelector('.eqload'); if (l) l.style.display = 'none'; });
+    panels.forEach(function (p) { var l = p.querySelector('.model-loading'); if (l) l.style.display = 'none'; });
     tick();
     frame();
   }
