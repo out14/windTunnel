@@ -20,24 +20,29 @@
 /* ---------- 토큰 ---------- */
 :root {
   /* 네이비 · 블루 계열 */
-  --navy-900: #00132b;
+  --navy-900: #0D122A;
   --navy-800: #012e54;
   --navy-700: #001d31;
   --navy-600: #094c7c;
   --blue-600: #2b74be;
   --blue-500: #3069a4;
   --blue-400: #5dafda;
-  --blue-300: #78b7ee;
+  --blue-300: #4699FF;
   --steel: #5784a9;
   --steel-dark: #1f598a;
   --sky-200: #c9dbea;
   --sky-100: #dee9f3;
   --mist: #e8eaf1;
 
+  /* 보더 컬러 */
+  --border:rgba(0,0,0,0.2);
+  --border-2:rgba(255,255,255,0.3);
+  --border-3:#f5f5f5;
+
   /* 글자 */
-  --text: #1b2333;
-  --text-2: #4d5768;
-  --text-3: #6a7484; /* 흰 바탕 4.5:1 이상 */
+  --text: #222;
+  --text-2: #666666;
+  --text-3: #666666; /* 흰 바탕 4.5:1 이상 */
   --heading-light: #2f5f82;
   --on-dark: #fff;
   --on-dark-2: #c6d3e2;
@@ -90,60 +95,47 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   padding-inline: var(--gut);
 }
 
-/* 동그란 화살표 '더보기' */
+/* '더보기 >' 글자 링크 */
 .more-link {
   display: inline-flex;
   flex: none;
   align-items: center;
-  justify-content: center;
-  width: 37px;
-  height: 37px;
-  border: 1.5px solid currentColor;
-  border-radius: 50%;
-  transition: background-color .2s, color .2s;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+  transition: color .2s;
 }
-.more-link::before {
+.more-link::after {
   content: '';
-  width: 8px;
-  height: 8px;
-  margin-left: -3px;
+  width: 7px;
+  height: 7px;
   border-top: 1.5px solid currentColor;
   border-right: 1.5px solid currentColor;
   transform: rotate(45deg);
+  transition: transform .2s var(--ease-out);
 }
+.more-link:hover::after { transform: translateX(3px) rotate(45deg); }
 .more-link--light { color: var(--white); }
-.more-link--light:hover { background: var(--white); color: var(--navy-800); }
+.more-link--light:hover { color: var(--sky-200); }
 .more-link--dark { color: var(--blue-600); }
-.more-link--dark:hover { background: var(--blue-600); color: var(--white); }
+.more-link--dark:hover { color: var(--navy-800); }
 
-/* 왼쪽 끝까지 이어지는 알약 모양 섹션 제목 */
+/* 섹션 제목 */
 .section-title {
-  position: relative;
-  z-index: 0;
   /* padding: 19px 40px 12px; */
   /* text-align: center; */
   padding: 19px 0px 12px;
   text-align: left;
 }
-.section-title::before {
-  content: '';
-  position: absolute;
-  z-index: -1;
-  top: 0;
-  right: 0;
-  width: 300%;
-  /* height: 100%; */
-  height: 2px;
-  border-radius: 0 100px 100px 0;
-}
 .section-title--dark { color: var(--on-dark); }
-.section-title--dark::before { background: linear-gradient(130deg, var(--steel) 65%, var(--steel-dark) 85%); }
-.section-title--light { color: var(--heading-light); }
-.section-title--light::before { background: linear-gradient(130deg, var(--sky-200) 65%, #a9ceec 85%); }
+/* .section-title--light { color: var(--heading-light); } */
+.section-title--light { color: var(--navy-900); }
 .section-title_eyebrow {
   font-size: 18px;
   font-weight: 400;
   letter-spacing: .01em;
+  color: var(--blue-300);
 }
 .section-title_heading {
   font-size: clamp(32px, 3vw, 45px);
@@ -166,11 +158,12 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   padding-right: .5em;
   font-size: clamp(90px, 11vw, 180px);
   font-weight: 900;
-  line-height: 1;
+  line-height: 0.8;
   letter-spacing: -.02em;
   white-space: nowrap;
   /* color: rgba(43, 116, 190, .07); */
-  color: rgba(0, 0, 0, .07);
+  /* color: rgba(0, 0, 0, .07); */
+  color: #f5f5f5;
 }
 @keyframes flow-text { to { transform: translateX(-50%); } }
 
@@ -181,7 +174,8 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   z-index: 100;
   height: var(--header-h);
   color: var(--on-dark);
-  background: linear-gradient(160deg, var(--navy-800) 50%, var(--navy-900) 55%, #00203c 75%);
+  /* background: linear-gradient(160deg, var(--navy-800) 50%, var(--navy-900) 55%, #00203c 75%); */
+  background: var(--navy-900);
 }
 .app-header_bar {
   display: flex;
@@ -287,7 +281,8 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   gap: 8px;
   height: 45px;
   padding: 0 22px;
-  border: 1px solid var(--white);
+  /* border: 1px solid var(--white); */
+  border: 1px solid var(--border-2);
   border-radius: 10px;
   font-size: 15px;
   white-space: nowrap;
@@ -451,6 +446,14 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
+  /* 켄 번스 — 들어올 때 확대된 상태에서 천천히 원래 크기로.
+     빠질 때는 페이드(1.2s)가 끝난 뒤 확대 상태로 조용히 되돌린다 */
+  transform: scale(1.14);
+  transition: transform 0s linear 1.2s;
+}
+.visual_slide.is-active .visual_image {
+  transform: scale(1);
+  transition: transform 7s cubic-bezier(.25, .6, .3, 1);
 }
 .visual_slide::after {
   content: '';
@@ -475,9 +478,19 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   text-transform: uppercase;
   color: var(--on-dark-2);
 }
+.visual_content.is-entering .visual_kicker,
+.visual_content.is-entering .visual_title {
+  animation: visual-rise 1s var(--ease-out) both;
+}
+.visual_content.is-entering .visual_title { animation-delay: .15s; }
+@keyframes visual-rise {
+  from { opacity: 0; transform: translateY(28px); }
+  to { opacity: 1; transform: none; }
+}
 .visual_title {
   margin-top: 14px;
-  font-size: clamp(28px, 2.6vw, 42px);
+  /* font-size: clamp(28px, 2.6vw, 42px); */
+  font-size: clamp(28px, 4vw, 42px);
   font-weight: 700;
   line-height: 1.35;
   text-shadow: 0 0 70px rgb(0, 80, 117);
@@ -576,31 +589,34 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   border-radius: var(--radius-md);
   background: var(--white);
   /* box-shadow: 0 10px 30px rgba(0, 19, 43, .08); */
-  box-shadow: 5px 10px 0px rgba(0, 19, 43, .05);
+  border:1px solid var(--border);
 }
 .notice-board_tabs {
   display: flex;
   align-items: stretch;
+  margin:0 20px;
+  border-bottom: 1px solid var(--border);
 }
 .notice-board_tab {
   position: relative;
-  flex: 1;
-  height: 66px;
-  border-right: 1px solid #9baec0;
-  border-bottom: 1px solid #9baec0;
+  /* flex: 1; */
+  width:120px;
+  height: 50px;
+  /* border-right: 1px solid #9baec0; */
+  /* border-bottom: 1px solid #9baec0; */
   font-size: 19px;
-  font-weight: 700;
+  font-weight: 500;
   color: var(--text-2);
-  background: var(--sky-100);
+  /* background: var(--sky-100); */
 }
 .notice-board_tab:first-child { border-radius: var(--radius-md) 0 0 0; }
 .notice-board_tab[aria-selected='true'] {
   z-index: 1;
-  color: var(--text);
+  color: var(--blue-300);
   background: var(--white);
-  border-bottom: 3px solid var(--blue-600);
+  border-bottom: 3px solid var(--blue-300);
 }
-.notice-board_tab[aria-selected='true']::after {
+/* .notice-board_tab[aria-selected='true']::after {
   content: '';
   position: absolute;
   left: 50%;
@@ -609,14 +625,15 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   border-top-color: var(--blue-600);
   border-bottom: 0;
   transform: translateX(-50%);
-}
+} */
 .notice-board_more {
   display: flex;
   flex: 0 0 76px;
   align-items: center;
   justify-content: center;
-  border-bottom: 1px solid #9baec0;
+  /* border-bottom: 1px solid #9baec0; */
   border-radius: 0 var(--radius-md) 0 0;
+  margin-left: auto;
 }
 .notice-board_list { padding: 18px 43px 30px; }
 .notice-board_row {
@@ -624,7 +641,7 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   align-items: center;
   gap: 14px;
   padding: 15px 0 12px;
-  border-bottom: 1px solid var(--blue-400);
+  border-bottom: 1px solid var(--border-3);
 }
 .notice-board_row:hover .notice-board_title { color: var(--blue-600); }
 .notice-board_category {
@@ -694,7 +711,8 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   color: var(--navy-700);
   background: var(--white);
   /* box-shadow: 0 6px 18px rgba(0, 19, 43, .1); */
-  box-shadow: 5px 10px 0px rgba(0, 19, 43, .05);
+  box-sizing: border-box;
+  border:1px solid var(--border);
   transition: color .2s, background-color .2s;
 }
 .quick-links_item:hover { color: var(--white); background: var(--blue-600); }
@@ -709,29 +727,38 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 
 /* 시설 전경 슬라이더 */
 .gallery-panel {
+  position: relative;
   display: flex;
   flex: 1;
   flex-direction: column;
   min-width: 0;
-  padding: 0 43px 34px;
+  /* padding: 0 43px 34px; */
   border-radius: var(--radius-md);
   color: var(--on-dark);
-  background: linear-gradient(130deg, var(--navy-600) 10%, #093857 45%, var(--navy-900) 55%, #094065 75%);
+  /* background: linear-gradient(130deg, var(--navy-600) 10%, #093857 45%, var(--navy-900) 55%, #094065 75%); */
 }
 .gallery-panel_head {
+  /* 사진 위에 겹쳐 올린다 */
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  left: 0;
+  right: 0;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 24px;
-  margin-bottom: 20px;
+  padding: 24px 28px 40px;
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+  background: linear-gradient(180deg, rgba(0, 19, 43, .6) 0%, rgba(0, 19, 43, 0) 100%);
 }
 .gallery-panel_title {
-  padding: 40px 28px 16px;
-  border-radius: 0 0 var(--radius-md) var(--radius-md);
+  /* padding: 40px 28px 16px;
+  border-radius: 0 0 var(--radius-md) var(--radius-md); */
   font-size: 17px;
   font-weight: 500;
-  background: linear-gradient(130deg, #004681 23%, var(--blue-500) 74%, #216799 100%);
+  /* background: linear-gradient(130deg, #004681 23%, var(--blue-500) 74%, #216799 100%); */
 }
-.gallery-panel_more { margin: 34px 0 0 auto; }
+.gallery-panel_more { margin-left: auto; }
 .gallery-panel_figure {
   position: relative;
   flex: 1;
@@ -778,9 +805,21 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   position: relative;
   /* margin-top: 25px; */
   margin-top: 100px;
-  background:
+  isolation: isolate; /* ::before(z-index: -1)가 섹션 바탕 위 · 내용 아래에 깔리게 */
+  background: var(--navy-900);
+  /* background:
     linear-gradient(120deg, rgba(42, 72, 104, .86), rgba(70, 104, 138, .8)),
-    url('assets/hero-01.jpg') 50% 40% / cover no-repeat;
+    url('assets/hero-01.jpg') 50% 40% / cover no-repeat; */
+}
+/* 배경 사진 — background-image에는 투명도를 줄 수 없어 별도 층으로 깔고 opacity로 조절한다 */
+.equipment-showcase::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  background: url('assets/hero-02.jpg') 50% 40% / cover no-repeat;
+  opacity: .35;
+  pointer-events: none;
 }
 .equipment-showcase_inner {
   position: relative;
@@ -810,16 +849,20 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   justify-content: center;
   gap: 10px;
   padding: 17px;
-  border: 1px solid var(--white);
+  /* border: 1px solid var(--white); */
   font-size: 20px;
   font-weight: 600;
   text-shadow: 0 0 24px rgba(54, 102, 125, .5);
   transition: background-color .2s, border-color .2s;
+  box-sizing: border-box;
 }
-.equipment-showcase_tab:hover { background: rgba(0, 29, 49, .5); }
+.equipment-showcase_tab:hover { 
+  border-bottom:1px solid var(--border-2);
+}
 .equipment-showcase_tab[aria-selected='true'] {
-  border-color: var(--navy-700);
-  background: var(--navy-700);
+  /* border-color: var(--navy-700); */
+  background: var(--border-2);
+  border-radius: 5px;
 }
 .equipment-showcase_tab-number {
   font-family: var(--mono);
@@ -973,9 +1016,10 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   flex-direction: column;
   padding: 90px 46px 46px;
   border-radius: 0 var(--radius-md) var(--radius-md) 0;
-  background:
+  background:rgba(255,255,255,0.1);
+  /* background:
     radial-gradient(circle at 30% 110%, rgba(93, 175, 218, .22), transparent 55%),
-    var(--navy-700);
+    var(--navy-700); */
 }
 .equipment-showcase_tag {
   font-family: var(--mono);
@@ -1024,7 +1068,7 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   justify-content: space-between;
   gap: 16px;
   margin-top: auto;
-}
+ }
 .equipment-showcase_scale {
   font-family: var(--mono);
   font-size: 13px;
@@ -1056,15 +1100,23 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 }
 .facility-field_cards {
   display: flex;
-  flex-wrap: wrap;
   gap: 10px;
+  margin-top: 30px;
+}
+/* 가운데 열 — 작은 칸 2개를 위아래로 */
+.facility-field_column {
+  display: flex;
+  flex: 0 0 calc((100% - 20px) / 3);
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
 }
 .facility-field_intro {
   display: flex;
   flex-direction: column;
   gap: 24px;
   margin-right: 40px;
-  width: calc((100% - 75px) / 4);
+  width:100%;
 }
 .facility-field_title {
    /* padding: 18px 30px 8px 40px; */
@@ -1076,13 +1128,11 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   color: var(--text-2);
 }
 .facility-field_lead-strong { font-weight: 700; color: var(--text); }
-/* .facility-field_title::before { height: 46%; } */
 .facility-card {
   position: relative;
   display: flex;
   flex-direction: column;
-  width: calc((100% - 30px) / 4);
-  min-height: 336px;
+  min-width: 0;
   padding: 50px 40px;
   overflow: hidden;
   border-radius: var(--radius-md);
@@ -1100,23 +1150,28 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   transition: opacity .3s;
 }
 .facility-card:hover::before { opacity: 1; }
-.facility-card--brand {
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  background: linear-gradient(140deg, #2a6ba6 0%, #1c4f80 55%, #2c6aa0 100%);
+/* 두 행 높이를 차지하는 세로 칸 — 세 열 같은 폭, 높이는 가운데 열에 맞춰 늘어난다
+   (flex: 1 1 0으로 나누면 카드 좌우 여백만큼 큰 칸이 넓어져서 폭을 직접 준다) */
+.facility-card--large { flex: 0 0 calc((100% - 20px) / 3); }
+/* 가운데 열에 위아래로 쌓이는 칸 */
+.facility-card--small {
+  aspect-ratio: 16 / 9;
+  min-height: 250px;
+  padding: 32px 36px;
 }
-.facility-card--brand::before { display: none; }
-.facility-card--decor {
-  flex: 1;
-  width: auto;
-  min-height: 0;
-  padding: 0;
-  background: none;
-  overflow: visible;
+.facility-card--small .facility-card_title { margin-bottom: 16px; }
+
+/* 등장 효과 (시안 A의 reveal-stagger) — 화면에 들어오면 스크립트가 .facility-field_cards에 is-in을 붙인다 */
+.facility-field_cards .facility-card {
+  opacity: 0;
+  transform: translateY(22px);
+  transition: opacity .75s var(--ease-out), transform .75s var(--ease-out);
 }
-/* 아랫줄 4번째 자리만 비워 둔다 — 곡선 장식은 .facility-field::after */
-.facility-card--decor::before { display: none; }
+.facility-field_cards.is-in .facility-card { opacity: 1; transform: none; }
+.facility-field_cards.is-in .facility-card--integrated { transition-delay: .03s; }
+.facility-field_cards.is-in .facility-card--trisonic { transition-delay: .11s; }
+.facility-field_cards.is-in .facility-card--hypersonic { transition-delay: .19s; }
+.facility-field_cards.is-in .facility-card--ballistic { transition-delay: .27s; }
 .facility-card--trisonic { background-image: url('assets/trisonic-layout.jpg'); }
 .facility-card--hypersonic { background-image: url('assets/hypersonic-layout.jpg'); }
 .facility-card--ballistic { background-image: url('assets/overview-ballistic.jpg'); }
@@ -1132,17 +1187,6 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   font-size: 12px;
   color: var(--on-dark-2);
   background: rgba(0, 19, 43, .6);
-}
-/* 카드 2개 폭 (1024px 이하에서는 한 칸으로 돌아간다) */
-.facility-card--wide { width: calc((100% - 80px) / 2 + 0px); }
-/* 아랫줄 첫 카드는 윗줄 소개 칸(.facility-field_intro 폭 + margin-right 40px)과 같은 폭 —
-   그래야 아랫줄 둘째 · 셋째 카드가 윗줄 카드 시작선에 맞는다 */
-.facility-card--trisonic { width: calc((100% - 75px) / 4 + 40px); }
-.facility-card_brand-mark {
-  font-size: 34px;
-  font-weight: 300;
-  line-height: 1.25;
-  color: rgba(255, 255, 255, .55);
 }
 .facility-card_eyebrow {
   font-size: 15px;
@@ -1176,7 +1220,6 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
    padding: 18px 0px 8px 0px; 
    white-space: nowrap; 
   }
-/* .location_title::before { height: 100%; } */
 .location_layout {
   display: flex;
   gap: 25px;
@@ -1277,7 +1320,8 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   gap: 8px;
   height: 50px;
   padding: 0 22px;
-  border: 1px solid var(--white);
+  /* border: 1px solid var(--white); */
+  border: 1px solid var(--border-2);
   border-radius: 10px;
   font-size: 15px;
   font-weight: 500;
@@ -1287,35 +1331,85 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 .location-info_button--primary { border-color: var(--blue-600); background: var(--blue-600); }
 .location-info_button--primary:hover { border-color: var(--white); }
 
+/* ---------- 패밀리 사이트 배너 (푸터 바로 위) ---------- */
+.family-sites {
+  background: var(--white);
+  border-top: 1px solid var(--border);
+}
+.family-sites_inner {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  padding: 26px 0; /* 이 배너만 좌우 여백 없이 */
+}
+.family-sites_viewport {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+.family-sites_track {
+  --visible: 5; /* 한 줄에 놓이는 로고 수 — 넘치면 다음 줄로 */
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.family-sites_item { flex: 0 0 calc((100% - 12px * (var(--visible) - 1)) / var(--visible)); }
+/* 로고 칸 — 로고 크기가 정해지지 않아 칸 크기를 고정하고 로고는 칸 안에 비율을 유지해 맞춘다 */
+.family-sites_link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 72px;
+  padding: 12px 20px;
+  border: 1px solid var(--hair-light);
+  border-radius: 10px;
+  background: var(--white);
+  transition: border-color .2s;
+}
+.family-sites_link:hover { border-color: var(--blue-600); }
+.family-sites_logo {
+  max-width: 100%;
+  max-height: 44px;
+  object-fit: contain;
+}
+/* 실제 로고를 받기 전 자리 표시 */
+.family-sites_placeholder {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-3);
+}
+
 /* ---------- 푸터 ---------- */
 .app-footer {
-  color: var(--text-2);
-  background: var(--mist);
-  border-top: 1px solid var(--hair-light);
+  color: var(--on-dark-2);
+  background: var(--navy-900);
 }
-.app-footer_menu {
+/* 개인정보처리방침 · 사이트맵 링크 줄 */
+.app-footer_policy {
   display: flex;
   gap: 12px;
   padding: 22px 0 18px;
-  border-bottom: 1px solid var(--hair-light);
+  border-bottom: 1px solid var(--hair-dark);
   font-size: 15px;
 }
-.app-footer_menu-item + .app-footer_menu-item::before {
+.app-footer_policy-item + .app-footer_policy-item::before {
   content: '';
   display: inline-block;
   width: 1px;
   height: 12px;
   margin-right: 12px;
-  background: var(--hair-light);
+  background: var(--hair-dark);
 }
-.app-footer_menu-link--strong { font-weight: 700; color: var(--blue-600); }
+.app-footer_policy-link { transition: color .2s; }
+.app-footer_policy-link:hover { color: var(--white); }
+.app-footer_policy-link--strong { font-weight: 700; color: var(--blue-300); }
 .app-footer_info {
   display: flex;
   align-items: flex-start;
-  justify-content: space-between;
-  gap: 30px;
-  padding: 34px 0 50px;
+  gap: clamp(30px, 5vw, 80px);
+  padding: 44px 0 50px;
 }
+.app-footer_brand { flex: 0 0 34%; min-width: 0; }
 .app-footer_logo { width: 150px; margin-bottom: 22px; }
 .app-footer_address {
   font-size: 14px;
@@ -1330,24 +1424,58 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 .app-footer_copyright {
   margin-top: 18px;
   font-size: 13px;
-  color: var(--text-3);
+  color: var(--on-dark-2);
 }
+
+/* 사이트맵 (시안 A 푸터 메뉴) — 섹션 제목 + 하위 메뉴 */
+.app-footer_menu {
+  display: flex;
+  flex: 1;
+  flex-wrap: wrap;
+  gap: 26px;
+  min-width: 0;
+}
+.app-footer_menu-group {
+  display: flex;
+  flex: 1 1 130px;
+  flex-direction: column;
+  min-width: 0;
+}
+.app-footer_menu-title {
+  margin-bottom: 14px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--white);
+}
+.app-footer_menu-link {
+  padding: 5px 0;
+  font-size: 14px;
+  color: var(--on-dark-2);
+  transition: color .2s, transform .25s;
+}
+.app-footer_menu-link:hover {
+  color: var(--white);
+  transform: translateX(5px);
+}
+
 .app-footer_top {
   display: inline-flex;
+  flex: none;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 4px;
   width: 64px;
   height: 64px;
-  border: 1px solid var(--hair-light);
+  border: 1px solid var(--hair-dark);
   border-radius: 50%;
   font-family: var(--mono);
   font-size: 11px;
   letter-spacing: .1em;
-  color: var(--text-2);
-  background: var(--white);
+  color: var(--white);
+  transition: background-color .2s, color .2s;
 }
+.app-footer_top:hover { color: var(--navy-900); background: var(--white); }
 .app-footer_top::before {
   content: '';
   width: 8px;
@@ -1371,6 +1499,7 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 }
 
 @media screen and (max-width: 1024px) {
+  .family-sites_track { --visible: 3; }
   .gnb, .header-shortcut { display: none; }
   .app-header_bar { justify-content: space-between; }
 
@@ -1394,14 +1523,18 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   .equipment-showcase_tab { flex: 1 1 30%; font-size: 17px; }
   .equipment-showcase_panel { margin-right: 0; }
 
-  .facility-field_intro,
-  .facility-card { width: calc((100% - 25px) / 2); }
-  .facility-card--brand,
-  .facility-card--decor,
+  /* 2×2 */
+  .facility-field_cards { flex-wrap: wrap; }
+  .facility-field_column { display: contents; }
+  .facility-card--large,
+  .facility-card--small { flex: 0 0 calc(50% - 5px); aspect-ratio: 4 / 3; min-height: 0; }
   .facility-field::after { display: none; }
 
   .location_layout { flex-direction: column; }
   .location-map { flex-basis: auto; min-height: 380px; }
+
+  .app-footer_info { flex-wrap: wrap; }
+  .app-footer_brand { flex-basis: 100%; }
 }
 
 @media screen and (max-width: 780px) {
@@ -1413,15 +1546,13 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 
   .news-panel { padding: 20px; gap: 20px; }
   .notice-board_tab { height: 54px; font-size: 16px; }
-  .notice-board_more { flex-basis: 56px; }
+  .notice-board_more { flex-basis: 72px; }
   .notice-board_list { padding: 10px 20px 20px; }
   .notice-board_title { font-size: 15px; }
   .quick-links { flex-wrap: wrap; gap: 8px; }
   .quick-links_entry { flex: 0 0 calc(50% - 4px); }
   .quick-links_item { padding: 14px 16px; font-size: 14px; }
-  .gallery-panel { padding: 0 20px 20px; }
-  .gallery-panel_title { padding: 30px 20px 12px; }
-  .gallery-panel_more { margin-top: 24px; }
+  .gallery-panel_head { padding: 18px 20px 32px; }
 
   .equipment-showcase_panel { flex-direction: column; }
   .equipment-showcase_media { flex-basis: auto; min-height: 300px; border-radius: var(--radius-md) var(--radius-md) 0 0; }
@@ -1437,6 +1568,7 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 }
 
 @media screen and (max-width: 480px) {
+  .family-sites_track { --visible: 2; }
   .lang-switcher { display: none; }
 
   .visual { height: 520px; }
@@ -1457,13 +1589,13 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   .equipment-showcase_tab { flex-basis: 100%; }
   .equipment-showcase_spec { flex-basis: 100%; }
 
-  .facility-field_intro,
-  .facility-card { width: 100%; }
+  .facility-card--large,
+  .facility-card--small { flex-basis: 100%; }
 
   .location_title { width: 100%; }
   .location-info_button { flex: 1 1 100%; }
 
-  .app-footer_info { flex-direction: column; }
+  .app-footer_menu-group { flex-basis: calc(50% - 13px); }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1640,7 +1772,7 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
             <button class="notice-board_tab" type="button" role="tab" id="notice-tab-all" aria-controls="notice-panel-all" aria-selected="true">전체</button>
             <button class="notice-board_tab" type="button" role="tab" id="notice-tab-notice" aria-controls="notice-panel-notice" aria-selected="false" tabindex="-1">공지사항</button>
             <button class="notice-board_tab" type="button" role="tab" id="notice-tab-event" aria-controls="notice-panel-event" aria-selected="false" tabindex="-1">행사</button>
-            <a class="notice-board_more" href="#"><span class="more-link more-link--dark" aria-hidden="true"></span><span class="visually-hidden">센터 소식 전체 보기</span></a>
+            <a class="notice-board_more more-link more-link--dark" href="#">더보기<span class="visually-hidden"> 센터 소식 전체</span></a>
           </div>
 
           <!-- 목록 글은 Next 개발 서버의 예시 데이터(api/mocks)와 같다 — 실제 공지가 아니다 -->
@@ -1703,7 +1835,7 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
       <div class="gallery-panel">
         <div class="gallery-panel_head">
           <h2 class="gallery-panel_title">시설 전경</h2>
-          <a class="gallery-panel_more more-link more-link--light" href="#"><span class="visually-hidden">시설 전경 갤러리 보기</span></a>
+          <a class="gallery-panel_more more-link more-link--light" href="#">더보기<span class="visually-hidden"> 시설 전경 갤러리</span></a>
         </div>
         <figure class="gallery-panel_figure">
           <img class="gallery-panel_image" src="assets/about-banner.jpg" alt="">
@@ -1761,7 +1893,7 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
           </dl>
           <div class="equipment-showcase_footer">
             <span class="equipment-showcase_scale">전장 약 27,450 mm</span>
-            <a class="more-link more-link--light" href="#"><span class="visually-hidden">삼중음속 풍동 상세 사양 보기</span></a>
+            <a class="more-link more-link--light" href="#">더보기<span class="visually-hidden"> 삼중음속 풍동 상세 사양</span></a>
           </div>
         </div>
       </article>
@@ -1792,7 +1924,7 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
           </dl>
           <div class="equipment-showcase_footer">
             <span class="equipment-showcase_scale">노즐 출구 Ø300 mm</span>
-            <a class="more-link more-link--light" href="#"><span class="visually-hidden">극초음속 풍동 상세 사양 보기</span></a>
+            <a class="more-link more-link--light" href="#">더보기<span class="visually-hidden"> 극초음속 풍동 상세 사양</span></a>
           </div>
         </div>
       </article>
@@ -1823,7 +1955,7 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
           </dl>
           <div class="equipment-showcase_footer">
             <span class="equipment-showcase_scale">발사부 8 m · 시험부 4.5 m</span>
-            <a class="more-link more-link--light" href="#"><span class="visually-hidden">발리스틱 레인지 상세 사양 보기</span></a>
+            <a class="more-link more-link--light" href="#">더보기<span class="visually-hidden"> 발리스틱 레인지 상세 사양</span></a>
           </div>
         </div>
       </article>
@@ -1832,45 +1964,43 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 
   <!-- 통합 풍동 시험 설비 -->
   <section class="facility-field" aria-labelledby="facility-title">
-    <div class="site-inner facility-field_cards">
+    <div class="site-inner">
       <div class="facility-field_intro">
-        <div class="section-title section-title--light facility-field_title">
-          <p class="section-title_eyebrow">integrated facility</p>
-          <h2 class="section-title_heading" id="facility-title">통합 풍동<br>시험 설비</h2>
+          <div class="section-title section-title--light facility-field_title">
+            <p class="section-title_eyebrow">integrated facility</p>
+            <h2 class="section-title_heading" id="facility-title">통합 풍동 시험 설비</h2>
+          </div>
+          <p class="facility-field_lead">센터는 고아음속·천음속·초음속 유동환경을 구현하는 <b class="facility-field_lead-strong">삼중음속 풍동장치(마하 0.5~3 급)</b>와 <b class="facility-field_lead-strong">극초음속 풍동장치(마하 7 급)</b>로 구성됩니다. 이를 기반으로 연구개발과 성능시험을 수행합니다.</p>
         </div>
-        <p class="facility-field_lead">센터는 고아음속·천음속·초음속 유동환경을 구현하는 <b class="facility-field_lead-strong">삼중음속 풍동장치(마하 0.5~3 급)</b>와 <b class="facility-field_lead-strong">극초음속 풍동장치(마하 7 급)</b>로 구성됩니다. 이를 기반으로 연구개발과 성능시험을 수행합니다.</p>
+      <!-- 시안 A 개요 모자이크: 큰 칸 | 작은 칸 2개 위아래 | 큰 칸. 화면에 들어오면 is-in → 카드가 차례로 떠오른다 -->
+      <div class="facility-field_cards">
+        <article class="facility-card facility-card--large facility-card--integrated">
+          <p class="facility-card_eyebrow">Integrated Facility</p>
+          <h3 class="facility-card_title">통합 풍동 시험 설비</h3>
+          <p class="facility-card_description">다양한 속도 영역의 고난이도 공기역학 환경을 지상에서 재현하기 위한 통합 풍동 시험장치를 제작·설치.</p>
+        </article>
+
+        <div class="facility-field_column">
+          <article class="facility-card facility-card--small facility-card--trisonic">
+            <p class="facility-card_eyebrow">Trisonic Wind Tunnel</p>
+            <h3 class="facility-card_title">삼중음속 풍동 설치 공간</h3>
+            <p class="facility-card_description">불어내기식으로 정체압력 1~9.8 atm, 질량유량 60~200kg/s 조건에서 마하수 0.5~3급 이상의 공력 시험을 최대 60초 유지할 수 있는 장치 구축</p>
+          </article>
+
+          <article class="facility-card facility-card--small facility-card--hypersonic">
+            <p class="facility-card_eyebrow">Hypersonic Wind Tunnel</p>
+            <h3 class="facility-card_title">극초음속 풍동 설치 공간</h3>
+            <p class="facility-card_description">전기히터 가열식 불어내기 방식으로 전압력 10~24 atm, 질량유량 1~2.9 kg/s 조건에서 마하 7급 공력시험을 최대 30초 유지 가능한 장치 구축</p>
+          </article>
+        </div>
+
+        <article class="facility-card facility-card--large facility-card--ballistic">
+          <span class="facility-card_pending">도판 준비 중</span>
+          <p class="facility-card_eyebrow">Ballistic Range</p>
+          <h3 class="facility-card_title">발리스틱 레인지 설치 공간</h3>
+          <p class="facility-card_description">2단 경가스 발사기로 Ø12.7 mm 탄도에서 모형을 최대 4 km/s까지 가속해, 지지대 없는 자유비행 조건의 공력을 계측합니다. 발사부 8 m, 시험부 4.5 m.</p>
+        </article>
       </div>
-
-      <div class="facility-card facility-card--brand" aria-hidden="true">
-        <p class="facility-card_brand-mark">AEROSPACE<br>Integrated<br>Wind Tunnel</p>
-      </div>
-
-      <article class="facility-card facility-card--integrated facility-card--wide">
-        <p class="facility-card_eyebrow">Integrated Facility</p>
-        <h3 class="facility-card_title">통합 풍동 시험 설비</h3>
-        <p class="facility-card_description">다양한 속도 영역의 고난이도 공기역학 환경을 지상에서 재현하기 위한 통합 풍동 시험장치를 제작·설치.</p>
-      </article>
-
-      <article class="facility-card facility-card--trisonic">
-        <p class="facility-card_eyebrow">Trisonic Wind Tunnel</p>
-        <h3 class="facility-card_title">삼중음속 풍동 설치 공간</h3>
-        <p class="facility-card_description">불어내기식으로 정체압력 1~9.8 atm, 질량유량 60~200kg/s 조건에서 마하수 0.5~3급 이상의 공력 시험을 최대 60초 유지할 수 있는 장치 구축</p>
-      </article>
-
-      <article class="facility-card facility-card--hypersonic">
-        <p class="facility-card_eyebrow">Hypersonic Wind Tunnel</p>
-        <h3 class="facility-card_title">극초음속 풍동 설치 공간</h3>
-        <p class="facility-card_description">전기히터 가열식 불어내기 방식으로 전압력 10~24 atm, 질량유량 1~2.9 kg/s 조건에서 마하 7급 공력시험을 최대 30초 유지 가능한 장치 구축</p>
-      </article>
-
-      <article class="facility-card facility-card--ballistic">
-        <span class="facility-card_pending">도판 준비 중</span>
-        <p class="facility-card_eyebrow">Ballistic Range</p>
-        <h3 class="facility-card_title">발리스틱 레인지 설치 공간</h3>
-        <p class="facility-card_description">2단 경가스 발사기로 Ø12.7 mm 탄도에서 모형을 최대 4 km/s까지 가속해, 지지대 없는 자유비행 조건의 공력을 계측합니다. 발사부 8 m, 시험부 4.5 m.</p>
-      </article>
-
-      <div class="facility-card facility-card--decor" aria-hidden="true"></div>
     </div>
   </section>
 
@@ -1924,17 +2054,57 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
       <span class="flow-text_word">AEROSPACE INTEGRATED WIND TUNNEL</span>
     </div>
   </div>
+
+  <!-- 패밀리 사이트 -->
+  <section class="family-sites" aria-label="패밀리 사이트">
+    <div class="site-inner family-sites_inner">
+      <div class="family-sites_viewport">
+        <ul class="family-sites_track">
+          <li class="family-sites_item">
+            <a class="family-sites_link" href="#" target="_blank" rel="noopener">
+              <!-- 로고를 받으면 자리 표시를 <img class="family-sites_logo" src="assets/family-○○.png" alt="기관명"> 으로 교체 -->
+              <span class="family-sites_placeholder">로고1</span>
+            </a>
+          </li>
+          <li class="family-sites_item">
+            <a class="family-sites_link" href="#" target="_blank" rel="noopener">
+              <!-- 로고를 받으면 자리 표시를 <img class="family-sites_logo" src="assets/family-○○.png" alt="기관명"> 으로 교체 -->
+              <span class="family-sites_placeholder">로고2</span>
+            </a>
+          </li>
+          <li class="family-sites_item">
+            <a class="family-sites_link" href="#" target="_blank" rel="noopener">
+              <!-- 로고를 받으면 자리 표시를 <img class="family-sites_logo" src="assets/family-○○.png" alt="기관명"> 으로 교체 -->
+              <span class="family-sites_placeholder">로고3</span>
+            </a>
+          </li>
+          <li class="family-sites_item">
+            <a class="family-sites_link" href="#" target="_blank" rel="noopener">
+              <!-- 로고를 받으면 자리 표시를 <img class="family-sites_logo" src="assets/family-○○.png" alt="기관명"> 으로 교체 -->
+              <span class="family-sites_placeholder">로고4</span>
+            </a>
+          </li>
+          <li class="family-sites_item">
+            <a class="family-sites_link" href="#" target="_blank" rel="noopener">
+              <!-- 로고를 받으면 자리 표시를 <img class="family-sites_logo" src="assets/family-○○.png" alt="기관명"> 으로 교체 -->
+              <span class="family-sites_placeholder">로고5</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </section>
 </main>
 
 <footer class="app-footer">
   <div class="site-inner">
-    <ul class="app-footer_menu">
-      <li class="app-footer_menu-item"><a class="app-footer_menu-link app-footer_menu-link--strong" href="#">개인정보처리방침</a></li>
-      <li class="app-footer_menu-item"><a class="app-footer_menu-link" href="#">사이트맵</a></li>
+    <ul class="app-footer_policy">
+      <li class="app-footer_policy-item"><a class="app-footer_policy-link app-footer_policy-link--strong" href="#">개인정보처리방침</a></li>
+      <li class="app-footer_policy-item"><a class="app-footer_policy-link" href="#">사이트맵</a></li>
     </ul>
     <div class="app-footer_info">
-      <div>
-        <img class="app-footer_logo" src="assets/logo-horizontal.png" alt="서울대학교 우주항공 통합 풍동센터">
+      <div class="app-footer_brand">
+        <img class="app-footer_logo" src="assets/logo-horizontal-light.png" alt="서울대학교 우주항공 통합 풍동센터">
         <address class="app-footer_address">
           (15011) 경기도 시흥시 서울대학로 173 서울대학교 시흥캠퍼스
           <span class="app-footer_contacts">
@@ -1945,6 +2115,40 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
         </address>
         <p class="app-footer_copyright">© Seoul National University. All rights reserved.</p>
       </div>
+
+      <nav class="app-footer_menu" aria-label="사이트 메뉴">
+        <div class="app-footer_menu-group">
+          <h2 class="app-footer_menu-title">센터 소개</h2>
+          <a class="app-footer_menu-link" href="#">센터장 인사말</a>
+          <a class="app-footer_menu-link" href="#">센터 비전 및 목표</a>
+          <a class="app-footer_menu-link" href="#">설립목적 및 연혁</a>
+          <a class="app-footer_menu-link" href="#">조직도</a>
+          <a class="app-footer_menu-link" href="#">구성원</a>
+          <a class="app-footer_menu-link" href="#">시설 전경 갤러리</a>
+          <a class="app-footer_menu-link" href="#">CI 및 브랜드 소개</a>
+          <a class="app-footer_menu-link" href="#">찾아오시는 길</a>
+        </div>
+        <div class="app-footer_menu-group">
+          <h2 class="app-footer_menu-title">연구 장비 안내</h2>
+          <a class="app-footer_menu-link" href="#">삼중음속 풍동</a>
+          <a class="app-footer_menu-link" href="#">극초음속 풍동</a>
+          <a class="app-footer_menu-link" href="#">발리스틱레인지</a>
+          <a class="app-footer_menu-link" href="#">장비별 세부 사양 및 참고 사례</a>
+          <a class="app-footer_menu-link" href="#">이용 절차 안내</a>
+        </div>
+        <div class="app-footer_menu-group">
+          <h2 class="app-footer_menu-title">센터 소식</h2>
+          <a class="app-footer_menu-link" href="#">공지사항</a>
+          <a class="app-footer_menu-link" href="#">행사</a>
+        </div>
+        <div class="app-footer_menu-group">
+          <h2 class="app-footer_menu-title">찾아오시는 길/문의</h2>
+          <a class="app-footer_menu-link" href="#">센터 위치</a>
+          <a class="app-footer_menu-link" href="#">센터별 컨택</a>
+          <a class="app-footer_menu-link" href="#">행정 문의</a>
+        </div>
+      </nav>
+
       <a class="app-footer_top" href="#top">TOP</a>
     </div>
   </div>
@@ -2010,9 +2214,18 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   /* 비주얼 */
   var visual = document.querySelector('.visual');
   var visualSlides = visual.querySelectorAll('.visual_slide');
+  var visualContent = visual.querySelector('.visual_content');
   var bullets = visual.querySelectorAll('.visual_bullet');
+  /* 슬라이드가 바뀔 때마다 문구 등장 효과를 다시 건다 */
+  function replayVisualText() {
+    visualContent.classList.remove('is-entering');
+    void visualContent.offsetWidth;
+    visualContent.classList.add('is-entering');
+  }
+  replayVisualText();
   var visualPlayer = autoplay(visualSlides.length, function (index) {
     visualSlides.forEach(function (slide, i) { slide.classList.toggle('is-active', i === index); });
+    replayVisualText();
     bullets.forEach(function (bullet, i) {
       if (i === index) bullet.setAttribute('aria-current', 'true');
       else bullet.removeAttribute('aria-current');
@@ -2023,6 +2236,19 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   });
   visual.querySelector('.visual_arrow--prev').addEventListener('click', function () { visualPlayer.go(visualPlayer.current() - 1); });
   visual.querySelector('.visual_arrow--next').addEventListener('click', function () { visualPlayer.go(visualPlayer.current() + 1); });
+
+  /* 통합 풍동 시험 설비 카드 — 화면에 들어오면 차례로 등장 (시안 A의 reveal-stagger) */
+  var facilityCards = document.querySelector('.facility-field_cards');
+  if (reduceMotion || !('IntersectionObserver' in window)) {
+    facilityCards.classList.add('is-in');
+  } else {
+    var facilityObserver = new IntersectionObserver(function (entries) {
+      if (!entries[0].isIntersecting) return;
+      facilityCards.classList.add('is-in');
+      facilityObserver.disconnect();
+    }, { threshold: 0.1, rootMargin: '0px 0px -7% 0px' });
+    facilityObserver.observe(facilityCards);
+  }
 
   /* 전체 메뉴 */
   var sitemap = document.getElementById('sitemap');
