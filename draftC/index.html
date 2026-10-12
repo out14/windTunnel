@@ -1,0 +1,2555 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>서울대학교 우주항공 통합 풍동센터</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* =========================================================
+   draftC — 메인 시안 (새 톤 · 레퍼런스: gadist.gnu.ac.kr)
+   Next 이식을 위해 windTunnel-front 컨벤션을 따른다:
+   - 레이아웃은 flex로만 짠다 (grid 쓰지 않음)
+   - 클래스: 블록 / 블록_요소 / 블록--변형 / is-상태 (Tailwind 이름 피하기)
+   - 반응형: 데스크톱 우선, 1240 / 1024 / 780 / 480 네 폭만
+   - 색은 아래 토큰만 쓴다
+   ========================================================= */
+
+/* ---------- 토큰 ---------- */
+:root {
+  /* 네이비 · 블루 계열 */
+  --navy-900: #00132b;
+  --navy-800: #012e54;
+  --navy-700: #001d31;
+  --navy-600: #094c7c;
+  --blue-600: #2b74be;
+  --blue-500: #3069a4;
+  --blue-400: #5dafda;
+  --blue-300: #78b7ee;
+  --steel: #5784a9;
+  --steel-dark: #1f598a;
+  --sky-200: #c9dbea;
+  --sky-100: #dee9f3;
+  --mist: #e8eaf1;
+
+  /* 글자 */
+  --text: #1b2333;
+  --text-2: #4d5768;
+  --text-3: #6a7484; /* 흰 바탕 4.5:1 이상 */
+  --heading-light: #2f5f82;
+  --on-dark: #fff;
+  --on-dark-2: #c6d3e2;
+  --white: #fff;
+  --hair-light: rgba(27, 35, 51, 0.14);
+  --hair-dark: rgba(255, 255, 255, 0.3);
+
+  /* 타이포그래피 */
+  --sans: 'Noto Sans KR', system-ui, 'Segoe UI', Roboto, sans-serif;
+  --mono: 'JetBrains Mono', ui-monospace, monospace;
+
+  /* 레이아웃 */
+  --inner-max: 1400px;
+  --gut: clamp(20px, 4.4vw, 84px);
+  --header-h: 74px;
+  --gnb-drop-h: 420px;
+  --radius-lg: 40px;
+  --radius-md: 20px;
+  --ease-out: cubic-bezier(0.2, 0.7, 0.3, 1);
+}
+
+/* ---------- 리셋 ---------- */
+*, *::before, *::after { box-sizing: border-box; }
+html { word-break: keep-all; overflow-wrap: break-word; scroll-behavior: smooth; }
+body {
+  margin: 0;
+  font: 16px/1.5 var(--sans);
+  color: var(--text);
+  background: var(--white);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+body.is-locked { overflow: hidden; }
+h1, h2, h3, h4, p, ul, ol, dl, dd, figure { margin: 0; }
+ul, ol { padding: 0; list-style: none; }
+a { color: inherit; text-decoration: none; }
+img { display: block; max-width: 100%; height: auto; }
+button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+:focus-visible { outline: 2px solid var(--blue-400); outline-offset: 2px; }
+.visually-hidden {
+  position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+/* ---------- 공용 ---------- */
+.site-inner {
+  width: 100%;
+  max-width: calc(var(--inner-max) + var(--gut) * 2);
+  margin-inline: auto;
+  padding-inline: var(--gut);
+}
+
+/* 동그란 화살표 '더보기' */
+.more-link {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 37px;
+  height: 37px;
+  border: 1.5px solid currentColor;
+  border-radius: 50%;
+  transition: background-color .2s, color .2s;
+}
+.more-link::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  margin-left: -3px;
+  border-top: 1.5px solid currentColor;
+  border-right: 1.5px solid currentColor;
+  transform: rotate(45deg);
+}
+.more-link--light { color: var(--white); }
+.more-link--light:hover { background: var(--white); color: var(--navy-800); }
+.more-link--dark { color: var(--blue-600); }
+.more-link--dark:hover { background: var(--blue-600); color: var(--white); }
+
+/* 왼쪽 끝까지 이어지는 알약 모양 섹션 제목 */
+.section-title {
+  position: relative;
+  z-index: 0;
+  /* padding: 19px 40px 12px; */
+  /* text-align: center; */
+  padding: 19px 0px 12px;
+  text-align: left;
+}
+.section-title::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  top: 0;
+  right: 0;
+  width: 300%;
+  /* height: 100%; */
+  height: 2px;
+  border-radius: 0 100px 100px 0;
+}
+.section-title--dark { color: var(--on-dark); }
+.section-title--dark::before { background: linear-gradient(130deg, var(--steel) 65%, var(--steel-dark) 85%); }
+.section-title--light { color: var(--heading-light); }
+.section-title--light::before { background: linear-gradient(130deg, var(--sky-200) 65%, #a9ceec 85%); }
+.section-title_eyebrow {
+  font-size: 18px;
+  font-weight: 400;
+  letter-spacing: .01em;
+}
+.section-title_heading {
+  font-size: clamp(32px, 3vw, 45px);
+  font-weight: 900;
+  line-height: 1.2;
+}
+
+/* 흐르는 큰 영문 글자 띠 (장식) */
+.flow-text {
+  overflow: hidden;
+  pointer-events: none;
+}
+.flow-text_track {
+  display: flex;
+  width: max-content;
+  animation: flow-text 40s linear infinite;
+}
+.flow-text_word {
+  flex: none;
+  padding-right: .5em;
+  font-size: clamp(90px, 11vw, 180px);
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -.02em;
+  white-space: nowrap;
+  /* color: rgba(43, 116, 190, .07); */
+  color: rgba(0, 0, 0, .07);
+}
+@keyframes flow-text { to { transform: translateX(-50%); } }
+
+/* ---------- 헤더 ---------- */
+.app-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  height: var(--header-h);
+  color: var(--on-dark);
+  background: linear-gradient(160deg, var(--navy-800) 50%, var(--navy-900) 55%, #00203c 75%);
+}
+.app-header_bar {
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+.app-header_logo {
+  flex: none;
+  display: block;
+}
+.app-header_logo-image { width: 150px; }
+.app-header_actions {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 18px;
+}
+
+/* GNB — 마우스를 올리면 모든 하위 메뉴가 함께 내려온다 */
+.gnb {
+  flex: 1;
+  margin: 0 40px;
+}
+.gnb_list { display: flex; }
+.gnb_item {
+  position: relative;
+  flex: 1;
+}
+.gnb_link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: var(--header-h);
+  padding: 0 12px;
+  font-size: 18px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+.gnb_sub {
+  position: absolute;
+  z-index: 3;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  height: 0;
+  overflow: hidden;
+  border-left: 1px solid var(--hair-dark);
+  transition: height .3s var(--ease-out), background-color .3s;
+}
+.gnb_sub > li:first-child { margin-top: 8px; }
+.gnb_item:last-child .gnb_sub { border-right: 1px solid var(--hair-dark); }
+.gnb_item:hover .gnb_sub,
+.gnb_item:focus-within .gnb_sub {
+  background: linear-gradient(-70deg, rgba(8, 68, 116, .95) 10%, rgba(32, 93, 136, .95) 74%);
+}
+.gnb_sub-link {
+  display: block;
+  padding: 0 8px;
+  line-height: 46px;
+  font-size: 16px;
+  text-align: center;
+  white-space: nowrap;
+  color: var(--on-dark-2);
+  transition: color .2s;
+}
+.gnb_sub-link:hover { color: var(--white); }
+.gnb_sub-label {
+  position: relative;
+  display: inline-block;
+}
+.gnb_sub-label::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 10px;
+  width: 0;
+  height: 2px;
+  background: var(--white);
+  transition: width .3s;
+}
+.gnb_sub-link:hover .gnb_sub-label::after { width: 100%; }
+.gnb_backdrop {
+  position: absolute;
+  z-index: 2;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  height: 0;
+  overflow: hidden;
+  background: rgba(0, 6, 20, .95);
+  transition: height .3s var(--ease-out);
+}
+.gnb:hover .gnb_sub,
+.gnb:focus-within .gnb_sub,
+.gnb:hover .gnb_backdrop,
+.gnb:focus-within .gnb_backdrop { height: var(--gnb-drop-h); }
+.gnb:hover .gnb_backdrop,
+.gnb:focus-within .gnb_backdrop { border-top: 1px solid var(--hair-dark); }
+
+.header-shortcut {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 45px;
+  padding: 0 22px;
+  border: 1px solid var(--white);
+  border-radius: 10px;
+  font-size: 15px;
+  white-space: nowrap;
+  transition: background-color .2s, color .2s;
+}
+.header-shortcut:hover { background: var(--white); color: var(--navy-800); }
+.header-shortcut_arrow {
+  width: 7px;
+  height: 7px;
+  border-top: 1.5px solid currentColor;
+  border-right: 1.5px solid currentColor;
+  transform: rotate(45deg);
+}
+
+.lang-switcher {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--mono);
+  font-size: 13px;
+}
+.lang-switcher_link { opacity: .72; }
+.lang-switcher_link[aria-current='true'] { opacity: 1; font-weight: 700; }
+.lang-switcher_divider { width: 1px; height: 11px; background: var(--hair-dark); }
+
+.sitemap-toggle {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 7px;
+  width: 44px;
+  height: 44px;
+  padding: 0 7px;
+}
+.sitemap-toggle_line {
+  display: block;
+  width: 29px;
+  height: 2px;
+  background: var(--white);
+}
+
+/* ---------- 전체 메뉴 (사이트맵) ---------- */
+.sitemap {
+  position: fixed;
+  z-index: 200;
+  inset: 0;
+  display: flex;
+  color: var(--on-dark);
+  background: rgba(0, 0, 0, .82);
+  backdrop-filter: blur(10px);
+}
+.sitemap[hidden] { display: none; }
+.sitemap_intro {
+  display: flex;
+  flex: 0 0 38%;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 70px 6%;
+  background: linear-gradient(130deg, #004681 23%, var(--blue-500) 74%, #216799 100%);
+}
+.sitemap_intro-logo { width: 170px; }
+.sitemap_slogan {
+  font-size: 22px;
+  font-weight: 300;
+}
+.sitemap_center-name {
+  margin: 6px 0 12px;
+  font-size: clamp(28px, 2.6vw, 38px);
+  font-weight: 700;
+  line-height: 1.3;
+}
+.sitemap_wordmark {
+  font-family: var(--mono);
+  font-size: 13px;
+  letter-spacing: .08em;
+  color: var(--on-dark-2);
+}
+.sitemap_copyright {
+  font-size: 14px;
+  font-weight: 300;
+  color: var(--on-dark-2);
+}
+.sitemap_body {
+  position: relative;
+  display: flex;
+  flex: 1;
+  align-items: center;
+  padding: 80px 6%;
+  overflow-y: auto;
+}
+.sitemap_close {
+  position: absolute;
+  top: 40px;
+  right: 6%;
+  width: 44px;
+  height: 44px;
+}
+.sitemap_close::before,
+.sitemap_close::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 6px;
+  width: 32px;
+  height: 2px;
+  background: var(--white);
+  transform: rotate(45deg);
+}
+.sitemap_close::after { transform: rotate(-45deg); }
+.sitemap_menu {
+  display: flex;
+  flex-direction: column;
+  gap: 52px;
+}
+.sitemap_section {
+  display: flex;
+  align-items: baseline;
+  gap: 60px;
+}
+.sitemap_section-title {
+  flex: 0 0 200px;
+  font-size: 26px;
+  font-weight: 700;
+}
+.sitemap_links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 30px;
+}
+.sitemap_link {
+  position: relative;
+  font-size: 17px;
+  color: var(--on-dark-2);
+  transition: color .3s;
+}
+.sitemap_link:hover { color: #b5f1ff; }
+
+/* ---------- 홈 ---------- */
+.home { overflow-x: clip; }
+.wrap{ 
+  width: var(--inner-max);  
+  margin-left: auto; 
+  margin-right: auto; 
+}
+
+/* 비주얼 */
+.visual {
+  position: relative;
+  height: clamp(560px, 54vw, 866px);
+  overflow: hidden;
+  background: var(--navy-900);
+}
+.visual_slide {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 1.2s ease;
+}
+.visual_slide.is-active { opacity: 1; }
+.visual_image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.visual_slide::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0, 19, 43, .35) 0%, rgba(0, 19, 43, .1) 45%, rgba(0, 19, 43, .45) 100%);
+}
+.visual_content {
+  position: absolute;
+  z-index: 1;
+  top: 30%;
+  left: 0;
+  width: 100%;
+  padding-inline: var(--gut);
+  text-align: center;
+  color: var(--on-dark);
+}
+.visual_kicker {
+  font-family: var(--mono);
+  font-size: 14px;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--on-dark-2);
+}
+.visual_title {
+  margin-top: 14px;
+  font-size: clamp(28px, 2.6vw, 42px);
+  font-weight: 700;
+  line-height: 1.35;
+  text-shadow: 0 0 70px rgb(0, 80, 117);
+}
+.visual_controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  margin-top: 28px;
+}
+.visual_bullets {
+  display: flex;
+  gap: 14px;
+}
+.visual_bullet {
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--white);
+  border-radius: 50%;
+  box-shadow: 0 0 10px rgba(0, 69, 122, .3) inset, 0 0 13px rgba(0, 69, 122, .6);
+}
+.visual_bullet[aria-current='true'] { background: var(--white); }
+.visual_toggle {
+  position: relative;
+  width: 28px;
+  height: 28px;
+}
+.visual_toggle::before,
+.visual_toggle::after {
+  content: '';
+  position: absolute;
+  top: 7px;
+  width: 4px;
+  height: 14px;
+  background: var(--white);
+}
+.visual_toggle::before { left: 8px; }
+.visual_toggle::after { right: 8px; }
+.visual_toggle[aria-pressed='true']::before {
+  left: 9px;
+  width: 0;
+  height: 0;
+  border-left: 12px solid var(--white);
+  border-top: 7px solid transparent;
+  border-bottom: 7px solid transparent;
+  background: none;
+}
+.visual_toggle[aria-pressed='true']::after { display: none; }
+.visual_arrow {
+  position: absolute;
+  z-index: 1;
+  top: 42%;
+  width: 56px;
+  height: 56px;
+}
+.visual_arrow::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 18px;
+  height: 18px;
+  border-top: 2px solid var(--white);
+  border-right: 2px solid var(--white);
+}
+.visual_arrow--prev { left: 10px; }
+.visual_arrow--prev::before { transform: translate(-30%, -50%) rotate(-135deg); }
+.visual_arrow--next { right: 10px; }
+.visual_arrow--next::before { transform: translate(-70%, -50%) rotate(45deg); }
+
+/* 소식 패널 — 비주얼 아래쪽에 겹쳐 오른쪽 화면 끝까지 이어진다 */
+.news-panel {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  gap: 34px;
+  margin-top: -186px;
+  /* margin-left: max(var(--gut), calc((100% - var(--inner-max)) / 2)); */
+  /* padding: 34px; */
+  margin-left:auto ;
+  margin-right:auto ;
+  border-radius: var(--radius-lg) 0 0 var(--radius-lg);
+  /* background: linear-gradient(-180deg, rgba(255, 255, 255, .72) 25%, rgba(102, 102, 120, .4) 100%); */
+  backdrop-filter: blur(14px);
+}
+.news-panel_main {
+  display: flex;
+  flex: 0 0 57%;
+  flex-direction: column;
+  gap: 24px;
+  min-width: 0;
+}
+
+.notice-board {
+  border-radius: var(--radius-md);
+  background: var(--white);
+  /* box-shadow: 0 10px 30px rgba(0, 19, 43, .08); */
+  box-shadow: 5px 10px 0px rgba(0, 19, 43, .05);
+}
+.notice-board_tabs {
+  display: flex;
+  align-items: stretch;
+}
+.notice-board_tab {
+  position: relative;
+  flex: 1;
+  height: 66px;
+  border-right: 1px solid #9baec0;
+  border-bottom: 1px solid #9baec0;
+  font-size: 19px;
+  font-weight: 700;
+  color: var(--text-2);
+  background: var(--sky-100);
+}
+.notice-board_tab:first-child { border-radius: var(--radius-md) 0 0 0; }
+.notice-board_tab[aria-selected='true'] {
+  z-index: 1;
+  color: var(--text);
+  background: var(--white);
+  border-bottom: 3px solid var(--blue-600);
+}
+.notice-board_tab[aria-selected='true']::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -15px;
+  border: 13px solid transparent;
+  border-top-color: var(--blue-600);
+  border-bottom: 0;
+  transform: translateX(-50%);
+}
+.notice-board_more {
+  display: flex;
+  flex: 0 0 76px;
+  align-items: center;
+  justify-content: center;
+  border-bottom: 1px solid #9baec0;
+  border-radius: 0 var(--radius-md) 0 0;
+}
+.notice-board_list { padding: 18px 43px 30px; }
+.notice-board_row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 15px 0 12px;
+  border-bottom: 1px solid var(--blue-400);
+}
+.notice-board_row:hover .notice-board_title { color: var(--blue-600); }
+.notice-board_category {
+  flex: none;
+  min-width: 56px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 500;
+  text-align: center;
+  color: var(--white);
+  background: var(--blue-600);
+}
+.notice-board_category--event { background: var(--steel-dark); }
+.notice-board_category--pinned { background: var(--navy-800); }
+.notice-board_title {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  font-size: 17px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  transition: color .2s;
+}
+.notice-board_date {
+  flex: none;
+  font-family: var(--mono);
+  font-size: 14px;
+  color: var(--text-3);
+}
+.notice-board_plus {
+  position: relative;
+  flex: none;
+  width: 16px;
+  height: 16px;
+}
+.notice-board_plus::before,
+.notice-board_plus::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  margin-top: -1px;
+  background: var(--blue-600);
+}
+.notice-board_plus::after { transform: rotate(90deg); }
+
+.quick-links {
+  display: flex;
+  gap: 12px;
+}
+.quick-links_entry {
+  flex: 1;
+  min-width: 0;
+}
+.quick-links_item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 100%;
+  padding: 18px 20px;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--navy-700);
+  background: var(--white);
+  /* box-shadow: 0 6px 18px rgba(0, 19, 43, .1); */
+  box-shadow: 5px 10px 0px rgba(0, 19, 43, .05);
+  transition: color .2s, background-color .2s;
+}
+.quick-links_item:hover { color: var(--white); background: var(--blue-600); }
+.quick-links_icon {
+  display: flex;
+  flex: none;
+  color: var(--blue-600);
+  transition: color .2s;
+}
+.quick-links_item:hover .quick-links_icon { color: var(--white); }
+.quick-links_svg { width: 30px; height: 30px; }
+
+/* 시설 전경 슬라이더 */
+.gallery-panel {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+  padding: 0 43px 34px;
+  border-radius: var(--radius-md);
+  color: var(--on-dark);
+  background: linear-gradient(130deg, var(--navy-600) 10%, #093857 45%, var(--navy-900) 55%, #094065 75%);
+}
+.gallery-panel_head {
+  display: flex;
+  align-items: flex-start;
+  gap: 24px;
+  margin-bottom: 20px;
+}
+.gallery-panel_title {
+  padding: 40px 28px 16px;
+  border-radius: 0 0 var(--radius-md) var(--radius-md);
+  font-size: 17px;
+  font-weight: 500;
+  background: linear-gradient(130deg, #004681 23%, var(--blue-500) 74%, #216799 100%);
+}
+.gallery-panel_more { margin: 34px 0 0 auto; }
+.gallery-panel_figure {
+  position: relative;
+  flex: 1;
+  min-height: 300px;
+  overflow: hidden;
+  border-radius: var(--radius-md);
+  background: #121a3a;
+}
+.gallery-panel_image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.gallery-panel_caption {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  padding: 20px 28px;
+  background: rgba(9, 40, 60, .82);
+}
+.gallery-panel_caption-title {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.gallery-panel_caption-meta {
+  flex: none;
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: .06em;
+  color: var(--on-dark-2);
+}
+
+/* 연구 장비 (레퍼런스의 '교육분야') */
+.equipment-showcase {
+  position: relative;
+  /* margin-top: 25px; */
+  margin-top: 100px;
+  background:
+    linear-gradient(120deg, rgba(42, 72, 104, .86), rgba(70, 104, 138, .8)),
+    url('assets/hero-01.jpg') 50% 40% / cover no-repeat;
+}
+.equipment-showcase_inner {
+  position: relative;
+  display: flex;
+  gap: 30px;
+  padding-top: 34px;
+  padding-bottom: 34px;
+  color: var(--on-dark);
+}
+.equipment-showcase_side {
+  display: flex;
+  /* flex: 0 0 27%; */
+  flex-direction: column;
+  gap: 24px;
+  margin-right: 0;
+  width:calc((100% - 0px) / 4);
+}
+.equipment-showcase_tabs {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  /* padding-left: 54px; */
+}
+.equipment-showcase_tab {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 17px;
+  border: 1px solid var(--white);
+  font-size: 20px;
+  font-weight: 600;
+  text-shadow: 0 0 24px rgba(54, 102, 125, .5);
+  transition: background-color .2s, border-color .2s;
+}
+.equipment-showcase_tab:hover { background: rgba(0, 29, 49, .5); }
+.equipment-showcase_tab[aria-selected='true'] {
+  border-color: var(--navy-700);
+  background: var(--navy-700);
+}
+.equipment-showcase_tab-number {
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--blue-300);
+}
+.equipment-showcase_panel {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  /* margin-right: 34px; */
+}
+.equipment-showcase_panel[hidden] { display: none; }
+/* 도판 칸 — 3D 모형(Model) ↔ 사진(Photo) 전환 */
+.equipment-showcase_media {
+  position: relative;
+  flex: 0 0 56%;
+  min-height: 400px;
+  overflow: hidden;
+  border-radius: var(--radius-md) 0 0 var(--radius-md);
+  background: linear-gradient(168deg, #1b2a55 0%, #0b1330 72%);
+}
+.equipment-showcase_figure {
+  position: absolute;
+  inset: 0;
+  background: #111a3b;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity .4s, visibility 0s linear .4s;
+}
+.equipment-showcase_media[data-view='photo'] .equipment-showcase_figure {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity .4s, visibility 0s;
+}
+.equipment-showcase_image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.equipment-showcase_image--contain { object-fit: contain; padding: 24px; }
+
+.model-stage {
+  position: absolute;
+  inset: 0;
+  transition: opacity .4s, visibility 0s;
+}
+.equipment-showcase_media[data-view='photo'] .model-stage {
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity .4s, visibility 0s linear .4s;
+}
+.model-stage_slot {
+  position: absolute;
+  inset: 0;
+}
+.model-stage_status {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: .14em;
+  color: var(--on-dark-2);
+  pointer-events: none;
+}
+.model-stage_status[hidden] { display: none; }
+
+/* 3D 캔버스 묶음 — 하나를 만들어 지금 보이는 패널의 slot으로 옮겨 다닌다 */
+.model-live {
+  position: absolute;
+  inset: 0;
+}
+.model-live_canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: pan-y;
+  cursor: grab;
+}
+.model-live_canvas:active { cursor: grabbing; }
+@media (pointer: fine) {
+  .model-live_canvas { touch-action: none; }
+}
+.model-live_vignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse at 50% 58%, transparent 42%, rgba(0, 19, 43, .5) 100%);
+}
+.model-live_hud {
+  position: absolute;
+  z-index: 2;
+  left: 16px;
+  bottom: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.model-live_button,
+.view-toggle_button {
+  padding: 7px 12px 6px;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--on-dark-2);
+  transition: border-color .2s, color .2s, background-color .2s;
+}
+.model-live_button {
+  border: 1px solid var(--hair-dark);
+  border-radius: 6px;
+  background: rgba(0, 19, 43, .6);
+}
+.model-live_button:hover { border-color: var(--blue-400); color: var(--white); }
+.model-live_button[aria-pressed='true'] { border-color: var(--blue-600); color: var(--white); background: var(--blue-600); }
+.model-live_hint {
+  position: absolute;
+  z-index: 2;
+  right: 16px;
+  bottom: 20px;
+  font-size: 12px;
+  color: var(--on-dark-2);
+  pointer-events: none;
+}
+
+.view-toggle {
+  position: absolute;
+  z-index: 3;
+  top: 16px;
+  right: 16px;
+  display: flex;
+  overflow: hidden;
+  border: 1px solid var(--hair-dark);
+  border-radius: 6px;
+  background: rgba(0, 19, 43, .6);
+  backdrop-filter: blur(6px);
+}
+.view-toggle[hidden] { display: none; }
+.view-toggle_button { font-weight: 700; }
+.view-toggle_button + .view-toggle_button { border-left: 1px solid var(--hair-dark); }
+.view-toggle_button:hover { color: var(--white); }
+.view-toggle_button[aria-pressed='true'] { color: var(--white); background: var(--blue-600); }
+.equipment-showcase_body {
+  position: relative;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  padding: 90px 46px 46px;
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  background:
+    radial-gradient(circle at 30% 110%, rgba(93, 175, 218, .22), transparent 55%),
+    var(--navy-700);
+}
+.equipment-showcase_tag {
+  font-family: var(--mono);
+  font-size: 13px;
+  letter-spacing: .08em;
+  color: var(--blue-300);
+}
+.equipment-showcase_name {
+  margin: 6px 0 18px;
+  font-size: 24px;
+  font-weight: 700;
+}
+.equipment-showcase_description {
+  font-size: 16px;
+  line-height: 1.7;
+  color: var(--on-dark-2);
+}
+.equipment-showcase_specs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px 0;
+  margin: 26px 0 30px;
+  padding-top: 20px;
+  border-top: 1px solid var(--hair-dark);
+}
+.equipment-showcase_spec {
+  display: flex;
+  flex: 0 0 50%;
+  flex-direction: column;
+  gap: 2px;
+}
+.equipment-showcase_spec-label {
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--blue-300);
+}
+.equipment-showcase_spec-value {
+  font-size: 16px;
+  font-weight: 500;
+}
+.equipment-showcase_footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: auto;
+}
+.equipment-showcase_scale {
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--on-dark-2);
+}
+
+/* 통합 풍동 시험 설비 (레퍼런스의 '연구분야') */
+.facility-field {
+  position: relative;
+  z-index: 0;
+  /* margin-top: 25px; */
+  margin-top: 100px;
+  padding-bottom: 100px;
+}
+/* 흐르는 곡선 장식 (assets/decor-wave-lines.svg — 원본의 흰 바탕 사각형은 빼고 투명하게 둠)
+   카드 줄 오른쪽 아래에서 화면 오른쪽 끝까지 붙인다 */
+.facility-field::after {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  right: 0;
+  bottom: 20px;
+  width: 42%;
+  height: 500px;
+  background: url('assets/decor-wave-lines.svg') right center / cover no-repeat;
+  -webkit-mask: linear-gradient(90deg, transparent 0%, #000 35%);
+  mask: linear-gradient(90deg, transparent 0%, #000 35%);
+  pointer-events: none;
+}
+.facility-field_cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.facility-field_intro {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  margin-right: 40px;
+  width: calc((100% - 75px) / 4);
+}
+.facility-field_title {
+   /* padding: 18px 30px 8px 40px; */
+   padding: 18px 0px 8px 0px;
+}
+.facility-field_lead {
+  font-size: 15px;
+  line-height: 1.75;
+  color: var(--text-2);
+}
+.facility-field_lead-strong { font-weight: 700; color: var(--text); }
+/* .facility-field_title::before { height: 46%; } */
+.facility-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: calc((100% - 30px) / 4);
+  min-height: 336px;
+  padding: 50px 40px;
+  overflow: hidden;
+  border-radius: var(--radius-md);
+  color: var(--on-dark);
+  background: var(--navy-800) center / cover no-repeat;
+  isolation: isolate;
+}
+.facility-card::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  background: linear-gradient(165deg, rgba(0, 19, 43, .25) 0%, rgba(0, 19, 43, .62) 45%, rgba(0, 19, 43, .9) 100%);
+  opacity: .7;
+  transition: opacity .3s;
+}
+.facility-card:hover::before { opacity: 1; }
+.facility-card--brand {
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background: linear-gradient(140deg, #2a6ba6 0%, #1c4f80 55%, #2c6aa0 100%);
+}
+.facility-card--brand::before { display: none; }
+.facility-card--decor {
+  min-height: 0;
+  padding: 0;
+  background: none;
+  overflow: visible;
+}
+/* 아랫줄 4번째 자리만 비워 둔다 — 곡선 장식은 .facility-field::after */
+.facility-card--decor::before { display: none; }
+.facility-card--trisonic { background-image: url('assets/trisonic-layout.jpg'); }
+.facility-card--hypersonic { background-image: url('assets/hypersonic-layout.jpg'); }
+.facility-card--ballistic { background-image: url('assets/overview-ballistic.jpg'); }
+.facility-card--integrated { background-image: url('assets/facility-layout.jpg'); }
+/* 실물 도판을 받기 전 임시 이미지 표시 — 받으면 이미지를 바꾸고 꼬리표를 지운다 */
+.facility-card_pending {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  padding: 4px 10px;
+  border: 1px solid var(--hair-dark);
+  border-radius: 20px;
+  font-size: 12px;
+  color: var(--on-dark-2);
+  background: rgba(0, 19, 43, .6);
+}
+/* 카드 2개 폭 (1024px 이하에서는 한 칸으로 돌아간다) */
+.facility-card--wide { width: calc((100% - 80px) / 2 + 0px); }
+.facility-card_brand-mark {
+  font-size: 34px;
+  font-weight: 300;
+  line-height: 1.25;
+  color: rgba(255, 255, 255, .55);
+}
+.facility-card_eyebrow {
+  font-size: 15px;
+  font-weight: 300;
+  color: var(--blue-300);
+  text-shadow: 0 0 10px rgba(0, 0, 0, .2);
+}
+.facility-card_title {
+  margin: 0 0 32px;
+  font-size: 25px;
+  font-weight: 700;
+  line-height: 1.35;
+}
+.facility-card_description {
+  font-size: 15px;
+  font-weight: 300;
+  line-height: 1.7;
+}
+.facility-card_link { margin-top: auto; padding-top: 24px; }
+
+/* 찾아오시는 길 */
+.location {
+  padding-bottom: 100px;
+}
+.location_head {
+  display: flex;
+  margin-bottom: 30px;
+}
+.location_title {
+   min-width: calc((100% - 75px) / 4); 
+   padding: 18px 0px 8px 0px; 
+   white-space: nowrap; 
+  }
+/* .location_title::before { height: 100%; } */
+.location_layout {
+  display: flex;
+  gap: 25px;
+}
+
+.location-map {
+  position: relative;
+  flex: 0 0 62%;
+  min-height: 440px;
+  overflow: hidden;
+  border-radius: var(--radius-md);
+  background: url('assets/location-fallback.jpg') center / cover no-repeat var(--mist);
+  box-shadow: 0 10px 30px rgba(0, 19, 43, .08);
+}
+.location-map_canvas {
+  position: absolute;
+  inset: 0;
+}
+.location-map_fallback {
+  position: absolute;
+  left: 24px;
+  bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 16px 20px;
+  border-radius: 12px;
+  color: var(--on-dark);
+  background: rgba(0, 19, 43, .82);
+}
+.location-map.is-loaded .location-map_fallback { display: none; }
+.location-map_fallback-title { font-weight: 700; }
+.location-map_fallback-address {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--on-dark-2);
+}
+
+.location-info {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  padding: 46px 42px;
+  border-radius: var(--radius-md);
+  color: var(--on-dark);
+  background:
+    radial-gradient(circle at 30% 110%, rgba(93, 175, 218, .22), transparent 55%),
+    var(--navy-700);
+}
+.location-info_eyebrow {
+  font-family: var(--mono);
+  font-size: 13px;
+  letter-spacing: .08em;
+  color: var(--blue-300);
+}
+.location-info_name {
+  margin: 8px 0 20px;
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1.35;
+}
+.location-info_address {
+  font-size: 16px;
+  font-style: normal;
+  line-height: 1.7;
+  color: var(--on-dark-2);
+}
+.location-info_details {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin: 28px 0 34px;
+  padding-top: 24px;
+  border-top: 1px solid var(--hair-dark);
+}
+.location-info_detail {
+  display: flex;
+  gap: 16px;
+}
+.location-info_detail-label {
+  flex: 0 0 64px;
+  font-size: 14px;
+  color: var(--blue-300);
+}
+.location-info_detail-value {
+  font-size: 15px;
+}
+.location-info_actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: auto;
+}
+.location-info_button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 50px;
+  padding: 0 22px;
+  border: 1px solid var(--white);
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 500;
+  transition: background-color .2s, color .2s, border-color .2s;
+}
+.location-info_button:hover { color: var(--navy-800); background: var(--white); }
+.location-info_button--primary { border-color: var(--blue-600); background: var(--blue-600); }
+.location-info_button--primary:hover { border-color: var(--white); }
+
+/* ---------- 푸터 ---------- */
+.app-footer {
+  color: var(--text-2);
+  background: var(--mist);
+  border-top: 1px solid var(--hair-light);
+}
+.app-footer_menu {
+  display: flex;
+  gap: 12px;
+  padding: 22px 0 18px;
+  border-bottom: 1px solid var(--hair-light);
+  font-size: 15px;
+}
+.app-footer_menu-item + .app-footer_menu-item::before {
+  content: '';
+  display: inline-block;
+  width: 1px;
+  height: 12px;
+  margin-right: 12px;
+  background: var(--hair-light);
+}
+.app-footer_menu-link--strong { font-weight: 700; color: var(--blue-600); }
+.app-footer_info {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 30px;
+  padding: 34px 0 50px;
+}
+.app-footer_logo { width: 150px; margin-bottom: 22px; }
+.app-footer_address {
+  font-size: 14px;
+  font-style: normal;
+  line-height: 1.8;
+}
+.app-footer_contacts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 22px;
+}
+.app-footer_copyright {
+  margin-top: 18px;
+  font-size: 13px;
+  color: var(--text-3);
+}
+.app-footer_top {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: 64px;
+  height: 64px;
+  border: 1px solid var(--hair-light);
+  border-radius: 50%;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: .1em;
+  color: var(--text-2);
+  background: var(--white);
+}
+.app-footer_top::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  margin-top: 4px;
+  border-top: 1.5px solid currentColor;
+  border-left: 1.5px solid currentColor;
+  transform: rotate(45deg);
+}
+
+/* ---------- 반응형 (큰 → 작은) ---------- */
+@media screen and (max-width: 1240px) {
+  .gnb { margin: 0 20px; }
+  .gnb_link { font-size: 16px; }
+  .header-shortcut { padding: 0 16px; font-size: 14px; }
+  .news-panel_main { flex-basis: 54%; }
+  .notice-board_list { padding: 14px 28px 24px; }
+  .equipment-showcase_body { padding: 70px 34px 34px; }
+  .facility-card { padding: 40px 30px; }
+  .facility-card_title { font-size: 22px; }
+}
+
+@media screen and (max-width: 1024px) {
+  .gnb, .header-shortcut { display: none; }
+  .app-header_bar { justify-content: space-between; }
+
+  .sitemap_intro { display: none; }
+  .sitemap_body { align-items: flex-start; padding: 100px var(--gut) 60px; }
+  .sitemap_close { right: var(--gut); top: 24px; }
+  .sitemap_section { flex-direction: column; gap: 14px; }
+  .sitemap_section-title { flex-basis: auto; font-size: 22px; }
+
+  .news-panel {
+    flex-direction: column;
+    margin: -110px var(--gut) 0;
+    border-radius: 30px;
+  }
+  .news-panel_main { flex-basis: auto; }
+  .gallery-panel_figure { flex: none; height: 360px; }
+
+  .equipment-showcase_inner { flex-direction: column; padding-right: var(--gut); }
+  .equipment-showcase_side { flex-basis: auto; }
+  .equipment-showcase_tabs { flex-direction: row; flex-wrap: wrap; padding-left: 0; }
+  .equipment-showcase_tab { flex: 1 1 30%; font-size: 17px; }
+  .equipment-showcase_panel { margin-right: 0; }
+
+  .facility-field_intro,
+  .facility-card { width: calc((100% - 25px) / 2); }
+  .facility-card--brand,
+  .facility-card--decor,
+  .facility-field::after { display: none; }
+
+  .location_layout { flex-direction: column; }
+  .location-map { flex-basis: auto; min-height: 380px; }
+}
+
+@media screen and (max-width: 780px) {
+  :root { --header-h: 64px; }
+  .app-header_logo-image { width: 124px; }
+
+  .visual_content { top: 26%; }
+  .visual_arrow { display: none; }
+
+  .news-panel { padding: 20px; gap: 20px; }
+  .notice-board_tab { height: 54px; font-size: 16px; }
+  .notice-board_more { flex-basis: 56px; }
+  .notice-board_list { padding: 10px 20px 20px; }
+  .notice-board_title { font-size: 15px; }
+  .quick-links { flex-wrap: wrap; gap: 8px; }
+  .quick-links_entry { flex: 0 0 calc(50% - 4px); }
+  .quick-links_item { padding: 14px 16px; font-size: 14px; }
+  .gallery-panel { padding: 0 20px 20px; }
+  .gallery-panel_title { padding: 30px 20px 12px; }
+  .gallery-panel_more { margin-top: 24px; }
+
+  .equipment-showcase_panel { flex-direction: column; }
+  .equipment-showcase_media { flex-basis: auto; min-height: 300px; border-radius: var(--radius-md) var(--radius-md) 0 0; }
+  .model-live_hint { display: none; }
+  .equipment-showcase_body { padding: 34px 26px 28px; border-radius: 0 0 var(--radius-md) var(--radius-md); }
+
+  .facility-card { min-height: 280px; }
+
+  .location { padding-bottom: 70px; }
+  .location-map { min-height: 300px; }
+  .location-info { padding: 34px 26px; }
+  .location-info_name { font-size: 22px; }
+}
+
+@media screen and (max-width: 480px) {
+  .lang-switcher { display: none; }
+
+  .visual { height: 520px; }
+  .visual_kicker { font-size: 11px; letter-spacing: .12em; }
+
+  .news-panel { margin-top: -80px; padding: 14px; border-radius: 24px; }
+  .notice-board_tab { font-size: 15px; }
+  .notice-board_row { flex-wrap: wrap; gap: 6px 10px; }
+  .notice-board_title { flex-basis: 100%; order: -1; }
+  .notice-board_plus { display: none; }
+  .quick-links_item { gap: 8px; padding: 12px; font-size: 13px; }
+  .quick-links_svg { width: 24px; height: 24px; }
+  .gallery-panel_head { gap: 12px; }
+  .gallery-panel_figure { height: 260px; }
+  .gallery-panel_caption { padding: 14px 18px; }
+  .gallery-panel_caption-meta { display: none; }
+
+  .equipment-showcase_tab { flex-basis: 100%; }
+  .equipment-showcase_spec { flex-basis: 100%; }
+
+  .facility-field_intro,
+  .facility-card { width: 100%; }
+
+  .location_title { width: 100%; }
+  .location-info_button { flex: 1 1 100%; }
+
+  .app-footer_info { flex-direction: column; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+</style>
+</head>
+<body>
+
+<header class="app-header">
+  <div class="site-inner app-header_bar">
+    <h1 class="app-header_logo">
+      <a href="#top"><img class="app-header_logo-image" src="assets/logo-horizontal-light.png" alt="서울대학교 우주항공 통합 풍동센터"></a>
+    </h1>
+
+    <nav class="gnb" aria-label="주 메뉴">
+      <ul class="gnb_list">
+        <li class="gnb_item">
+          <a class="gnb_link" href="#">센터 소개</a>
+          <ul class="gnb_sub">
+            <li><a class="gnb_sub-link" href="#"><span class="gnb_sub-label">센터장 인사말</span></a></li>
+            <li><a class="gnb_sub-link" href="#"><span class="gnb_sub-label">센터 비전 및 목표</span></a></li>
+            <li><a class="gnb_sub-link" href="#"><span class="gnb_sub-label">설립목적 및 연혁</span></a></li>
+            <li><a class="gnb_sub-link" href="#"><span class="gnb_sub-label">조직도</span></a></li>
+            <li><a class="gnb_sub-link" href="#"><span class="gnb_sub-label">구성원</span></a></li>
+            <li><a class="gnb_sub-link" href="#"><span class="gnb_sub-label">시설 전경 갤러리</span></a></li>
+            <li><a class="gnb_sub-link" href="#"><span class="gnb_sub-label">CI 및 브랜드 소개</span></a></li>
+            <li><a class="gnb_sub-link" href="#"><span class="gnb_sub-label">찾아오시는 길</span></a></li>
+          </ul>
+        </li>
+        <li class="gnb_item">
+          <a class="gnb_link" href="#equipment">연구 장비 안내</a>
+          <ul class="gnb_sub">
+            <li><a class="gnb_sub-link" href="#"><span class="gnb_sub-label">삼중음속 풍동</span></a></li>
+            <li><a class="gnb_sub-link" href="#"><span class="gnb_sub-label">극초음속 풍동</span></a></li>
+            <li><a class="gnb_sub-link" href="#"><span class="gnb_sub-label">발리스틱레인지</span></a></li>
+            <li><a class="gnb_sub-link" href="#"><span class="gnb_sub-label">장비별 세부 사양 및 참고 사례</span></a></li>
+            <li><a class="gnb_sub-link" href="#"><span class="gnb_sub-label">이용 절차 안내</span></a></li>
+          </ul>
+        </li>
+        <li class="gnb_item">
+          <a class="gnb_link" href="#news">센터 소식</a>
+          <ul class="gnb_sub">
+            <li><a class="gnb_sub-link" href="#"><span class="gnb_sub-label">공지사항</span></a></li>
+            <li><a class="gnb_sub-link" href="#"><span class="gnb_sub-label">행사</span></a></li>
+          </ul>
+        </li>
+        <li class="gnb_item">
+          <a class="gnb_link" href="#">찾아오시는 길/문의</a>
+          <ul class="gnb_sub">
+            <li><a class="gnb_sub-link" href="#"><span class="gnb_sub-label">센터 위치</span></a></li>
+            <li><a class="gnb_sub-link" href="#"><span class="gnb_sub-label">센터별 컨택</span></a></li>
+            <li><a class="gnb_sub-link" href="#"><span class="gnb_sub-label">행정 문의</span></a></li>
+          </ul>
+        </li>
+      </ul>
+      <div class="gnb_backdrop" aria-hidden="true"></div>
+    </nav>
+
+    <div class="app-header_actions">
+      <a class="header-shortcut" href="#">시험 이용 문의하기<span class="header-shortcut_arrow" aria-hidden="true"></span></a>
+      <div class="lang-switcher" aria-label="언어 선택">
+        <a class="lang-switcher_link" href="#" aria-current="true">KO</a>
+        <span class="lang-switcher_divider" aria-hidden="true"></span>
+        <a class="lang-switcher_link" href="#" lang="en">EN</a>
+      </div>
+      <button class="sitemap-toggle" type="button" aria-expanded="false" aria-controls="sitemap" aria-label="전체 메뉴 열기">
+        <span class="sitemap-toggle_line"></span>
+        <span class="sitemap-toggle_line"></span>
+        <span class="sitemap-toggle_line"></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- 전체 메뉴 -->
+<div class="sitemap" id="sitemap" role="dialog" aria-modal="true" aria-label="전체 메뉴" hidden>
+  <div class="sitemap_intro">
+    <img class="sitemap_intro-logo" src="assets/logo-horizontal-light.png" alt="">
+    <div>
+      <p class="sitemap_slogan">공기역학 환경을 지상에서 재현한다</p>
+      <p class="sitemap_center-name">서울대학교<br>우주항공 통합 풍동센터</p>
+      <p class="sitemap_wordmark">AEROSPACE INTEGRATED WIND TUNNEL CENTER</p>
+    </div>
+    <p class="sitemap_copyright">© Seoul National University. All rights reserved.</p>
+  </div>
+  <div class="sitemap_body">
+    <button class="sitemap_close" type="button" aria-label="전체 메뉴 닫기"></button>
+    <ul class="sitemap_menu">
+      <li class="sitemap_section">
+        <p class="sitemap_section-title">센터 소개</p>
+        <ul class="sitemap_links">
+          <li><a class="sitemap_link" href="#">센터장 인사말</a></li>
+          <li><a class="sitemap_link" href="#">센터 비전 및 목표</a></li>
+          <li><a class="sitemap_link" href="#">설립목적 및 연혁</a></li>
+          <li><a class="sitemap_link" href="#">조직도</a></li>
+          <li><a class="sitemap_link" href="#">구성원</a></li>
+          <li><a class="sitemap_link" href="#">시설 전경 갤러리</a></li>
+          <li><a class="sitemap_link" href="#">CI 및 브랜드 소개</a></li>
+          <li><a class="sitemap_link" href="#">찾아오시는 길</a></li>
+        </ul>
+      </li>
+      <li class="sitemap_section">
+        <p class="sitemap_section-title">연구 장비 안내</p>
+        <ul class="sitemap_links">
+          <li><a class="sitemap_link" href="#">삼중음속 풍동</a></li>
+          <li><a class="sitemap_link" href="#">극초음속 풍동</a></li>
+          <li><a class="sitemap_link" href="#">발리스틱레인지</a></li>
+          <li><a class="sitemap_link" href="#">장비별 세부 사양 및 참고 사례</a></li>
+          <li><a class="sitemap_link" href="#">이용 절차 안내</a></li>
+        </ul>
+      </li>
+      <li class="sitemap_section">
+        <p class="sitemap_section-title">센터 소식</p>
+        <ul class="sitemap_links">
+          <li><a class="sitemap_link" href="#">공지사항</a></li>
+          <li><a class="sitemap_link" href="#">행사</a></li>
+        </ul>
+      </li>
+      <li class="sitemap_section">
+        <p class="sitemap_section-title">찾아오시는 길/문의</p>
+        <ul class="sitemap_links">
+          <li><a class="sitemap_link" href="#">센터 위치</a></li>
+          <li><a class="sitemap_link" href="#">센터별 컨택</a></li>
+          <li><a class="sitemap_link" href="#">행정 문의</a></li>
+        </ul>
+      </li>
+      <li class="sitemap_section">
+        <p class="sitemap_section-title">사이트 정책</p>
+        <ul class="sitemap_links">
+          <li><a class="sitemap_link" href="#">사이트맵</a></li>
+          <li><a class="sitemap_link" href="#">개인정보처리방침</a></li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<main class="home">
+
+  <!-- 비주얼 -->
+  <section class="visual" id="top" aria-roledescription="carousel" aria-label="히어로 이미지">
+    <div class="visual_slide is-active">
+      <img class="visual_image" src="assets/hero-01.jpg" alt="풍동 시험 설비 전경">
+    </div>
+    <div class="visual_slide">
+      <img class="visual_image" src="assets/hero-02.jpg" alt="풍동 시험 설비 내부">
+    </div>
+
+    <div class="visual_content">
+      <p class="visual_kicker">Aerospace Integrated Wind Tunnel Center</p>
+      <h2 class="visual_title">공기역학 환경을 지상에서 재현한다</h2>
+      <div class="visual_controls">
+        <div class="visual_bullets">
+          <button class="visual_bullet" type="button" aria-label="1번 이미지" aria-current="true"></button>
+          <button class="visual_bullet" type="button" aria-label="2번 이미지"></button>
+        </div>
+        <button class="visual_toggle" type="button" aria-pressed="false" aria-label="자동 재생 멈춤"></button>
+      </div>
+    </div>
+
+    <button class="visual_arrow visual_arrow--prev" type="button" aria-label="이전 이미지"></button>
+    <button class="visual_arrow visual_arrow--next" type="button" aria-label="다음 이미지"></button>
+  </section>
+
+  <!-- 센터 소식 · 바로가기 · 시설 전경 -->
+   <div class="site-inner">
+    <section class="news-panel" id="news" aria-labelledby="news-title">
+      <div class="news-panel_main">
+        <div class="notice-board">
+          <h2 class="visually-hidden" id="news-title">센터 소식</h2>
+          <div class="notice-board_tabs" role="tablist" aria-label="센터 소식 분류">
+            <button class="notice-board_tab" type="button" role="tab" id="notice-tab-all" aria-controls="notice-panel-all" aria-selected="true">전체</button>
+            <button class="notice-board_tab" type="button" role="tab" id="notice-tab-notice" aria-controls="notice-panel-notice" aria-selected="false" tabindex="-1">공지사항</button>
+            <button class="notice-board_tab" type="button" role="tab" id="notice-tab-event" aria-controls="notice-panel-event" aria-selected="false" tabindex="-1">행사</button>
+            <a class="notice-board_more" href="#"><span class="more-link more-link--dark" aria-hidden="true"></span><span class="visually-hidden">센터 소식 전체 보기</span></a>
+          </div>
+
+          <!-- 목록 글은 Next 개발 서버의 예시 데이터(api/mocks)와 같다 — 실제 공지가 아니다 -->
+          <ul class="notice-board_list" role="tabpanel" id="notice-panel-all" aria-labelledby="notice-tab-all">
+            <li><a class="notice-board_row" href="#"><span class="notice-board_category notice-board_category--pinned">중요</span><span class="notice-board_title">2026년 하반기 풍동 시험 설비 이용 신청 안내</span><span class="notice-board_date">2026-10-07</span><span class="notice-board_plus" aria-hidden="true"></span></a></li>
+            <li><a class="notice-board_row" href="#"><span class="notice-board_category notice-board_category--event">행사</span><span class="notice-board_title">하반기 시험 설비 이용 설명회</span><span class="notice-board_date">2026-10-14</span><span class="notice-board_plus" aria-hidden="true"></span></a></li>
+            <li><a class="notice-board_row" href="#"><span class="notice-board_category">공지</span><span class="notice-board_title">홈페이지 개편 안내</span><span class="notice-board_date">2026-10-01</span><span class="notice-board_plus" aria-hidden="true"></span></a></li>
+            <li><a class="notice-board_row" href="#"><span class="notice-board_category">공지</span><span class="notice-board_title">극초음속 풍동 정기 점검에 따른 운용 일정 변경</span><span class="notice-board_date">2026-09-24</span><span class="notice-board_plus" aria-hidden="true"></span></a></li>
+          </ul>
+          <ul class="notice-board_list" role="tabpanel" id="notice-panel-notice" aria-labelledby="notice-tab-notice" hidden>
+            <li><a class="notice-board_row" href="#"><span class="notice-board_category notice-board_category--pinned">중요</span><span class="notice-board_title">2026년 하반기 풍동 시험 설비 이용 신청 안내</span><span class="notice-board_date">2026-10-07</span><span class="notice-board_plus" aria-hidden="true"></span></a></li>
+            <li><a class="notice-board_row" href="#"><span class="notice-board_title">홈페이지 개편 안내</span><span class="notice-board_date">2026-10-01</span><span class="notice-board_plus" aria-hidden="true"></span></a></li>
+            <li><a class="notice-board_row" href="#"><span class="notice-board_title">극초음속 풍동 정기 점검에 따른 운용 일정 변경</span><span class="notice-board_date">2026-09-24</span><span class="notice-board_plus" aria-hidden="true"></span></a></li>
+            <li><a class="notice-board_row" href="#"><span class="notice-board_title">추석 연휴 기간 센터 운영 안내</span><span class="notice-board_date">2026-09-18</span><span class="notice-board_plus" aria-hidden="true"></span></a></li>
+          </ul>
+          <ul class="notice-board_list" role="tabpanel" id="notice-panel-event" aria-labelledby="notice-tab-event" hidden>
+            <li><a class="notice-board_row" href="#"><span class="notice-board_category notice-board_category--event">예정</span><span class="notice-board_title">하반기 시험 설비 이용 설명회</span><span class="notice-board_date">2026-10-14</span><span class="notice-board_plus" aria-hidden="true"></span></a></li>
+            <li><a class="notice-board_row" href="#"><span class="notice-board_category notice-board_category--event">예정</span><span class="notice-board_title">시험동 신규 출입자 안전 교육</span><span class="notice-board_date">2026-10-14</span><span class="notice-board_plus" aria-hidden="true"></span></a></li>
+            <li><a class="notice-board_row" href="#"><span class="notice-board_category notice-board_category--event">예정</span><span class="notice-board_title">한국항공우주학회 추계학술대회 참가 및 센터 홍보 부스 운영</span><span class="notice-board_date">2026-10-21</span><span class="notice-board_plus" aria-hidden="true"></span></a></li>
+            <li><a class="notice-board_row" href="#"><span class="notice-board_category notice-board_category--event">예정</span><span class="notice-board_title">통합 풍동 시설 공개 주간</span><span class="notice-board_date">2026-10-29</span><span class="notice-board_plus" aria-hidden="true"></span></a></li>
+          </ul>
+        </div>
+
+        <ul class="quick-links" aria-label="바로가기">
+          <li class="quick-links_entry">
+            <a class="quick-links_item" href="#">
+              <span class="quick-links_icon" aria-hidden="true">
+                <svg class="quick-links_svg" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 5h12l6 6v20H10z"/><path d="M22 5v6h6M14 17h10M14 22h10M14 27h6"/></svg>
+              </span>
+              이용 절차 안내
+            </a>
+          </li>
+          <li class="quick-links_entry">
+            <a class="quick-links_item" href="#">
+              <span class="quick-links_icon" aria-hidden="true">
+                <svg class="quick-links_svg" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M7 10h22M7 18h22M7 26h22"/><circle cx="13" cy="10" r="2.6" fill="currentColor"/><circle cx="23" cy="18" r="2.6" fill="currentColor"/><circle cx="16" cy="26" r="2.6" fill="currentColor"/></svg>
+              </span>
+              장비 세부 사양
+            </a>
+          </li>
+          <li class="quick-links_entry">
+            <a class="quick-links_item" href="#">
+              <span class="quick-links_icon" aria-hidden="true">
+                <svg class="quick-links_svg" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M18 32s10-9.5 10-17a10 10 0 0 0-20 0c0 7.5 10 17 10 17z"/><circle cx="18" cy="15" r="3.6"/></svg>
+              </span>
+              찾아오시는 길
+            </a>
+          </li>
+          <li class="quick-links_entry">
+            <a class="quick-links_item" href="#">
+              <span class="quick-links_icon" aria-hidden="true">
+                <svg class="quick-links_svg" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M9 6h6l2.5 6.5-3.5 2.5a16 16 0 0 0 7 7l2.5-3.5L30 21v6a3 3 0 0 1-3 3A21 21 0 0 1 6 9a3 3 0 0 1 3-3z"/></svg>
+              </span>
+              행정 문의
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <div class="gallery-panel">
+        <div class="gallery-panel_head">
+          <h2 class="gallery-panel_title">시설 전경</h2>
+          <a class="gallery-panel_more more-link more-link--light" href="#"><span class="visually-hidden">시설 전경 갤러리 보기</span></a>
+        </div>
+        <figure class="gallery-panel_figure">
+          <img class="gallery-panel_image" src="assets/about-banner.jpg" alt="">
+          <figcaption class="gallery-panel_caption"><span class="gallery-panel_caption-title">서울대학교 시흥캠퍼스</span><span class="gallery-panel_caption-meta">SIHEUNG CAMPUS</span></figcaption>
+        </figure>
+      </div>
+    </section>
+  </div>
+
+  <!-- 연구 장비 -->
+  <section class="equipment-showcase" id="equipment" aria-labelledby="equipment-title">
+    <div class="site-inner equipment-showcase_inner">
+      <div class="equipment-showcase_side">
+        <div class="section-title section-title--dark">
+          <p class="section-title_eyebrow">research facilities</p>
+          <h2 class="section-title_heading" id="equipment-title">연구 장비</h2>
+        </div>
+        <div class="equipment-showcase_tabs" role="tablist" aria-label="연구 장비 선택">
+          <button class="equipment-showcase_tab" type="button" role="tab" id="equipment-tab-trisonic" aria-controls="equipment-panel-trisonic" aria-selected="true"><span class="equipment-showcase_tab-number">01</span>삼중음속 풍동</button>
+          <button class="equipment-showcase_tab" type="button" role="tab" id="equipment-tab-hypersonic" aria-controls="equipment-panel-hypersonic" aria-selected="false" tabindex="-1"><span class="equipment-showcase_tab-number">02</span>극초음속 풍동</button>
+          <button class="equipment-showcase_tab" type="button" role="tab" id="equipment-tab-ballistic" aria-controls="equipment-panel-ballistic" aria-selected="false" tabindex="-1"><span class="equipment-showcase_tab-number">03</span>발리스틱 레인지</button>
+        </div>
+      </div>
+
+      <article class="equipment-showcase_panel" role="tabpanel" id="equipment-panel-trisonic" aria-labelledby="equipment-tab-trisonic" data-model="trisonic">
+        <div class="equipment-showcase_media" data-view="model">
+          <div class="model-stage">
+            <div class="model-stage_slot"><div class="model-live" id="model-live">
+              <div class="model-live_vignette" aria-hidden="true"></div>
+              <div class="model-live_hud">
+                <button class="model-live_button" type="button" data-model-reset>시점 초기화</button>
+                <button class="model-live_button" type="button" data-model-spin aria-pressed="true">자동 회전</button>
+              </div>
+              <p class="model-live_hint" aria-hidden="true">드래그해서 돌려 보기</p>
+            </div></div>
+            <p class="model-stage_status">3D 모형 불러오는 중</p>
+          </div>
+          <figure class="equipment-showcase_figure">
+            <img class="equipment-showcase_image" src="assets/trisonic-model.jpg" alt="삼중음속 풍동 전체 구성">
+          </figure>
+          <div class="view-toggle" role="group" aria-label="보기 전환">
+            <button class="view-toggle_button" type="button" data-view-button="model" aria-pressed="true">Model</button>
+            <button class="view-toggle_button" type="button" data-view-button="photo" aria-pressed="false">Photo</button>
+          </div>
+        </div>
+        <div class="equipment-showcase_body">
+          <p class="equipment-showcase_tag">Facility 01</p>
+          <h3 class="equipment-showcase_name">삼중음속 풍동</h3>
+          <p class="equipment-showcase_description">아음속·천음속·초음속의 삼중 속도 영역을 모사합니다. 가변 노즐 실시간 제어로 마하수를 연속 가변하며, 압력·힘·진동 등 주요 공력 데이터를 획득합니다.</p>
+          <dl class="equipment-showcase_specs">
+            <div class="equipment-showcase_spec"><dt class="equipment-showcase_spec-label">Mach</dt><dd class="equipment-showcase_spec-value">0.5 – 3 급 이상</dd></div>
+            <div class="equipment-showcase_spec"><dt class="equipment-showcase_spec-label">Test Section</dt><dd class="equipment-showcase_spec-value">500 × 500 mm</dd></div>
+            <div class="equipment-showcase_spec"><dt class="equipment-showcase_spec-label">Run Time</dt><dd class="equipment-showcase_spec-value">~ 60 초</dd></div>
+            <div class="equipment-showcase_spec"><dt class="equipment-showcase_spec-label">Mass Flow</dt><dd class="equipment-showcase_spec-value">60 – 200 kg/s</dd></div>
+          </dl>
+          <div class="equipment-showcase_footer">
+            <span class="equipment-showcase_scale">전장 약 27,450 mm</span>
+            <a class="more-link more-link--light" href="#"><span class="visually-hidden">삼중음속 풍동 상세 사양 보기</span></a>
+          </div>
+        </div>
+      </article>
+
+      <article class="equipment-showcase_panel" role="tabpanel" id="equipment-panel-hypersonic" aria-labelledby="equipment-tab-hypersonic" hidden data-model="hypersonic">
+        <div class="equipment-showcase_media" data-view="model">
+          <div class="model-stage">
+            <div class="model-stage_slot"></div>
+            <p class="model-stage_status">3D 모형 불러오는 중</p>
+          </div>
+          <figure class="equipment-showcase_figure">
+            <img class="equipment-showcase_image equipment-showcase_image--contain" src="assets/hypersonic-side.jpg" alt="극초음속 풍동 측면 선도면">
+          </figure>
+          <div class="view-toggle" role="group" aria-label="보기 전환">
+            <button class="view-toggle_button" type="button" data-view-button="model" aria-pressed="true">Model</button>
+            <button class="view-toggle_button" type="button" data-view-button="photo" aria-pressed="false">Photo</button>
+          </div>
+        </div>
+        <div class="equipment-showcase_body">
+          <p class="equipment-showcase_tag">Facility 02</p>
+          <h3 class="equipment-showcase_name">극초음속 풍동</h3>
+          <p class="equipment-showcase_description">M5 이상의 비행 환경을 지상에서 모사합니다. 전기히터 가열식 불어내기 방식이며, 발사체의 공력현상과 우주탐사선의 하강·착륙 시 발생하는 비행안정성 문제를 연구합니다.</p>
+          <dl class="equipment-showcase_specs">
+            <div class="equipment-showcase_spec"><dt class="equipment-showcase_spec-label">Mach</dt><dd class="equipment-showcase_spec-value">7.0 급</dd></div>
+            <div class="equipment-showcase_spec"><dt class="equipment-showcase_spec-label">Nozzle Exit</dt><dd class="equipment-showcase_spec-value">Ø300 mm</dd></div>
+            <div class="equipment-showcase_spec"><dt class="equipment-showcase_spec-label">Run Time</dt><dd class="equipment-showcase_spec-value">~ 30 초</dd></div>
+            <div class="equipment-showcase_spec"><dt class="equipment-showcase_spec-label">Mass Flow</dt><dd class="equipment-showcase_spec-value">1 – 2.9 kg/s</dd></div>
+          </dl>
+          <div class="equipment-showcase_footer">
+            <span class="equipment-showcase_scale">노즐 출구 Ø300 mm</span>
+            <a class="more-link more-link--light" href="#"><span class="visually-hidden">극초음속 풍동 상세 사양 보기</span></a>
+          </div>
+        </div>
+      </article>
+
+      <article class="equipment-showcase_panel" role="tabpanel" id="equipment-panel-ballistic" aria-labelledby="equipment-tab-ballistic" hidden data-model="ballistic">
+        <div class="equipment-showcase_media" data-view="model">
+          <div class="model-stage">
+            <div class="model-stage_slot"></div>
+            <p class="model-stage_status">3D 모형 불러오는 중</p>
+          </div>
+          <figure class="equipment-showcase_figure">
+            <img class="equipment-showcase_image equipment-showcase_image--contain" src="assets/overview-ballistic.jpg" alt="발리스틱 레인지 설치 공간">
+          </figure>
+          <div class="view-toggle" role="group" aria-label="보기 전환">
+            <button class="view-toggle_button" type="button" data-view-button="model" aria-pressed="true">Model</button>
+            <button class="view-toggle_button" type="button" data-view-button="photo" aria-pressed="false">Photo</button>
+          </div>
+        </div>
+        <div class="equipment-showcase_body">
+          <p class="equipment-showcase_tag">Facility 03</p>
+          <h3 class="equipment-showcase_name">발리스틱 레인지</h3>
+          <p class="equipment-showcase_description">2단 경가스 발사기로 모형을 가속해 천음속·초음속·극초음속 자유비행 공력 실험을 수행합니다. 비행체 후류 유동 계측과 쉴리렌 유동 가시화가 가능합니다.</p>
+          <dl class="equipment-showcase_specs">
+            <div class="equipment-showcase_spec"><dt class="equipment-showcase_spec-label">Velocity</dt><dd class="equipment-showcase_spec-value">최대 4 km/s</dd></div>
+            <div class="equipment-showcase_spec"><dt class="equipment-showcase_spec-label">Bore</dt><dd class="equipment-showcase_spec-value">Ø12.7 mm</dd></div>
+            <div class="equipment-showcase_spec"><dt class="equipment-showcase_spec-label">Test Section</dt><dd class="equipment-showcase_spec-value">4.5 m</dd></div>
+            <div class="equipment-showcase_spec"><dt class="equipment-showcase_spec-label">Viewport</dt><dd class="equipment-showcase_spec-value">Ø500 mm</dd></div>
+          </dl>
+          <div class="equipment-showcase_footer">
+            <span class="equipment-showcase_scale">발사부 8 m · 시험부 4.5 m</span>
+            <a class="more-link more-link--light" href="#"><span class="visually-hidden">발리스틱 레인지 상세 사양 보기</span></a>
+          </div>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- 통합 풍동 시험 설비 -->
+  <section class="facility-field" aria-labelledby="facility-title">
+    <div class="site-inner facility-field_cards">
+      <div class="facility-field_intro">
+        <div class="section-title section-title--light facility-field_title">
+          <p class="section-title_eyebrow">integrated facility</p>
+          <h2 class="section-title_heading" id="facility-title">통합 풍동<br>시험 설비</h2>
+        </div>
+        <p class="facility-field_lead">센터는 고아음속·천음속·초음속 유동환경을 구현하는 <b class="facility-field_lead-strong">삼중음속 풍동장치(마하 0.5~3 급)</b>와 <b class="facility-field_lead-strong">극초음속 풍동장치(마하 7 급)</b>로 구성됩니다. 이를 기반으로 연구개발과 성능시험을 수행합니다.</p>
+      </div>
+
+      <div class="facility-card facility-card--brand" aria-hidden="true">
+        <p class="facility-card_brand-mark">AEROSPACE<br>Integrated<br>Wind Tunnel</p>
+      </div>
+
+      <article class="facility-card facility-card--integrated facility-card--wide">
+        <p class="facility-card_eyebrow">Integrated Facility</p>
+        <h3 class="facility-card_title">통합 풍동 시험 설비</h3>
+        <p class="facility-card_description">다양한 속도 영역의 고난이도 공기역학 환경을 지상에서 재현하기 위한 통합 풍동 시험장치를 제작·설치.</p>
+      </article>
+
+      <article class="facility-card facility-card--trisonic">
+        <p class="facility-card_eyebrow">Trisonic Wind Tunnel</p>
+        <h3 class="facility-card_title">삼중음속 풍동 설치 공간</h3>
+        <p class="facility-card_description">불어내기식으로 정체압력 1~9.8 atm, 질량유량 60~200kg/s 조건에서 마하수 0.5~3급 이상의 공력 시험을 최대 60초 유지할 수 있는 장치 구축</p>
+      </article>
+
+      <article class="facility-card facility-card--hypersonic">
+        <p class="facility-card_eyebrow">Hypersonic Wind Tunnel</p>
+        <h3 class="facility-card_title">극초음속 풍동 설치 공간</h3>
+        <p class="facility-card_description">전기히터 가열식 불어내기 방식으로 전압력 10~24 atm, 질량유량 1~2.9 kg/s 조건에서 마하 7급 공력시험을 최대 30초 유지 가능한 장치 구축</p>
+      </article>
+
+      <article class="facility-card facility-card--ballistic">
+        <span class="facility-card_pending">도판 준비 중</span>
+        <p class="facility-card_eyebrow">Ballistic Range</p>
+        <h3 class="facility-card_title">발리스틱 레인지 설치 공간</h3>
+        <p class="facility-card_description">2단 경가스 발사기로 Ø12.7 mm 탄도에서 모형을 최대 4 km/s까지 가속해, 지지대 없는 자유비행 조건의 공력을 계측합니다. 발사부 8 m, 시험부 4.5 m.</p>
+      </article>
+
+      <div class="facility-card facility-card--decor" aria-hidden="true"></div>
+    </div>
+  </section>
+
+  <!-- 찾아오시는 길 -->
+  <section class="location" id="location" aria-labelledby="location-title">
+    <div class="site-inner">
+      <div class="location_head">
+        <div class="section-title section-title--light location_title">
+          <p class="section-title_eyebrow">location</p>
+          <h2 class="section-title_heading" id="location-title">찾아오시는 길</h2>
+        </div>
+      </div>
+
+      <div class="location_layout">
+        <div class="location-map">
+          <!-- 카카오 지도 퍼가기 — Next의 CENTER_ROUGHMAP과 같은 지도 -->
+          <div class="location-map_canvas">
+            <div id="daumRoughmapContainer1790835790291" class="root_daum_roughmap root_daum_roughmap_landing"></div>
+          </div>
+          <p class="location-map_fallback">
+            <strong class="location-map_fallback-title">서울대학교 시흥캠퍼스</strong>
+            <span class="location-map_fallback-address">(15011) 경기도 시흥시 서울대학로 173</span>
+          </p>
+        </div>
+
+        <div class="location-info">
+          <p class="location-info_eyebrow">Location</p>
+          <h3 class="location-info_name">서울대학교<br>우주항공 통합 풍동센터</h3>
+          <address class="location-info_address">
+            (15011) 경기도 시흥시 서울대학로 173<br>
+            서울대학교 시흥캠퍼스
+          </address>
+          <dl class="location-info_details">
+            <div class="location-info_detail"><dt class="location-info_detail-label">영문명</dt><dd class="location-info_detail-value">Aerospace Integrated Wind Tunnel Center</dd></div>
+            <div class="location-info_detail"><dt class="location-info_detail-label">운영시간</dt><dd class="location-info_detail-value">평일 09:00 – 18:00 (점심 12:00 – 13:00)</dd></div>
+            <div class="location-info_detail"><dt class="location-info_detail-label">문의</dt><dd class="location-info_detail-value">031-5176-2640 · aerowtc@snu.ac.kr</dd></div>
+          </dl>
+          <div class="location-info_actions">
+            <a class="location-info_button location-info_button--primary" href="#">시험 이용 문의하기</a>
+            <a class="location-info_button" href="tel:+82-31-5176-2640">031-5176-2640</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 흐르는 큰 영문 글자 띠 (장식) — 푸터 바로 위 -->
+  <div class="flow-text" aria-hidden="true">
+    <div class="flow-text_track">
+      <span class="flow-text_word">AEROSPACE INTEGRATED WIND TUNNEL</span>
+      <span class="flow-text_word">AEROSPACE INTEGRATED WIND TUNNEL</span>
+    </div>
+  </div>
+</main>
+
+<footer class="app-footer">
+  <div class="site-inner">
+    <ul class="app-footer_menu">
+      <li class="app-footer_menu-item"><a class="app-footer_menu-link app-footer_menu-link--strong" href="#">개인정보처리방침</a></li>
+      <li class="app-footer_menu-item"><a class="app-footer_menu-link" href="#">사이트맵</a></li>
+    </ul>
+    <div class="app-footer_info">
+      <div>
+        <img class="app-footer_logo" src="assets/logo-horizontal.png" alt="서울대학교 우주항공 통합 풍동센터">
+        <address class="app-footer_address">
+          (15011) 경기도 시흥시 서울대학로 173 서울대학교 시흥캠퍼스
+          <span class="app-footer_contacts">
+            <span>TEL 031-5176-2640</span>
+            <span>E-mail aerowtc@snu.ac.kr</span>
+            <span>평일 09:00 – 18:00 (점심 12:00 – 13:00)</span>
+          </span>
+        </address>
+        <p class="app-footer_copyright">© Seoul National University. All rights reserved.</p>
+      </div>
+      <a class="app-footer_top" href="#top">TOP</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function () {
+  var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* 탭 — role="tablist" 공통 (센터 소식 · 연구 장비) */
+  document.querySelectorAll('[role="tablist"]').forEach(function (tablist) {
+    var tabs = Array.prototype.slice.call(tablist.querySelectorAll('[role="tab"]'));
+    function select(tab) {
+      tabs.forEach(function (item) {
+        var on = item === tab;
+        item.setAttribute('aria-selected', on);
+        item.tabIndex = on ? 0 : -1;
+        document.getElementById(item.getAttribute('aria-controls')).hidden = !on;
+      });
+      tablist.dispatchEvent(new CustomEvent('tabchange', { detail: document.getElementById(tab.getAttribute('aria-controls')) }));
+    }
+    tabs.forEach(function (tab, index) {
+      tab.addEventListener('click', function () { select(tab); });
+      tab.addEventListener('keydown', function (event) {
+        var step = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[event.key];
+        if (!step) return;
+        event.preventDefault();
+        var next = tabs[(index + step + tabs.length) % tabs.length];
+        select(next);
+        next.focus();
+      });
+    });
+  });
+
+  /* 자동 재생 슬라이드 공통 — show(index)만 다르게 넘긴다 */
+  function autoplay(count, show, toggle, delay) {
+    var current = 0;
+    var timer = null;
+    function go(index) {
+      current = (index + count) % count;
+      show(current);
+    }
+    function start() { stop(); timer = setInterval(function () { go(current + 1); }, delay); }
+    function stop() { clearInterval(timer); timer = null; }
+    toggle.addEventListener('click', function () {
+      var paused = toggle.getAttribute('aria-pressed') !== 'true';
+      toggle.setAttribute('aria-pressed', paused);
+      toggle.setAttribute('aria-label', paused ? '자동 재생 시작' : '자동 재생 멈춤');
+      paused ? stop() : start();
+    });
+    if (reduceMotion) {
+      toggle.setAttribute('aria-pressed', 'true');
+      toggle.setAttribute('aria-label', '자동 재생 시작');
+    } else {
+      start();
+    }
+    return {
+      go: function (index) { go(index); if (timer) start(); },
+      current: function () { return current; }
+    };
+  }
+
+  /* 비주얼 */
+  var visual = document.querySelector('.visual');
+  var visualSlides = visual.querySelectorAll('.visual_slide');
+  var bullets = visual.querySelectorAll('.visual_bullet');
+  var visualPlayer = autoplay(visualSlides.length, function (index) {
+    visualSlides.forEach(function (slide, i) { slide.classList.toggle('is-active', i === index); });
+    bullets.forEach(function (bullet, i) {
+      if (i === index) bullet.setAttribute('aria-current', 'true');
+      else bullet.removeAttribute('aria-current');
+    });
+  }, visual.querySelector('.visual_toggle'), 5000);
+  bullets.forEach(function (bullet, i) {
+    bullet.addEventListener('click', function () { visualPlayer.go(i); });
+  });
+  visual.querySelector('.visual_arrow--prev').addEventListener('click', function () { visualPlayer.go(visualPlayer.current() - 1); });
+  visual.querySelector('.visual_arrow--next').addEventListener('click', function () { visualPlayer.go(visualPlayer.current() + 1); });
+
+  /* 전체 메뉴 */
+  var sitemap = document.getElementById('sitemap');
+  var openButton = document.querySelector('.sitemap-toggle');
+  var closeButton = sitemap.querySelector('.sitemap_close');
+  function setSitemap(open) {
+    sitemap.hidden = !open;
+    openButton.setAttribute('aria-expanded', open);
+    document.body.classList.toggle('is-locked', open);
+    (open ? closeButton : openButton).focus();
+  }
+  openButton.addEventListener('click', function () { setSitemap(true); });
+  closeButton.addEventListener('click', function () { setSitemap(false); });
+  document.addEventListener('keydown', function (event) {
+    if (event.key === 'Escape' && !sitemap.hidden) setSitemap(false);
+  });
+})();
+</script>
+<!-- 카카오 지도 퍼가기 (로더가 document.write를 쓰므로 문서를 읽는 중에 불러온다) -->
+<script charset="UTF-8" src="https://t1.kakaocdn.net/kakaomapweb/roughmap/loader/prod/roughmapLoader.js"></script>
+<script>
+(function () {
+  var map = document.querySelector('.location-map');
+  var canvas = map.querySelector('.location-map_canvas');
+  try {
+    new daum.roughmap.Lander({
+      timestamp: '1790835790291',
+      key: '2ib85jcagzw',
+      mapWidth: String(Math.max(320, Math.round(canvas.clientWidth))),
+      mapHeight: String(Math.max(240, Math.round(canvas.clientHeight)))
+    }).render();
+    map.classList.add('is-loaded');
+  } catch (error) {
+    /* 지도를 못 불러오면 대체 이미지와 주소를 그대로 둔다 */
+  }
+})();
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+/* ============================================================
+   연구 장비 3D 모형 — 시안 A의 무대를 연구 장비 탭에 맞춰 옮겼다.
+   캔버스는 하나만 쓰고, 탭을 바꾸면 보이는 패널의 slot으로 옮긴다.
+   형상은 치수 비율만 맞춘 개념 모형이다 (부위 설명·사양 문구는 자료가 아니라 옮기지 않았다).
+   ============================================================ */
+(function () {
+  'use strict';
+
+  var REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var showcase = document.querySelector('.equipment-showcase');
+  if (!showcase) return;
+  var panels = Array.prototype.slice.call(showcase.querySelectorAll('.equipment-showcase_panel'));
+  var step = 0;
+  panels.forEach(function (panel, i) { if (!panel.hidden) step = i; });
+
+  /* ---------- Model / Photo 보기 전환 (3D 실패와 무관하게 동작) ---------- */
+  panels.forEach(function (panel) {
+    var media = panel.querySelector('.equipment-showcase_media');
+    var buttons = Array.prototype.slice.call(panel.querySelectorAll('[data-view-button]'));
+    buttons.forEach(function (button) {
+      button.addEventListener('click', function () {
+        var view = button.getAttribute('data-view-button');
+        media.setAttribute('data-view', view);
+        buttons.forEach(function (item) { item.setAttribute('aria-pressed', item === button); });
+        if (view === 'model') showcase.dispatchEvent(new CustomEvent('modelview'));
+      });
+    });
+  });
+
+  /* 3D를 못 띄우면 사진 보기로 고정하고 전환 버튼을 숨긴다 */
+  function fail() {
+    panels.forEach(function (panel) {
+      panel.querySelector('.equipment-showcase_media').setAttribute('data-view', 'photo');
+      panel.querySelector('.view-toggle').hidden = true;
+    });
+  }
+
+  /* 화면에 가까워지면 그때 만든다 */
+  var io = new IntersectionObserver(function (entries) {
+    if (!entries[0].isIntersecting) return;
+    io.disconnect();
+    if (typeof THREE === 'undefined') { fail(); return; }
+    try { init(); } catch (error) { fail(); }
+  }, { rootMargin: '400px 0px' });
+  io.observe(showcase);
+
+  function init() {
+    var live = document.getElementById('model-live');
+    var spinButton = live.querySelector('[data-model-spin]');
+    var models = {};
+    var spin = !REDUCED;
+    var visible = true;
+    var cam = { theta: .9, phi: 1.1, radius: 44, target: new THREE.Vector3(0, 2.5, 0) };
+    var goal = { theta: .9, phi: 1.1, radius: 44, target: new THREE.Vector3(0, 2.5, 0) };
+    var CAMERA = {
+      trisonic: { theta: .85, phi: 1.12, radius: 42, ty: 2.6 },
+      hypersonic: { theta: .90, phi: 1.08, radius: 47, ty: 2.8 },
+      ballistic: { theta: .95, phi: 1.14, radius: 53, ty: 2.2 }
+    };
+    spinButton.setAttribute('aria-pressed', spin);
+
+    var renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.domElement.className = 'model-live_canvas';
+    renderer.domElement.setAttribute('aria-hidden', 'true');
+    live.insertBefore(renderer.domElement, live.firstChild);
+
+    var scene = new THREE.Scene();
+    var camera = new THREE.PerspectiveCamera(38, 1, .5, 400);
+
+    scene.add(new THREE.HemisphereLight(0xEEF3FA, 0x2A3550, 1.05));
+    var key = new THREE.DirectionalLight(0xffffff, 1.0);
+    key.position.set(26, 34, 22);
+    key.castShadow = true;
+    key.shadow.mapSize.set(1024, 1024);
+    key.shadow.camera.left = -34; key.shadow.camera.right = 34;
+    key.shadow.camera.top = 34; key.shadow.camera.bottom = -34;
+    key.shadow.camera.near = 1; key.shadow.camera.far = 120;
+    scene.add(key);
+    var fill = new THREE.DirectionalLight(0xB9CBE6, .38);
+    fill.position.set(-24, 14, -18);
+    scene.add(fill);
+
+    var grid = new THREE.GridHelper(120, 60, 0x5D7FA8, 0x5D7FA8);
+    grid.material.transparent = true;
+    grid.material.opacity = .28;
+    scene.add(grid);
+    var floor = new THREE.Mesh(new THREE.PlaneGeometry(200, 200), new THREE.ShadowMaterial({ opacity: .22 }));
+    floor.rotation.x = -Math.PI / 2;
+    floor.position.y = -.01;
+    floor.receiveShadow = true;
+    scene.add(floor);
+
+    /* ---------- 재질 · 도형 도우미 ---------- */
+    function M(color, metalness, roughness, extra) {
+      return new THREE.MeshStandardMaterial(Object.assign({ color: color, metalness: metalness, roughness: roughness }, extra || {}));
+    }
+    var mk = {
+      duct: function () { return M(0xC6CED8, .72, .34); },
+      duct2: function () { return M(0xA9B4C2, .78, .40); },
+      tank: function () { return M(0x9DA8B6, .62, .46); },
+      frame: function () { return M(0x66727F, .35, .72); },
+      dark: function () { return M(0x505B68, .45, .62); },
+      model: function () { return M(0xEEF2F6, .28, .45); },
+      hot: function () { return M(0x9A6A5E, .50, .58); },
+      glass: function () { return M(0xA9C3DC, .05, .08, { transparent: true, opacity: .25, side: THREE.DoubleSide, depthWrite: false }); }
+    };
+    function lift(mesh) { mesh.translateY = function (y) { this.position.y += y; return this; }; return mesh; }
+    function cyl(x, len, rN, rP, mat, seg) {
+      var m = new THREE.Mesh(new THREE.CylinderGeometry(rP, rN, len, seg || 36, 1, false), mat);
+      m.rotation.z = -Math.PI / 2; m.position.x = x; m.castShadow = true; m.receiveShadow = true;
+      return lift(m);
+    }
+    function ring(x, r, t, mat) {
+      var m = new THREE.Mesh(new THREE.TorusGeometry(r, t, 10, 40), mat);
+      m.rotation.y = Math.PI / 2; m.position.x = x; m.castShadow = true;
+      return m;
+    }
+    function box(x, y, z, w, h, d, mat) {
+      var m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat);
+      m.position.set(x, y, z); m.castShadow = true; m.receiveShadow = true;
+      return m;
+    }
+    function lathe(x, len, rA, rB, curve, mat) {
+      var pts = [];
+      for (var i = 0; i <= 26; i++) {
+        var t = i / 26;
+        pts.push(new THREE.Vector2(Math.max(rA + (rB - rA) * Math.pow(t, curve), .02), t * len));
+      }
+      var m = new THREE.Mesh(new THREE.LatheGeometry(pts, 48), mat);
+      m.rotation.z = -Math.PI / 2; m.position.x = x; m.castShadow = true; m.receiveShadow = true;
+      return lift(m);
+    }
+    function legs(g, x0, x1, axisY, r, gap) {
+      var mat = mk.frame();
+      for (var x = x0; x <= x1 + .001; x += (gap || 4)) {
+        var h = axisY - r;
+        if (h > .2) g.add(box(x, h / 2, 0, .5, h, 1.8, mat));
+      }
+    }
+    function testModel(x, y, scale, mat) {
+      var g = new THREE.Group();
+      var body = new THREE.Mesh(new THREE.CylinderGeometry(.06, .16, 1.5, 20), mat);
+      body.rotation.z = Math.PI / 2; g.add(body);
+      var nose = new THREE.Mesh(new THREE.ConeGeometry(.16, .7, 20), mat);
+      nose.rotation.z = -Math.PI / 2; nose.position.x = 1.05; g.add(nose);
+      var wing = new THREE.Mesh(new THREE.BoxGeometry(.55, .035, 1.5), mat);
+      wing.position.x = -.25; g.add(wing);
+      var fin = new THREE.Mesh(new THREE.BoxGeometry(.42, .55, .035), mat);
+      fin.position.set(-.6, .28, 0); g.add(fin);
+      g.traverse(function (o) { if (o.isMesh) o.castShadow = true; });
+      g.scale.setScalar(scale); g.position.set(x, y, 0);
+      return g;
+    }
+    function dome(r, x, y, z, rz, mat) {
+      var m = new THREE.Mesh(new THREE.SphereGeometry(r, 24, 16, 0, Math.PI * 2, 0, Math.PI / 2), mat);
+      m.rotation.z = rz; m.position.set(x, y, z); m.castShadow = true;
+      return m;
+    }
+
+    /* ---------- 삼중음속 풍동 ---------- */
+    function buildTrisonic() {
+      var root = new THREE.Group(), AX = 2.6, g, mat;
+
+      /* 고압 공기 저장탱크 */
+      g = new THREE.Group(); mat = mk.tank();
+      [-2.6, 0, 2.6].forEach(function (z) {
+        var t = cyl(-13.5, 9, 1.15, 1.15, mat, 32); t.position.y = 1.6; t.position.z = z; g.add(t);
+        g.add(dome(1.15, -13.5 - 4.5, 1.6, z, Math.PI / 2, mat));
+        g.add(dome(1.15, -13.5 + 4.5, 1.6, z, -Math.PI / 2, mat));
+        [-16.5, -13.5, -10.5].forEach(function (x) { g.add(box(x, .25, z, .7, .5, 2.6, mk.frame())); });
+      });
+      g.add(cyl(-8.6, 2.6, .34, .34, mk.duct2(), 20).translateY(1.6));
+      root.add(g);
+
+      /* 유량 조절 밸브 */
+      g = new THREE.Group(); mat = mk.dark();
+      g.add(box(-6.9, 1.6, 0, 1.5, 1.5, 1.5, mat));
+      g.add(cyl(-6.9, 1.7, .42, .42, mk.duct2(), 24).translateY(1.6));
+      var stem = new THREE.Mesh(new THREE.CylinderGeometry(.09, .09, 1.1, 12), mat);
+      stem.position.set(-6.9, 2.75, 0); g.add(stem);
+      var wheel = new THREE.Mesh(new THREE.TorusGeometry(.42, .07, 8, 28), mat);
+      wheel.rotation.x = Math.PI / 2; wheel.position.set(-6.9, 3.3, 0); g.add(wheel);
+      var pipe = cyl(-5.3, 2.2, .42, .55, mk.duct(), 24); pipe.position.y = 1.6; g.add(pipe);
+      var riser = new THREE.Mesh(new THREE.CylinderGeometry(.55, .55, 1.2, 24), mk.duct());
+      riser.position.set(-4.3, 2.1, 0); riser.castShadow = true; g.add(riser);
+      root.add(g);
+
+      /* 정체실 */
+      g = new THREE.Group();
+      g.add(cyl(-2.6, 4.2, 1.5, 1.5, mk.duct(), 40).translateY(AX));
+      g.add(ring(-4.7, 1.52, .09, mk.duct2()).translateY(AX));
+      g.add(ring(-0.5, 1.52, .09, mk.duct2()).translateY(AX));
+      [-3.6, -2.8, -2.0].forEach(function (x) {
+        var screen = new THREE.Mesh(new THREE.CircleGeometry(1.45, 36), mk.glass());
+        screen.rotation.y = Math.PI / 2; screen.position.set(x, AX, 0); g.add(screen);
+      });
+      legs(g, -4.2, -1.0, AX, 1.5, 3.2);
+      root.add(g);
+
+      /* 가변노즐 */
+      g = new THREE.Group();
+      g.add(lathe(-0.4, 1.9, 1.5, .55, 1.5, mk.duct2()).translateY(AX));
+      g.add(lathe(1.5, 1.1, .55, .8, .8, mk.duct2()).translateY(AX));
+      [-0.35, 0.6].forEach(function (x) {
+        [-1, 1].forEach(function (side) { g.add(box(x, AX + side * 1.25, 0, .7, .22, 1.3, mk.frame())); });
+      });
+      legs(g, .6, .6, AX, .8, 4);
+      root.add(g);
+
+      /* 시험부 · 모형지지 */
+      g = new THREE.Group();
+      g.add(box(3.6, AX, 0, 3.6, 1.9, 1.9, mk.glass()));
+      [1.8, 5.4].forEach(function (x) { g.add(box(x, AX, 0, .22, 2.1, 2.1, mk.frame())); });
+      [1.02, -1.02].forEach(function (y) { g.add(box(3.6, AX + y * .95, 0, 3.4, .14, 2.05, mk.frame())); });
+      var sting = cyl(4.6, 2.0, .12, .12, mk.dark(), 16); sting.position.y = AX; g.add(sting);
+      g.add(testModel(3.3, AX, 1.0, mk.model()));
+      legs(g, 2.2, 5.0, AX, .95, 2.8);
+      root.add(g);
+
+      /* 디퓨저 및 이젝터 */
+      g = new THREE.Group();
+      g.add(lathe(5.6, 4.6, .9, 1.55, 1.0, mk.duct()).translateY(AX));
+      g.add(cyl(11.2, 1.6, 1.55, 1.55, mk.duct(), 32).translateY(AX));
+      g.add(ring(10.4, 1.58, .09, mk.duct2()).translateY(AX));
+      legs(g, 7.0, 11.0, AX, 1.3, 3.0);
+      root.add(g);
+
+      /* 소음저감장치 */
+      g = new THREE.Group(); mat = mk.duct2();
+      var elbow = new THREE.Mesh(new THREE.TorusGeometry(1.6, 1.5, 16, 28, Math.PI / 2), mat);
+      elbow.position.set(12.0, AX + 1.6, 0); elbow.rotation.set(0, Math.PI, Math.PI); elbow.castShadow = true;
+      var tower = new THREE.Mesh(new THREE.CylinderGeometry(1.7, 1.9, 6.4, 32), mat);
+      tower.position.set(13.6, 5.8, 0); tower.castShadow = true;
+      var cap = new THREE.Mesh(new THREE.CylinderGeometry(2.1, 2.1, .4, 32), mk.frame());
+      cap.position.set(13.6, 9.2, 0); cap.castShadow = true;
+      g.add(elbow, tower, cap);
+      for (var i = 0; i < 3; i++) {
+        var band = new THREE.Mesh(new THREE.TorusGeometry(1.78, .07, 8, 36), mk.frame());
+        band.rotation.x = Math.PI / 2; band.position.set(13.6, 4.0 + i * 1.9, 0); g.add(band);
+      }
+      root.add(g);
+
+      return root;
+    }
+
+    /* ---------- 극초음속 풍동 ---------- */
+    function buildHypersonic() {
+      var root = new THREE.Group(), AX = 3.0, g, mat;
+
+      /* 고압 공기 공급부 */
+      g = new THREE.Group(); mat = mk.tank();
+      [-1.6, 1.6].forEach(function (z) {
+        var t = cyl(-14.5, 6.4, .95, .95, mat, 28); t.position.set(-14.5, 1.5, z); g.add(t);
+        g.add(dome(.95, -14.5 - 3.2, 1.5, z, Math.PI / 2, mat));
+        g.add(dome(.95, -14.5 + 3.2, 1.5, z, -Math.PI / 2, mat));
+        [-16.6, -14.5, -12.4].forEach(function (x) { g.add(box(x, .22, z, .6, .44, 1.7, mk.frame())); });
+      });
+      g.add(cyl(-10.6, 2.6, .3, .3, mk.duct2(), 20).translateY(1.5));
+      root.add(g);
+
+      /* 전기히터 */
+      g = new THREE.Group(); mat = mk.hot();
+      var body = new THREE.Mesh(new THREE.CylinderGeometry(1.35, 1.35, 6.2, 32), mat);
+      body.position.set(-8.6, 3.6, 0); body.castShadow = true; g.add(body);
+      var top = new THREE.Mesh(new THREE.SphereGeometry(1.35, 28, 16, 0, Math.PI * 2, 0, Math.PI / 2), mat);
+      top.position.set(-8.6, 6.7, 0); top.castShadow = true; g.add(top);
+      g.add(box(-8.6, .3, 0, 3.4, .6, 3.4, mk.frame()));
+      for (var i = 0; i < 4; i++) {
+        var band = new THREE.Mesh(new THREE.TorusGeometry(1.42, .08, 8, 36), mk.dark());
+        band.rotation.x = Math.PI / 2; band.position.set(-8.6, 1.6 + i * 1.5, 0); g.add(band);
+      }
+      var out = cyl(-7.0, 1.6, .45, .45, mk.duct2(), 20); out.position.y = 6.2; g.add(out);
+      var down = new THREE.Mesh(new THREE.CylinderGeometry(.45, .45, 3.3, 20), mk.duct2());
+      down.position.set(-6.1, 4.6, 0); down.castShadow = true; g.add(down);
+      root.add(g);
+
+      /* 정체실 */
+      g = new THREE.Group();
+      g.add(cyl(-3.9, 2.8, .95, .95, mk.duct(), 32).translateY(AX));
+      g.add(ring(-5.3, .98, .08, mk.duct2()).translateY(AX));
+      g.add(ring(-2.5, .98, .08, mk.duct2()).translateY(AX));
+      var elbow = new THREE.Mesh(new THREE.TorusGeometry(1.0, .45, 14, 24, Math.PI / 2), mk.duct2());
+      elbow.position.set(-6.1, AX, 0); elbow.rotation.set(Math.PI / 2, 0, Math.PI); elbow.castShadow = true; g.add(elbow);
+      legs(g, -4.6, -2.8, AX, .95, 2.0);
+      root.add(g);
+
+      /* 노즐 */
+      g = new THREE.Group();
+      var converge = lathe(-2.4, 1.3, .95, .18, 1.4, mk.duct2()); converge.position.y = AX; g.add(converge);
+      var nozzle = lathe(-1.1, 4.6, .18, 1.75, .55, mk.duct2()); nozzle.position.y = AX; g.add(nozzle);
+      [0.2, 1.8, 3.3].forEach(function (dx) {
+        var r = .18 + (1.75 - .18) * Math.pow(dx / 4.6, .55);
+        g.add(ring(-1.1 + dx, r + .04, .07, mk.frame()).translateY(AX));
+      });
+      legs(g, 2.0, 3.2, AX, 1.5, 2.0);
+      root.add(g);
+
+      /* 진공 시험부 */
+      g = new THREE.Group();
+      var shell = cyl(6.4, 5.2, 2.0, 2.0, mk.glass(), 40); shell.position.y = AX; g.add(shell);
+      g.add(ring(3.8, 2.02, .12, mk.frame()).translateY(AX));
+      g.add(ring(9.0, 2.02, .12, mk.frame()).translateY(AX));
+      g.add(testModel(6.4, AX, .85, mk.model()));
+      g.add(box(6.4, .55, 0, 5.4, 1.1, 4.4, mk.frame()));
+      root.add(g);
+
+      /* 진공탱크 · 진공펌프 */
+      g = new THREE.Group();
+      g.add(lathe(9.1, 3.2, 1.2, 1.9, 1.0, mk.duct()).translateY(AX));
+      var sphere = new THREE.Mesh(new THREE.SphereGeometry(3.1, 36, 24), mk.tank());
+      sphere.position.set(15.6, 3.6, 0); sphere.castShadow = true; g.add(sphere);
+      g.add(cyl(13.0, 2.2, 1.0, 1.0, mk.duct(), 24).translateY(AX));
+      [[-2, -2], [2, -2], [-2, 2], [2, 2]].forEach(function (p) { g.add(box(15.6 + p[0], .7, p[1], .4, 1.4, .4, mk.frame())); });
+      g.add(box(19.8, .9, 0, 2.2, 1.8, 2.2, mk.dark()));
+      g.add(cyl(18.4, 1.4, .45, .45, mk.duct2(), 20).translateY(1.6));
+      root.add(g);
+
+      return root;
+    }
+
+    /* ---------- 발리스틱 레인지 ---------- */
+    function buildBallistic() {
+      var root = new THREE.Group(), AX = 2.0, g;
+
+      /* 1단 · 펌프튜브 */
+      g = new THREE.Group();
+      g.add(cyl(-19.0, 3.4, .75, .75, mk.dark(), 28).translateY(AX));
+      g.add(ring(-17.4, .82, .12, mk.frame()).translateY(AX));
+      g.add(cyl(-21.0, .6, .9, .9, mk.frame(), 24).translateY(AX));
+      g.add(cyl(-13.6, 7.2, .6, .6, mk.duct2(), 28).translateY(AX));
+      legs(g, -20.0, -10.6, AX, .6, 2.4);
+      root.add(g);
+
+      /* 발사부 */
+      g = new THREE.Group();
+      g.add(lathe(-9.9, 1.6, .6, .22, 1.6, mk.duct2()).translateY(AX));
+      g.add(cyl(-9.0, 1.2, .9, .9, mk.frame(), 24).translateY(AX));
+      g.add(cyl(-5.4, 6.0, .2, .2, mk.duct(), 20).translateY(AX));
+      for (var i = 0; i < 4; i++) g.add(ring(-7.8 + i * 1.7, .3, .09, mk.frame()).translateY(AX));
+      legs(g, -8.2, -2.8, AX, .2, 2.7);
+      root.add(g);
+
+      /* 블라스트 탱크 */
+      g = new THREE.Group();
+      var tank = cyl(-1.0, 3.2, 1.5, 1.5, mk.duct(), 32); tank.position.y = AX; g.add(tank);
+      g.add(ring(-2.6, 1.55, .12, mk.frame()).translateY(AX));
+      g.add(ring(0.6, 1.55, .12, mk.frame()).translateY(AX));
+      var cone = lathe(0.6, 1.4, 1.5, .8, 1.0, mk.duct2()); cone.position.y = AX; g.add(cone);
+      g.add(box(-1.0, .35, 0, 2.6, .7, 3.4, mk.frame()));
+      root.add(g);
+
+      /* 자유비행 시험부 */
+      g = new THREE.Group();
+      var tube = cyl(9.5, 16.0, 1.15, 1.15, mk.glass(), 40); tube.position.y = AX; g.add(tube);
+      for (var k = 0; k < 5; k++) {
+        var x = 3.0 + k * 3.4;
+        g.add(ring(x, 1.2, .13, mk.frame()).translateY(AX));
+        g.add(box(x, AX + 1.7, 0, .7, .7, .7, mk.dark()));
+        g.add(box(x, AX - 1.7, 0, .7, .7, .7, mk.dark()));
+        g.add(box(x, AX, 1.7, .6, .6, .6, mk.duct2()));
+      }
+      legs(g, 2.6, 16.2, AX, 1.15, 3.4);
+      var projectile = new THREE.Mesh(new THREE.ConeGeometry(.12, .42, 16), mk.model());
+      projectile.rotation.z = -Math.PI / 2; projectile.position.set(8.0, AX, 0); g.add(projectile);
+      root.add(g);
+
+      /* 표적부 · 포집 탱크 */
+      g = new THREE.Group();
+      g.add(cyl(19.6, 3.4, 1.7, 1.7, mk.duct2(), 32).translateY(AX));
+      g.add(ring(17.9, 1.75, .13, mk.frame()).translateY(AX));
+      g.add(dome(1.7, 21.3, AX, 0, -Math.PI / 2, mk.duct2()));
+      g.add(box(18.6, AX, 0, .4, 1.6, 1.6, mk.hot()));
+      g.add(box(19.6, .4, 0, 3.0, .8, 3.8, mk.frame()));
+      root.add(g);
+
+      return root;
+    }
+
+    var BUILDERS = { trisonic: buildTrisonic, hypersonic: buildHypersonic, ballistic: buildBallistic };
+
+    /* ---------- 크기 · 거리 보정 ---------- */
+    var lastFit = 0;
+    function slotRect() { return panels[step].querySelector('.model-stage_slot').getBoundingClientRect(); }
+    function fitMul() {
+      var r = slotRect();
+      var aspect = r.width / Math.max(1, r.height);
+      return aspect >= 1.3 ? 1 : Math.min(1.7, 1.3 / Math.max(.45, aspect));
+    }
+    function clampRadius() { goal.radius = Math.max(9, Math.min(95, goal.radius)); }
+    function resize() {
+      var r = slotRect();
+      if (!r.width || !r.height) return;
+      renderer.setSize(r.width, r.height, false);
+      camera.aspect = r.width / r.height;
+      camera.updateProjectionMatrix();
+      var f = fitMul();
+      if (lastFit && f !== lastFit) { goal.radius *= f / lastFit; clampRadius(); }
+      lastFit = f;
+    }
+
+    /* ---------- 설비 전환 ---------- */
+    function show(i) {
+      step = i;
+      var slot = panels[i].querySelector('.model-stage_slot');
+      if (live.parentNode !== slot) slot.appendChild(live);
+      var id = panels[i].getAttribute('data-model');
+      if (!models[id]) { models[id] = BUILDERS[id](); scene.add(models[id]); }
+      Object.keys(models).forEach(function (k) { models[k].visible = k === id; });
+      var c = CAMERA[id];
+      goal.theta = c.theta; goal.phi = c.phi; goal.radius = c.radius * fitMul();
+      goal.target.set(0, c.ty, 0);
+      cam.theta = goal.theta; cam.phi = goal.phi; cam.radius = goal.radius; cam.target.copy(goal.target);
+      resize();
+    }
+    showcase.querySelector('[role="tablist"]').addEventListener('tabchange', function (event) {
+      show(panels.indexOf(event.detail));
+    });
+    showcase.addEventListener('modelview', resize);
+
+    /* ---------- 조작 : 드래그 회전 · 두 손가락 확대 · Ctrl/⌘ + 휠 확대 ---------- */
+    var canvas = renderer.domElement, pointers = {}, last = null, pinch = 0;
+    function distance(a, b) { var x = a.x - b.x, y = a.y - b.y; return Math.sqrt(x * x + y * y); }
+    function stopSpin() { spin = false; spinButton.setAttribute('aria-pressed', 'false'); }
+    canvas.addEventListener('pointerdown', function (e) {
+      canvas.setPointerCapture(e.pointerId);
+      pointers[e.pointerId] = { x: e.clientX, y: e.clientY };
+      last = { x: e.clientX, y: e.clientY };
+      stopSpin();
+      var ids = Object.keys(pointers);
+      if (ids.length === 2) pinch = distance(pointers[ids[0]], pointers[ids[1]]);
+    });
+    canvas.addEventListener('pointermove', function (e) {
+      if (!pointers[e.pointerId]) return;
+      var ids = Object.keys(pointers);
+      if (ids.length >= 2) {
+        pointers[e.pointerId] = { x: e.clientX, y: e.clientY };
+        var d = distance(pointers[ids[0]], pointers[ids[1]]);
+        if (pinch > 0) { goal.radius *= pinch / d; clampRadius(); }
+        pinch = d;
+        return;
+      }
+      goal.theta -= (e.clientX - last.x) * .006;
+      goal.phi = Math.max(.18, Math.min(1.52, goal.phi - (e.clientY - last.y) * .005));
+      last = { x: e.clientX, y: e.clientY };
+      pointers[e.pointerId] = last;
+    });
+    function release(e) { delete pointers[e.pointerId]; pinch = 0; }
+    canvas.addEventListener('pointerup', release);
+    canvas.addEventListener('pointercancel', release);
+    canvas.addEventListener('wheel', function (e) {
+      if (!(e.ctrlKey || e.metaKey)) return; /* 그냥 휠은 페이지 스크롤에 양보한다 */
+      e.preventDefault();
+      goal.radius *= 1 + Math.sign(e.deltaY) * .1;
+      clampRadius();
+    }, { passive: false });
+
+    live.querySelector('[data-model-reset]').addEventListener('click', function () { show(step); });
+    spinButton.addEventListener('click', function () {
+      spin = !spin;
+      spinButton.setAttribute('aria-pressed', spin);
+    });
+
+    /* ---------- 그리기 — 화면 밖이거나 사진 보기일 때는 쉰다 ---------- */
+    new IntersectionObserver(function (entries) { visible = entries[0].isIntersecting; }).observe(showcase);
+    window.addEventListener('resize', resize, { passive: true });
+    function modelView() {
+      return panels[step].querySelector('.equipment-showcase_media').getAttribute('data-view') !== 'photo';
+    }
+    function tick() {
+      requestAnimationFrame(tick);
+      if (!visible || !modelView()) return;
+      if (spin) goal.theta += .0016;
+      cam.theta += (goal.theta - cam.theta) * .1;
+      cam.phi += (goal.phi - cam.phi) * .1;
+      cam.radius += (goal.radius - cam.radius) * .08;
+      cam.target.lerp(goal.target, .08);
+      var sp = Math.sin(cam.phi);
+      camera.position.set(
+        cam.target.x + cam.radius * sp * Math.sin(cam.theta),
+        cam.target.y + cam.radius * Math.cos(cam.phi),
+        cam.target.z + cam.radius * sp * Math.cos(cam.theta));
+      camera.lookAt(cam.target);
+      renderer.render(scene, camera);
+    }
+
+    show(step);
+    panels.forEach(function (panel) { panel.querySelector('.model-stage_status').hidden = true; });
+    tick();
+  }
+})();
+</script>
+</body>
+</html>
