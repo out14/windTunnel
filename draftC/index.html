@@ -490,7 +490,7 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 .visual_title {
   margin-top: 14px;
   /* font-size: clamp(28px, 2.6vw, 42px); */
-  font-size: clamp(28px, 4vw, 42px);
+  font-size: clamp(28px, 48px, 48px);
   font-weight: 700;
   line-height: 1.35;
   text-shadow: 0 0 70px rgb(0, 80, 117);
@@ -672,24 +672,6 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   font-size: 14px;
   color: var(--text-3);
 }
-.notice-board_plus {
-  position: relative;
-  flex: none;
-  width: 16px;
-  height: 16px;
-}
-.notice-board_plus::before,
-.notice-board_plus::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 0;
-  width: 100%;
-  height: 2px;
-  margin-top: -1px;
-  background: var(--blue-600);
-}
-.notice-board_plus::after { transform: rotate(90deg); }
 
 .quick-links {
   display: flex;
@@ -846,7 +828,7 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 .equipment-showcase_tab {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 10px;
   padding: 17px;
   /* border: 1px solid var(--white); */
@@ -861,8 +843,20 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 }
 .equipment-showcase_tab[aria-selected='true'] {
   /* border-color: var(--navy-700); */
-  background: var(--border-2);
-  border-radius: 5px;
+  /* background: var(--border-2);
+  border-radius: 5px; */
+}
+/* 선택된 탭 — 오른쪽 끝에 '>' 표시 */
+.equipment-showcase_tab[aria-selected='true']::after {
+  content: '';
+  flex: none;
+  width: 9px;
+  height: 9px;
+  margin-left: auto;
+  margin-right: 4px;
+  border-top: 2px solid currentColor;
+  border-right: 2px solid currentColor;
+  transform: rotate(45deg);
 }
 .equipment-showcase_tab-number {
   font-family: var(--mono);
@@ -1016,7 +1010,7 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   flex-direction: column;
   padding: 90px 46px 46px;
   border-radius: 0 var(--radius-md) var(--radius-md) 0;
-  background:rgba(255,255,255,0.1);
+  background:rgba(0,0,0,0.6);
   /* background:
     radial-gradient(circle at 30% 110%, rgba(93, 175, 218, .22), transparent 55%),
     var(--navy-700); */
@@ -1080,7 +1074,7 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   position: relative;
   z-index: 0;
   /* margin-top: 25px; */
-  margin-top: 100px;
+  padding-top: 100px;
   padding-bottom: 100px;
 }
 /* 흐르는 곡선 장식 (assets/decor-wave-lines.svg — 원본의 흰 바탕 사각형은 빼고 투명하게 둠)
@@ -1090,9 +1084,10 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   position: absolute;
   z-index: -1;
   right: 0;
-  bottom: 20px;
-  width: 42%;
-  height: 500px;
+  top: 0px;
+  width: 80%;
+  height: 50vw;
+  opacity: 0.6;
   background: url('assets/decor-wave-lines.svg') right center / cover no-repeat;
   -webkit-mask: linear-gradient(90deg, transparent 0%, #000 35%);
   mask: linear-gradient(90deg, transparent 0%, #000 35%);
@@ -1402,7 +1397,7 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 }
 .app-footer_policy-link { transition: color .2s; }
 .app-footer_policy-link:hover { color: var(--white); }
-.app-footer_policy-link--strong { font-weight: 700; color: var(--blue-300); }
+.app-footer_policy-link--strong { font-weight: 700; color: var(--white); }
 .app-footer_info {
   display: flex;
   align-items: flex-start;
@@ -1578,7 +1573,6 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   .notice-board_tab { font-size: 15px; }
   .notice-board_row { flex-wrap: wrap; gap: 6px 10px; }
   .notice-board_title { flex-basis: 100%; order: -1; }
-  .notice-board_plus { display: none; }
   .quick-links_item { gap: 8px; padding: 12px; font-size: 13px; }
   .quick-links_svg { width: 24px; height: 24px; }
   .gallery-panel_head { gap: 12px; }
@@ -1777,22 +1771,22 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 
           <!-- 목록 글은 Next 개발 서버의 예시 데이터(api/mocks)와 같다 — 실제 공지가 아니다 -->
           <ul class="notice-board_list" role="tabpanel" id="notice-panel-all" aria-labelledby="notice-tab-all">
-            <li><a class="notice-board_row" href="#"><span class="notice-board_category notice-board_category--pinned">중요</span><span class="notice-board_title">2026년 하반기 풍동 시험 설비 이용 신청 안내</span><span class="notice-board_date">2026-10-07</span><span class="notice-board_plus" aria-hidden="true"></span></a></li>
-            <li><a class="notice-board_row" href="#"><span class="notice-board_category notice-board_category--event">행사</span><span class="notice-board_title">하반기 시험 설비 이용 설명회</span><span class="notice-board_date">2026-10-14</span><span class="notice-board_plus" aria-hidden="true"></span></a></li>
-            <li><a class="notice-board_row" href="#"><span class="notice-board_category">공지</span><span class="notice-board_title">홈페이지 개편 안내</span><span class="notice-board_date">2026-10-01</span><span class="notice-board_plus" aria-hidden="true"></span></a></li>
-            <li><a class="notice-board_row" href="#"><span class="notice-board_category">공지</span><span class="notice-board_title">극초음속 풍동 정기 점검에 따른 운용 일정 변경</span><span class="notice-board_date">2026-09-24</span><span class="notice-board_plus" aria-hidden="true"></span></a></li>
+            <li><a class="notice-board_row" href="#"><span class="notice-board_category notice-board_category--pinned">중요</span><span class="notice-board_title">2026년 하반기 풍동 시험 설비 이용 신청 안내</span><span class="notice-board_date">2026-10-07</span></a></li>
+            <li><a class="notice-board_row" href="#"><span class="notice-board_category notice-board_category--event">행사</span><span class="notice-board_title">하반기 시험 설비 이용 설명회</span><span class="notice-board_date">2026-10-14</span></a></li>
+            <li><a class="notice-board_row" href="#"><span class="notice-board_category">공지</span><span class="notice-board_title">홈페이지 개편 안내</span><span class="notice-board_date">2026-10-01</span></a></li>
+            <li><a class="notice-board_row" href="#"><span class="notice-board_category">공지</span><span class="notice-board_title">극초음속 풍동 정기 점검에 따른 운용 일정 변경</span><span class="notice-board_date">2026-09-24</span></a></li>
           </ul>
           <ul class="notice-board_list" role="tabpanel" id="notice-panel-notice" aria-labelledby="notice-tab-notice" hidden>
-            <li><a class="notice-board_row" href="#"><span class="notice-board_category notice-board_category--pinned">중요</span><span class="notice-board_title">2026년 하반기 풍동 시험 설비 이용 신청 안내</span><span class="notice-board_date">2026-10-07</span><span class="notice-board_plus" aria-hidden="true"></span></a></li>
-            <li><a class="notice-board_row" href="#"><span class="notice-board_title">홈페이지 개편 안내</span><span class="notice-board_date">2026-10-01</span><span class="notice-board_plus" aria-hidden="true"></span></a></li>
-            <li><a class="notice-board_row" href="#"><span class="notice-board_title">극초음속 풍동 정기 점검에 따른 운용 일정 변경</span><span class="notice-board_date">2026-09-24</span><span class="notice-board_plus" aria-hidden="true"></span></a></li>
-            <li><a class="notice-board_row" href="#"><span class="notice-board_title">추석 연휴 기간 센터 운영 안내</span><span class="notice-board_date">2026-09-18</span><span class="notice-board_plus" aria-hidden="true"></span></a></li>
+            <li><a class="notice-board_row" href="#"><span class="notice-board_category notice-board_category--pinned">중요</span><span class="notice-board_title">2026년 하반기 풍동 시험 설비 이용 신청 안내</span><span class="notice-board_date">2026-10-07</span></a></li>
+            <li><a class="notice-board_row" href="#"><span class="notice-board_title">홈페이지 개편 안내</span><span class="notice-board_date">2026-10-01</span></a></li>
+            <li><a class="notice-board_row" href="#"><span class="notice-board_title">극초음속 풍동 정기 점검에 따른 운용 일정 변경</span><span class="notice-board_date">2026-09-24</span></a></li>
+            <li><a class="notice-board_row" href="#"><span class="notice-board_title">추석 연휴 기간 센터 운영 안내</span><span class="notice-board_date">2026-09-18</span></a></li>
           </ul>
           <ul class="notice-board_list" role="tabpanel" id="notice-panel-event" aria-labelledby="notice-tab-event" hidden>
-            <li><a class="notice-board_row" href="#"><span class="notice-board_category notice-board_category--event">예정</span><span class="notice-board_title">하반기 시험 설비 이용 설명회</span><span class="notice-board_date">2026-10-14</span><span class="notice-board_plus" aria-hidden="true"></span></a></li>
-            <li><a class="notice-board_row" href="#"><span class="notice-board_category notice-board_category--event">예정</span><span class="notice-board_title">시험동 신규 출입자 안전 교육</span><span class="notice-board_date">2026-10-14</span><span class="notice-board_plus" aria-hidden="true"></span></a></li>
-            <li><a class="notice-board_row" href="#"><span class="notice-board_category notice-board_category--event">예정</span><span class="notice-board_title">한국항공우주학회 추계학술대회 참가 및 센터 홍보 부스 운영</span><span class="notice-board_date">2026-10-21</span><span class="notice-board_plus" aria-hidden="true"></span></a></li>
-            <li><a class="notice-board_row" href="#"><span class="notice-board_category notice-board_category--event">예정</span><span class="notice-board_title">통합 풍동 시설 공개 주간</span><span class="notice-board_date">2026-10-29</span><span class="notice-board_plus" aria-hidden="true"></span></a></li>
+            <li><a class="notice-board_row" href="#"><span class="notice-board_category notice-board_category--event">예정</span><span class="notice-board_title">하반기 시험 설비 이용 설명회</span><span class="notice-board_date">2026-10-14</span></a></li>
+            <li><a class="notice-board_row" href="#"><span class="notice-board_category notice-board_category--event">예정</span><span class="notice-board_title">시험동 신규 출입자 안전 교육</span><span class="notice-board_date">2026-10-14</span></a></li>
+            <li><a class="notice-board_row" href="#"><span class="notice-board_category notice-board_category--event">예정</span><span class="notice-board_title">한국항공우주학회 추계학술대회 참가 및 센터 홍보 부스 운영</span><span class="notice-board_date">2026-10-21</span></a></li>
+            <li><a class="notice-board_row" href="#"><span class="notice-board_category notice-board_category--event">예정</span><span class="notice-board_title">통합 풍동 시설 공개 주간</span><span class="notice-board_date">2026-10-29</span></a></li>
           </ul>
         </div>
 
