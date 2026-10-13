@@ -37,7 +37,9 @@
   /* 보더 컬러 */
   --border:rgba(0,0,0,0.2);
   --border-2:rgba(255,255,255,0.3);
-  --border-3:#f5f5f5;
+  /* --border-3:#f5f5f5; */
+  --border-3:#E5E7EB;
+  
 
   /* 글자 */
   --text: #222;
@@ -62,6 +64,9 @@
   --radius-lg: 40px;
   --radius-md: 20px;
   --ease-out: cubic-bezier(0.2, 0.7, 0.3, 1);
+
+  /* 키보드 포커스 테두리 (어두운 구역은 아래 :focus-visible 옆에서 blue-400으로 바꾼다) */
+  --focus: var(--blue-600);
 }
 
 /* ---------- 리셋 ---------- */
@@ -81,7 +86,15 @@ ul, ol { padding: 0; list-style: none; }
 a { color: inherit; text-decoration: none; }
 img { display: block; max-width: 100%; height: auto; }
 button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
-:focus-visible { outline: 2px solid var(--blue-400); outline-offset: 2px; }
+/* 포커스 테두리 — 흰 바탕은 blue-600(4.8:1), 어두운 구역은 blue-400. 둘 다 배경 대비 3:1 이상 */
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.app-header,
+.sitemap,
+.visual,
+.gallery-panel,
+.equipment-showcase,
+.location-info,
+.app-footer { --focus: var(--blue-400); }
 .visually-hidden {
   position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0;
   overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
@@ -131,6 +144,7 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 .section-title--dark { color: var(--on-dark); }
 /* .section-title--light { color: var(--heading-light); } */
 .section-title--light { color: var(--navy-900); }
+.section-title--light .section-title_eyebrow { color: var(--blue-600); } /* 흰 바탕 대비 — 어두운 구역은 blue-300 그대로 */
 .section-title_eyebrow {
   font-size: 18px;
   font-weight: 400;
@@ -151,7 +165,8 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 .flow-text_track {
   display: flex;
   width: max-content;
-  animation: flow-text 40s linear infinite;
+  /* 저절로 흐르지 않고 스크롤한 만큼만 움직인다 (스크립트가 transform을 준다) — WCAG 2.2.2 대상에서 빠진다 */
+  will-change: transform;
 }
 .flow-text_word {
   flex: none;
@@ -165,7 +180,6 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   /* color: rgba(0, 0, 0, .07); */
   color: #f5f5f5;
 }
-@keyframes flow-text { to { transform: translateX(-50%); } }
 
 /* ---------- 헤더 ---------- */
 .app-header {
@@ -274,6 +288,9 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 .gnb:focus-within .gnb_backdrop { height: var(--gnb-drop-h); }
 .gnb:hover .gnb_backdrop,
 .gnb:focus-within .gnb_backdrop { border-top: 1px solid var(--hair-dark); }
+/* Esc로 닫은 상태 — 마우스가 메뉴를 벗어나거나 포커스가 다시 들어오면 풀린다 (WCAG 1.4.13) */
+.gnb.is-dismissed .gnb_sub,
+.gnb.is-dismissed .gnb_backdrop { height: 0; border-top: 0; }
 
 .header-shortcut {
   display: inline-flex;
@@ -591,11 +608,17 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   /* box-shadow: 0 10px 30px rgba(0, 19, 43, .08); */
   border:1px solid var(--border);
 }
-.notice-board_tabs {
+/* 탭 줄 — 탭 목록(tablist)에는 탭만 두고, 더보기 링크는 그 옆 형제로 둔다 */
+.notice-board_head {
   display: flex;
   align-items: stretch;
   margin:0 20px;
   border-bottom: 1px solid var(--border);
+}
+.notice-board_tabs {
+  display: flex;
+  align-items: stretch;
+  min-width: 0; /* 좁은 폭에서 탭(width:120px)이 예전처럼 줄어들 수 있게 */
 }
 .notice-board_tab {
   position: relative;
@@ -612,9 +635,9 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 .notice-board_tab:first-child { border-radius: var(--radius-md) 0 0 0; }
 .notice-board_tab[aria-selected='true'] {
   z-index: 1;
-  color: var(--blue-300);
+  color: var(--blue-600); /* 흰 바탕 4.5:1 이상 — blue-300은 2.89:1 */
   background: var(--white);
-  border-bottom: 3px solid var(--blue-300);
+  border-bottom: 3px solid var(--blue-600);
 }
 /* .notice-board_tab[aria-selected='true']::after {
   content: '';
@@ -1129,7 +1152,6 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   flex-direction: column;
   min-width: 0;
   padding: 50px 40px;
-  overflow: hidden;
   border-radius: var(--radius-md);
   color: var(--on-dark);
   background: var(--navy-800) center / cover no-repeat;
@@ -1140,8 +1162,10 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   position: absolute;
   z-index: -1;
   inset: 0;
-  background: linear-gradient(165deg, rgba(0, 19, 43, .25) 0%, rgba(0, 19, 43, .62) 45%, rgba(0, 19, 43, .9) 100%);
-  opacity: .7;
+  border-radius: inherit;
+  /* 글자가 놓이는 위쪽을 진하게 — 사진이 밝아도 글자 대비 4.5:1 이상 (평소 .85 → 호버 1) */
+  background: linear-gradient(180deg, rgba(0, 19, 43, .9) 0%, rgba(0, 19, 43, .8) 55%, rgba(0, 19, 43, .6) 100%);
+  opacity: .85;
   transition: opacity .3s;
 }
 .facility-card:hover::before { opacity: 1; }
@@ -1185,8 +1209,8 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 }
 .facility-card_eyebrow {
   font-size: 15px;
-  font-weight: 300;
-  color: var(--blue-300);
+  font-weight: 400;
+  color: var(--sky-200); /* 사진 위 대비 — blue-300은 1~2:1로 읽히지 않았다 */
   text-shadow: 0 0 10px rgba(0, 0, 0, .2);
 }
 .facility-card_title {
@@ -1362,6 +1386,8 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   transition: border-color .2s;
 }
 .family-sites_link:hover { border-color: var(--blue-600); }
+/* 보는 칸(viewport)이 넘침을 잘라 내므로 포커스 테두리는 칸 안쪽에 그린다 */
+.family-sites_link:focus-visible { outline-offset: -3px; }
 .family-sites_logo {
   max-width: 100%;
   max-height: 44px;
@@ -1494,7 +1520,17 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 }
 
 @media screen and (max-width: 1024px) {
-  .family-sites_track { --visible: 3; }
+  /* 반응형에서는 한 줄로 두고 손가락으로 밀어 넘긴다 (자동 재생 없음).
+     --visible을 소수로 줘서 다음 로고가 반쯤 보이게 해 밀 수 있다는 걸 알린다 */
+  .family-sites_viewport {
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+  }
+  .family-sites_viewport::-webkit-scrollbar { display: none; }
+  .family-sites_track { --visible: 3.5; flex-wrap: nowrap; }
+  .family-sites_item { scroll-snap-align: start; }
   .gnb, .header-shortcut { display: none; }
   .app-header_bar { justify-content: space-between; }
 
@@ -1522,7 +1558,8 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   .facility-field_cards { flex-wrap: wrap; }
   .facility-field_column { display: contents; }
   .facility-card--large,
-  .facility-card--small { flex: 0 0 calc(50% - 5px); aspect-ratio: 4 / 3; min-height: 0; }
+  /* min-height를 auto로 둬야 글이 길 때 4:3보다 길어진다 (고정값이면 글이 넘쳐 잘린다) */
+  .facility-card--small { flex: 0 0 calc(50% - 5px); aspect-ratio: 4 / 3; min-height: auto; }
   .facility-field::after { display: none; }
 
   .location_layout { flex-direction: column; }
@@ -1554,7 +1591,6 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   .model-live_hint { display: none; }
   .equipment-showcase_body { padding: 34px 26px 28px; border-radius: 0 0 var(--radius-md) var(--radius-md); }
 
-  .facility-card { min-height: 280px; }
 
   .location { padding-bottom: 70px; }
   .location-map { min-height: 300px; }
@@ -1563,7 +1599,7 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 }
 
 @media screen and (max-width: 480px) {
-  .family-sites_track { --visible: 2; }
+  .family-sites_track { --visible: 2.5; }
   .lang-switcher { display: none; }
 
   .visual { height: 520px; }
@@ -1762,32 +1798,40 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
       <div class="news-panel_main">
         <div class="notice-board">
           <h2 class="visually-hidden" id="news-title">센터 소식</h2>
-          <div class="notice-board_tabs" role="tablist" aria-label="센터 소식 분류">
-            <button class="notice-board_tab" type="button" role="tab" id="notice-tab-all" aria-controls="notice-panel-all" aria-selected="true">전체</button>
-            <button class="notice-board_tab" type="button" role="tab" id="notice-tab-notice" aria-controls="notice-panel-notice" aria-selected="false" tabindex="-1">공지사항</button>
-            <button class="notice-board_tab" type="button" role="tab" id="notice-tab-event" aria-controls="notice-panel-event" aria-selected="false" tabindex="-1">행사</button>
+          <div class="notice-board_head">
+            <div class="notice-board_tabs" role="tablist" aria-label="센터 소식 분류">
+              <button class="notice-board_tab" type="button" role="tab" id="notice-tab-all" aria-controls="notice-panel-all" aria-selected="true">전체</button>
+              <button class="notice-board_tab" type="button" role="tab" id="notice-tab-notice" aria-controls="notice-panel-notice" aria-selected="false" tabindex="-1">공지사항</button>
+              <button class="notice-board_tab" type="button" role="tab" id="notice-tab-event" aria-controls="notice-panel-event" aria-selected="false" tabindex="-1">행사</button>
+            </div>
             <a class="notice-board_more more-link more-link--dark" href="#">더보기<span class="visually-hidden"> 센터 소식 전체</span></a>
           </div>
 
           <!-- 목록 글은 Next 개발 서버의 예시 데이터(api/mocks)와 같다 — 실제 공지가 아니다 -->
-          <ul class="notice-board_list" role="tabpanel" id="notice-panel-all" aria-labelledby="notice-tab-all">
-            <li><a class="notice-board_row" href="#"><span class="notice-board_category notice-board_category--pinned">중요</span><span class="notice-board_title">2026년 하반기 풍동 시험 설비 이용 신청 안내</span><span class="notice-board_date">2026-10-07</span></a></li>
-            <li><a class="notice-board_row" href="#"><span class="notice-board_category notice-board_category--event">행사</span><span class="notice-board_title">하반기 시험 설비 이용 설명회</span><span class="notice-board_date">2026-10-14</span></a></li>
-            <li><a class="notice-board_row" href="#"><span class="notice-board_category">공지</span><span class="notice-board_title">홈페이지 개편 안내</span><span class="notice-board_date">2026-10-01</span></a></li>
-            <li><a class="notice-board_row" href="#"><span class="notice-board_category">공지</span><span class="notice-board_title">극초음속 풍동 정기 점검에 따른 운용 일정 변경</span><span class="notice-board_date">2026-09-24</span></a></li>
-          </ul>
-          <ul class="notice-board_list" role="tabpanel" id="notice-panel-notice" aria-labelledby="notice-tab-notice" hidden>
-            <li><a class="notice-board_row" href="#"><span class="notice-board_category notice-board_category--pinned">중요</span><span class="notice-board_title">2026년 하반기 풍동 시험 설비 이용 신청 안내</span><span class="notice-board_date">2026-10-07</span></a></li>
-            <li><a class="notice-board_row" href="#"><span class="notice-board_title">홈페이지 개편 안내</span><span class="notice-board_date">2026-10-01</span></a></li>
-            <li><a class="notice-board_row" href="#"><span class="notice-board_title">극초음속 풍동 정기 점검에 따른 운용 일정 변경</span><span class="notice-board_date">2026-09-24</span></a></li>
-            <li><a class="notice-board_row" href="#"><span class="notice-board_title">추석 연휴 기간 센터 운영 안내</span><span class="notice-board_date">2026-09-18</span></a></li>
-          </ul>
-          <ul class="notice-board_list" role="tabpanel" id="notice-panel-event" aria-labelledby="notice-tab-event" hidden>
-            <li><a class="notice-board_row" href="#"><span class="notice-board_category notice-board_category--event">예정</span><span class="notice-board_title">하반기 시험 설비 이용 설명회</span><span class="notice-board_date">2026-10-14</span></a></li>
-            <li><a class="notice-board_row" href="#"><span class="notice-board_category notice-board_category--event">예정</span><span class="notice-board_title">시험동 신규 출입자 안전 교육</span><span class="notice-board_date">2026-10-14</span></a></li>
-            <li><a class="notice-board_row" href="#"><span class="notice-board_category notice-board_category--event">예정</span><span class="notice-board_title">한국항공우주학회 추계학술대회 참가 및 센터 홍보 부스 운영</span><span class="notice-board_date">2026-10-21</span></a></li>
-            <li><a class="notice-board_row" href="#"><span class="notice-board_category notice-board_category--event">예정</span><span class="notice-board_title">통합 풍동 시설 공개 주간</span><span class="notice-board_date">2026-10-29</span></a></li>
-          </ul>
+          <div class="notice-board_panel" role="tabpanel" id="notice-panel-all" aria-labelledby="notice-tab-all">
+            <ul class="notice-board_list">
+              <li><a class="notice-board_row" href="#"><span class="notice-board_category notice-board_category--pinned">중요</span><span class="notice-board_title">2026년 하반기 풍동 시험 설비 이용 신청 안내</span><span class="notice-board_date">2026-10-07</span></a></li>
+              <li><a class="notice-board_row" href="#"><span class="notice-board_category notice-board_category--event">행사</span><span class="notice-board_title">하반기 시험 설비 이용 설명회</span><span class="notice-board_date">2026-10-14</span></a></li>
+              <li><a class="notice-board_row" href="#"><span class="notice-board_category">공지</span><span class="notice-board_title">홈페이지 개편 안내</span><span class="notice-board_date">2026-10-01</span></a></li>
+              <li><a class="notice-board_row" href="#"><span class="notice-board_category">공지</span><span class="notice-board_title">극초음속 풍동 정기 점검에 따른 운용 일정 변경</span><span class="notice-board_date">2026-09-24</span></a></li>
+            </ul>
+          </div>
+          <div class="notice-board_panel" role="tabpanel" id="notice-panel-notice" aria-labelledby="notice-tab-notice" hidden>
+            <ul class="notice-board_list">
+              <li><a class="notice-board_row" href="#"><span class="notice-board_category notice-board_category--pinned">중요</span><span class="notice-board_title">2026년 하반기 풍동 시험 설비 이용 신청 안내</span><span class="notice-board_date">2026-10-07</span></a></li>
+              <li><a class="notice-board_row" href="#"><span class="notice-board_title">홈페이지 개편 안내</span><span class="notice-board_date">2026-10-01</span></a></li>
+              <li><a class="notice-board_row" href="#"><span class="notice-board_title">극초음속 풍동 정기 점검에 따른 운용 일정 변경</span><span class="notice-board_date">2026-09-24</span></a></li>
+              <li><a class="notice-board_row" href="#"><span class="notice-board_title">추석 연휴 기간 센터 운영 안내</span><span class="notice-board_date">2026-09-18</span></a></li>
+            </ul>
+          </div>
+          <div class="notice-board_panel" role="tabpanel" id="notice-panel-event" aria-labelledby="notice-tab-event" hidden>
+            <ul class="notice-board_list">
+              <li><a class="notice-board_row" href="#"><span class="notice-board_category notice-board_category--event">예정</span><span class="notice-board_title">하반기 시험 설비 이용 설명회</span><span class="notice-board_date">2026-10-14</span></a></li>
+              <li><a class="notice-board_row" href="#"><span class="notice-board_category notice-board_category--event">예정</span><span class="notice-board_title">시험동 신규 출입자 안전 교육</span><span class="notice-board_date">2026-10-14</span></a></li>
+              <li><a class="notice-board_row" href="#"><span class="notice-board_category notice-board_category--event">예정</span><span class="notice-board_title">한국항공우주학회 추계학술대회 참가 및 센터 홍보 부스 운영</span><span class="notice-board_date">2026-10-21</span></a></li>
+              <li><a class="notice-board_row" href="#"><span class="notice-board_category notice-board_category--event">예정</span><span class="notice-board_title">통합 풍동 시설 공개 주간</span><span class="notice-board_date">2026-10-29</span></a></li>
+            </ul>
+          </div>
         </div>
 
         <ul class="quick-links" aria-label="바로가기">
@@ -1852,9 +1896,11 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
           <button class="equipment-showcase_tab" type="button" role="tab" id="equipment-tab-hypersonic" aria-controls="equipment-panel-hypersonic" aria-selected="false" tabindex="-1"><span class="equipment-showcase_tab-number">02</span>극초음속 풍동</button>
           <button class="equipment-showcase_tab" type="button" role="tab" id="equipment-tab-ballistic" aria-controls="equipment-panel-ballistic" aria-selected="false" tabindex="-1"><span class="equipment-showcase_tab-number">03</span>발리스틱 레인지</button>
         </div>
+        <!-- 3D 모형 상태 알림 (스크린리더 전용, WCAG 4.1.3) -->
+        <p class="visually-hidden" role="status" data-model-announce></p>
       </div>
 
-      <article class="equipment-showcase_panel" role="tabpanel" id="equipment-panel-trisonic" aria-labelledby="equipment-tab-trisonic" data-model="trisonic">
+      <div class="equipment-showcase_panel" role="tabpanel" id="equipment-panel-trisonic" aria-labelledby="equipment-tab-trisonic" data-model="trisonic">
         <div class="equipment-showcase_media" data-view="model">
           <div class="model-stage">
             <div class="model-stage_slot"><div class="model-live" id="model-live">
@@ -1893,9 +1939,9 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
             <a class="more-link more-link--light" href="#">더보기<span class="visually-hidden"> 삼중음속 풍동 상세 사양</span></a>
           </div>
         </div>
-      </article>
+      </div>
 
-      <article class="equipment-showcase_panel" role="tabpanel" id="equipment-panel-hypersonic" aria-labelledby="equipment-tab-hypersonic" hidden data-model="hypersonic">
+      <div class="equipment-showcase_panel" role="tabpanel" id="equipment-panel-hypersonic" aria-labelledby="equipment-tab-hypersonic" hidden data-model="hypersonic">
         <div class="equipment-showcase_media" data-view="model">
           <div class="model-stage">
             <div class="model-stage_slot"></div>
@@ -1927,9 +1973,9 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
             <a class="more-link more-link--light" href="#">더보기<span class="visually-hidden"> 극초음속 풍동 상세 사양</span></a>
           </div>
         </div>
-      </article>
+      </div>
 
-      <article class="equipment-showcase_panel" role="tabpanel" id="equipment-panel-ballistic" aria-labelledby="equipment-tab-ballistic" hidden data-model="ballistic">
+      <div class="equipment-showcase_panel" role="tabpanel" id="equipment-panel-ballistic" aria-labelledby="equipment-tab-ballistic" hidden data-model="ballistic">
         <div class="equipment-showcase_media" data-view="model">
           <div class="model-stage">
             <div class="model-stage_slot"></div>
@@ -1961,7 +2007,7 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
             <a class="more-link more-link--light" href="#">더보기<span class="visually-hidden"> 발리스틱 레인지 상세 사양</span></a>
           </div>
         </div>
-      </article>
+      </div>
     </div>
   </section>
 
@@ -2257,20 +2303,77 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
     facilityObserver.observe(facilityCards);
   }
 
+  /* 흐르는 글자 — 스크롤한 거리만큼 왼쪽으로 민다. 화면에 보일 때만 계산하고, 동작 줄이기 설정이면 멈춰 둔다 */
+  var flowTrack = document.querySelector('.flow-text_track');
+  if (!reduceMotion && 'IntersectionObserver' in window) {
+    var flowVisible = false;
+    var flowTicking = false;
+    var FLOW_SPEED = .6; /* 스크롤 1px당 글자가 움직이는 거리 */
+    function moveFlow() {
+      flowTicking = false;
+      var loop = flowTrack.scrollWidth / 2; /* 같은 문구 두 벌 — 한 벌 길이마다 처음으로 이어 붙는다 */
+      flowTrack.style.transform = 'translateX(' + -((window.scrollY * FLOW_SPEED) % loop) + 'px)';
+    }
+    new IntersectionObserver(function (entries) {
+      flowVisible = entries[0].isIntersecting;
+      if (flowVisible) moveFlow();
+    }).observe(flowTrack);
+    window.addEventListener('scroll', function () {
+      if (!flowVisible || flowTicking) return;
+      flowTicking = true;
+      requestAnimationFrame(moveFlow);
+    }, { passive: true });
+  }
+
+  /* GNB 드롭다운 — Esc로 닫기 */
+  var gnb = document.querySelector('.gnb');
+  var gnbRefocusing = false;
+  document.addEventListener('keydown', function (event) {
+    if (event.key !== 'Escape') return;
+    if (!gnb.matches(':hover') && !gnb.contains(document.activeElement)) return;
+    gnb.classList.add('is-dismissed');
+    /* 펼친 칸 안에 포커스가 있었다면 보이는 1차 메뉴로 옮긴다 */
+    if (document.activeElement.closest('.gnb_sub')) {
+      gnbRefocusing = true;
+      document.activeElement.closest('.gnb_item').querySelector('.gnb_link').focus();
+      gnbRefocusing = false;
+    }
+  });
+  gnb.addEventListener('mouseleave', function () { gnb.classList.remove('is-dismissed'); });
+  gnb.addEventListener('focusin', function () {
+    if (!gnbRefocusing) gnb.classList.remove('is-dismissed');
+  });
+
   /* 전체 메뉴 */
   var sitemap = document.getElementById('sitemap');
   var openButton = document.querySelector('.sitemap-toggle');
   var closeButton = sitemap.querySelector('.sitemap_close');
+  /* 메뉴 뒤에 가려진 영역 — 열려 있는 동안 inert로 막아 스크린리더·Tab이 넘어가지 않게 한다 */
+  var behindSitemap = document.querySelectorAll('.app-header, main, .app-footer');
   function setSitemap(open) {
     sitemap.hidden = !open;
     openButton.setAttribute('aria-expanded', open);
     document.body.classList.toggle('is-locked', open);
+    behindSitemap.forEach(function (area) { area.inert = open; });
     (open ? closeButton : openButton).focus();
   }
   openButton.addEventListener('click', function () { setSitemap(true); });
   closeButton.addEventListener('click', function () { setSitemap(false); });
   document.addEventListener('keydown', function (event) {
-    if (event.key === 'Escape' && !sitemap.hidden) setSitemap(false);
+    if (sitemap.hidden) return;
+    if (event.key === 'Escape') { setSitemap(false); return; }
+    /* 포커스 가두기 — 처음/마지막 요소에서 Tab이 메뉴 안에서 돌게 한다 */
+    if (event.key !== 'Tab') return;
+    var focusables = sitemap.querySelectorAll('a[href], button');
+    var first = focusables[0];
+    var last = focusables[focusables.length - 1];
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
   });
 })();
 </script>
@@ -2325,7 +2428,9 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   });
 
   /* 3D를 못 띄우면 사진 보기로 고정하고 전환 버튼을 숨긴다 */
+  var announce = showcase.querySelector('[data-model-announce]');
   function fail() {
+    announce.textContent = '3D 모형을 불러오지 못해 사진으로 보여 드립니다.';
     panels.forEach(function (panel) {
       panel.querySelector('.equipment-showcase_media').setAttribute('data-view', 'photo');
       panel.querySelector('.view-toggle').hidden = true;
@@ -2785,6 +2890,7 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 
     show(step);
     panels.forEach(function (panel) { panel.querySelector('.model-stage_status').hidden = true; });
+    announce.textContent = '3D 모형을 불러왔습니다.';
     tick();
   }
 })();
