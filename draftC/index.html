@@ -1616,14 +1616,15 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   position: absolute;
   inset: 0 0 0 auto;
   width: 60%;
-  mask-image: linear-gradient(90deg, transparent 0%, #000 35%);
+  mask-image: linear-gradient(90deg, transparent 0%, #000 25%); /* 페이드 폭을 줄여 사진 왼쪽(사람)이 더 보이게 */
 }
 /* 원본 가장자리의 밝은 여백이 띠 끝에 보이지 않게 조금 키워 자른다 */
 .usage-band_image {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  opacity: .8;
+  object-position: 5% center; /* 사람(사진 왼쪽)이 페이드에 덜 묻히게 사진을 오른쪽으로 민다 */
+  opacity: .65;
   transform: scale(1.06);
 }
 /* 글 쪽(왼쪽)을 더 어둡게 */
