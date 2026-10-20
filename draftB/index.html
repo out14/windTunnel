@@ -63,7 +63,9 @@
 
 <!-- ============ §01 개요 (어두운 지면) ============ -->
 <section class="theme-dark container page-section" id="overview">
-  <div class="section-head reveal">
+  <div class="ov-split">
+    <div>
+    <div class="section-head reveal">
     <!-- <span class="section-no">§ 01</span> -->
      <span class="section-en">Overview</span>
     <h2 class="reveal-lines">
@@ -71,12 +73,9 @@
     </h2>
     
   </div>
-  <div class="rule-double reveal"></div>
+  
 
-  <div class="col-set col-set-3" style="margin-top:clamp(28px,4.4vh,54px)">
-    <div class="col-rail">
-      <div class="v-keyword reveal"><span>Continuum</span></div>
-    </div>
+  <div style="margin-top:clamp(24px,3.6vh,44px)">
     <div class="reveal-seq">
       <p class="body-txt">삼중음속 풍동은 아음속(M&lt;1)·천음속(0.8≤M≤1.2)·초음속(1.2&lt;M&lt;5)의 삼중 속도 영역을 모사합니다. 극초음속 풍동은 M5 이상의 비행 환경을 지상에서 모사하고, 발리스틱 레인지는 지지대가 없는 자유비행 조건을 담당합니다.</p>
       <p class="body-txt">센터는 <strong>고아음속·천음속·초음속 유동환경을 구현하는 삼중음속 풍동장치(마하 0.5~3 급)</strong>와 <strong>극초음속 풍동장치(마하 7 급)</strong>로 구성됩니다. 이를 기반으로 연구개발과 성능시험을 수행합니다.</p>
@@ -85,15 +84,19 @@
       <a class="btn-stamp" href="#location">이용 문의 <i>→</i></a>
     </div>
 
-    <aside class="margin-table reveal-seq">
-      <h5>Tab. 1.1 속도 영역 대조</h5>
-      <div class="row"><b>M &lt; 1</b><span>아음속</span></div>
-      <div class="row"><b>0.8 ≤ M ≤ 1.2</b><span>천음속</span></div>
-      <div class="row"><b>1.2 &lt; M &lt; 5</b><span>초음속</span></div>
-      <div class="row is-hl"><b>M 5 이상</b><span>극초음속</span></div>
-      <div class="row"><b>최대 4 km/s</b><span>자유비행</span></div>
-      <p>삼중음속 풍동 M 0.5~3 급 이상, 극초음속 풍동 M 7 급. 극초음속 풍동은 향후 M5~M10 확보가 가능한 설계를 반영했다.</p>
-    </aside>
+    
+  </div>
+    </div>
+    <div><div class="mach reveal">
+  <p class="mach-label">Mach Number Spectrum</p>
+  <div class="mach-scale">
+    <div class="mach-heads"><div class="mach-head" style="--p:0%"><b>아음속</b><span class="mach-en">Subsonic</span><span class="mach-range">M &lt; 1</span><em>음속보다 느린 영역</em><p class="mach-note">공기역학적 안정성이 높은 구간</p></div><div class="mach-head" style="--p:25%"><b>천음속</b><span class="mach-en">Transonic</span><span class="mach-range">0.8 ≤ M ≤ 1.2</span><em>음속에 근접하는 영역</em><p class="mach-note">압축성 효과가 나타나는 전이 구간</p></div><div class="mach-head" style="--p:50%"><b>초음속</b><span class="mach-en">Supersonic</span><span class="mach-range">1.2 &lt; M &lt; 5</span><em>음속보다 빠른 영역</em><p class="mach-note">충격파가 발생하는 고속 구간</p></div><div class="mach-head" style="--p:75%"><b>극초음속</b><span class="mach-en">Hypersonic</span><span class="mach-range">M ≥ 5</span><em>마하 5 이상의 영역</em><p class="mach-note">극한의 온도·압력 환경을 동반하는 구간</p></div></div>
+    <div class="mach-line" aria-hidden="true"><i style="--p:0%"></i><i style="--p:25%"></i><i style="--p:50%"></i><i style="--p:75%"></i></div>
+    <div class="mach-ticks" aria-hidden="true"><span style="--p:0%">M &lt; 1</span><span style="--p:25%">M 0.8</span><span style="--p:50%">M 1.2</span><span style="--p:75%">M 5</span><span class="mach-tick-end">M 5+</span></div>
+  </div>
+  <div class="mach-cover"><p class="mach-cover-label">Facility Coverage</p><div class="mach-bar"><p class="mach-bar-head"><b>삼중음속 풍동</b><span class="mach-bar-dots"></span><span>M 0.5 – 3 급</span></p><div class="mach-bar-track"><i style="--a:12%;--b:62%"></i></div></div><div class="mach-bar"><p class="mach-bar-head"><b>극초음속 풍동</b><span class="mach-bar-dots"></span><span>M 7 급</span></p><div class="mach-bar-track"><u style="--a:75%;--b:100%"></u><i style="--a:82%;--b:88%"></i></div></div><div class="mach-bar"><p class="mach-bar-head"><b>발리스틱 레인지</b><span class="mach-bar-dots"></span><span>자유비행</span></p><div class="mach-bar-track"><i style="--a:93%;--b:100%" class="is-open"></i></div></div><p class="mach-cover-note">옅은 띠는 극초음속 풍동의 증설 설계 범위(M5–10). 발리스틱 레인지는 마하수가 아니라 발사속도(최대 4 km/s)로 규정되어 위치는 참고용이다.</p></div>
+  <div class="mach-stat"><p class="mach-stat-label"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round" aria-hidden="true"><path d="M1.2 7.4 18.8 1.2l-6.2 17.6-2.6-7.2-7.2-2.6z"/><path d="m10 11.6 8.8-10.4"/></svg>Free-Flight</p><p class="mach-stat-cap">최대 자유비행 속도</p><p class="mach-stat-val">4<span>km/s</span></p><p class="mach-stat-sub">2단 경가스 발사기</p><svg class="mach-globe" viewBox="0 0 68 68" fill="none" stroke="currentColor" stroke-width="1" aria-hidden="true"><circle cx="34" cy="34" r="23"/><ellipse cx="34" cy="34" rx="8.5" ry="23"/><ellipse cx="34" cy="34" rx="17" ry="23"/><path d="M11.6 26.4h44.8M11 42h46M13.4 34h41.2"/><ellipse cx="34" cy="34" rx="31" ry="10" transform="rotate(-24 34 34)" opacity=".55"/><circle cx="60.4" cy="22.2" r="2" fill="currentColor" stroke="none"/></svg></div>
+</div></div>
   </div>
 </section>
 
@@ -104,7 +107,7 @@
     <h2 class="reveal-lines"><span class="reveal-line"><span>설비 일람</span></span></h2>
     
   </div>
-  <div class="rule-double reveal"></div>
+  
 </section>
 
 <section class="theme-paper facility-pin" id="facilities-pin" aria-label="설비 일람">
@@ -146,7 +149,6 @@
           </figure>
         </div>
         <div class="panel-text-col">
-          <p class="panel-no">Unit 2.1</p>
           <h3>삼중음속 풍동</h3>
           <p class="panel-en">Trisonic Wind Tunnel</p>
           <p class="panel-desc">아음속·천음속·초음속의 삼중 속도 영역을 모사합니다. 가변 노즐 실시간 제어로 마하수를 연속 가변하며, 압력·힘·진동 등 주요 공력 데이터를 획득합니다.</p>
@@ -178,7 +180,6 @@
           </figure>
         </div>
         <div class="panel-text-col">
-          <p class="panel-no">Unit 2.2</p>
           <h3>극초음속 풍동</h3>
           <p class="panel-en">Hypersonic Wind Tunnel</p>
           <p class="panel-desc">M5 이상의 비행 환경을 지상에서 모사합니다. 전기히터 가열식 불어내기(Pressure–Vacuum Blowdown) 방식이며, 발사체의 공력현상과 우주탐사선의 하강·착륙 시 발생하는 비행안정성 문제를 연구합니다.</p>
@@ -210,7 +211,6 @@
           </figure>
         </div>
         <div class="panel-text-col">
-          <p class="panel-no">Unit 2.3</p>
           <h3>발리스틱 레인지</h3>
           <p class="panel-en">Ballistic Range</p>
           <p class="panel-desc">2단 경가스 발사기(Two-stage light gas gun)로 모형을 가속해 천음속·초음속·극초음속 자유비행 공력 실험을 수행합니다. 비행체 후류 유동 계측과 슐리렌 유동 가시화가 가능합니다.</p>
@@ -235,7 +235,7 @@
         <span class="section-en">Data</span>
         <h2 class="reveal-lines is-in"><span class="reveal-line"><span>계측 자료</span></span></h2>
       </div>
-      <div class="rule-double"></div>
+      
 
       <div class="fig-row">
       <div class="fig-rail reveal"><span>Measurement</span></div>
@@ -327,13 +327,13 @@
         <h2 class="reveal-lines"><span class="reveal-line"><span>센터 소식</span></span></h2>
     <a class="btn-stamp" href="#">공지사항 전체보기 <i>→</i></a>
   </div>
-  <div class="rule-double reveal"></div>
+  
   <div class="news-list reveal" style="margin-top:clamp(22px,3.4vh,40px)">
-    <a><span class="news-tag">공지</span><span class="news-title">2026년 하반기 풍동 시험 설비 이용 신청 안내</span><span class="dots"></span><span class="news-date">2026.09.24</span></a>
-    <a><span class="news-tag">운영</span><span class="news-title">극초음속 풍동 정기 점검에 따른 운용 일정 변경</span><span class="dots"></span><span class="news-date">2026.09.11</span></a>
+    <a><span class="news-tag is-notice">공지</span><span class="news-title">2026년 하반기 풍동 시험 설비 이용 신청 안내</span><span class="dots"></span><span class="news-date">2026.09.24</span></a>
+    <a><span class="news-tag is-notice">공지</span><span class="news-title">극초음속 풍동 정기 점검에 따른 운용 일정 변경</span><span class="dots"></span><span class="news-date">2026.09.11</span></a>
     <a><span class="news-tag">행사</span><span class="news-title">제1회 통합풍동 기술교류회 개최 결과</span><span class="dots"></span><span class="news-date">2026.08.29</span></a>
-    <a><span class="news-tag">모집</span><span class="news-title">산업체 공동연구 파트너 모집 공고</span><span class="dots"></span><span class="news-date">2026.08.14</span></a>
-    <a><span class="news-tag">설비</span><span class="news-title">발리스틱 레인지 고속 촬영 장비 증설</span><span class="dots"></span><span class="news-date">2026.07.30</span></a>
+    <a><span class="news-tag is-notice">공지</span><span class="news-title">산업체 공동연구 파트너 모집 공고</span><span class="dots"></span><span class="news-date">2026.08.14</span></a>
+    <a><span class="news-tag is-notice">공지</span><span class="news-title">발리스틱 레인지 고속 촬영 장비 증설</span><span class="dots"></span><span class="news-date">2026.07.30</span></a>
   </div>
 </section>
 
@@ -344,7 +344,7 @@
     <h2 class="reveal-lines"><span class="reveal-line"><span>소재지</span></span></h2>
     
   </div>
-  <div class="rule-double reveal"></div>
+  
   <div class="location reveal" style="margin-top:clamp(26px,4vh,48px)">
     <div class="map-box">
       <div class="map-host" id="map-host">
@@ -1460,5 +1460,35 @@
 
 </script>
 
+<script>
+/* 마하 스펙트럼 · 축 그리기 + 커버리지 띠 (mach_block.grow_js) */
+(function () {
+  var blocks = document.querySelectorAll('.mach');
+  if (!blocks.length || !('IntersectionObserver' in window)) return;
+  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  var DRAW_MS = 950;
+  Array.prototype.forEach.call(blocks, function (m) {
+    var scale = m.querySelector('.mach-scale'), cover = m.querySelector('.mach-cover');
+    if (!scale || !cover) return;
+    var drawn = false, seen = false, timer = 0;
+    function sync() {
+      if (!seen) m.classList.remove('is-grow');          // 띠는 띠가 사라질 때만 접힌다
+      else if (drawn) m.classList.add('is-grow');        // 축이 다 그려지고 띠가 보일 때
+    }
+    new IntersectionObserver(function (es) {
+      var on = es[es.length - 1].isIntersecting;
+      m.classList.toggle('is-draw', on);
+      clearTimeout(timer);
+      if (on) timer = setTimeout(function () { drawn = true; sync(); }, DRAW_MS);
+      else drawn = false;                                // 축이 사라져도 보이는 띠는 그대로
+    }, { threshold: 0.6, rootMargin: '0px 0px -8% 0px' }).observe(scale);
+    new IntersectionObserver(function (es) {
+      seen = es[es.length - 1].isIntersecting; sync();
+    }, { threshold: 0.35, rootMargin: '0px 0px -8% 0px' }).observe(cover);
+    m.classList.add('mach-anim');
+    requestAnimationFrame(function () { requestAnimationFrame(function () { m.classList.add('is-armed'); }); });
+  });
+})();
+</script>
 </body>
 </html>

@@ -324,6 +324,162 @@ button{ font:inherit; color:inherit; background:none; border:0; cursor:pointer; 
 .tile.big{ grid-row:1/3; aspect-ratio:4/3.08; }
 .tile.sm{ aspect-ratio:16/9; } */
 
+/* ============ 마하 속도 영역 스펙트럼 ============
+   데스크톱은 가로 축, 태블릿은 2×2 카드, 모바일은 세로 레일.
+   같은 칸이 화면 폭에 따라 다른 항목을 보이므로 DOM 은 하나만 두고
+   CSS 가 켜고 끈다 — 같은 내용을 두 번 적지 않기 위해서다. */
+.mach{ margin-top:clamp(26px,4vh,46px); }
+.mach-label{ display:flex; align-items:center; gap:14px;
+  font-family:var(--mono); font-size:10px; letter-spacing:.24em; text-transform:uppercase;
+  color:var(--on-paper-2); white-space:nowrap; }
+.mach-label::before{ content:''; width:7px; height:7px; flex:0 0 7px;
+  border-left:1px solid var(--amber-ink); border-top:1px solid var(--amber-ink); align-self:flex-start; margin-top:2px; }
+.mach-label::after{ content:''; flex:1; border-top:1px solid var(--hair-paper); }
+
+/* ---- 가로 축 (데스크톱) ---- */
+.mach-scale{ margin-top:clamp(18px,2.6vh,30px); }
+.mach-heads{ position:relative; display:grid; grid-template-columns:repeat(4,minmax(0,1fr));
+  padding-bottom:16px; }
+.mach-head{ position:relative; padding:0 12px 0 15px; }
+/* 머리말 왼쪽의 세로 눈금선이 그대로 내려와 축 위의 점과 만난다 */
+.mach-head::before{ content:''; position:absolute; left:0; top:-2px; bottom:-16px;
+  width:1px; background:var(--hair-paper); }
+.mach-head b{ display:block; font-size:clamp(15px,1.35vw,18px); font-weight:700; letter-spacing:-.02em; }
+.mach-en{ display:block; margin-top:3px;
+  font-family:var(--mono); font-size:9.5px; letter-spacing:.18em; text-transform:uppercase; color:var(--amber-ink); }
+/* 범위는 데스크톱에서 축 눈금이 말하므로 숨기고, 축이 접히면 여기서 보인다 */
+.mach-range{ display:none; font-family:var(--mono); font-size:11.5px; letter-spacing:.04em; }
+/* 무엇인가(em) → 어떤 특성인가(note) 두 줄 */
+.mach-head em{ display:block; margin-top:9px; font-style:normal; font-size:12.5px; font-weight:500; color:var(--on-paper); }
+.mach-note{ margin-top:3px; font-size:12px; line-height:1.55; color:var(--on-paper-2); }
+
+.mach-line{ position:relative; height:3px; border-radius:2px;
+  background:linear-gradient(90deg, rgba(122,74,5,.30) 0%, rgba(122,74,5,.62) 46%, var(--amber-ink) 100%); }
+.mach-line i{ position:absolute; left:var(--p); top:50%; transform:translate(-50%,-50%);
+  width:9px; height:9px; border-radius:50%; background:var(--amber-ink); }
+/* 축 끝의 화살촉 — 영역이 계속 열려 있다는 표시 */
+.mach-line::after{ content:''; position:absolute; right:-9px; top:50%; transform:translateY(-50%);
+  border-left:9px solid var(--amber-ink); border-top:5px solid transparent; border-bottom:5px solid transparent; }
+.mach-ticks{ position:relative; height:16px; margin-top:11px; }
+.mach-ticks span{ position:absolute; left:var(--p); transform:translateX(-50%);
+  font-family:var(--mono); font-size:10.5px; letter-spacing:.08em; color:var(--on-paper-2); white-space:nowrap; }
+.mach-ticks span:first-child{ transform:none; }
+.mach-tick-end{ left:auto !important; right:0; transform:none !important; color:var(--amber-ink) !important; }
+
+/* ---- 설비 커버리지 : 어느 장비가 축의 어디를 덮는가 ---- */
+.mach-cover{ margin-top:clamp(18px,2.6vh,28px); }
+.mach-cover-label{ font-family:var(--mono); font-size:9.5px; letter-spacing:.2em;
+  text-transform:uppercase; color:var(--on-paper-2); padding-bottom:9px; border-bottom:1px solid var(--hair-paper); }
+.mach-bar{ margin-top:13px; }
+.mach-bar-head{ display:flex; align-items:baseline; gap:10px; margin-bottom:5px; font-size:12.5px; }
+.mach-bar-head b{ font-weight:600; letter-spacing:-.02em; white-space:nowrap; }
+.mach-bar-head > span:last-child{ font-family:var(--mono); font-size:11px; color:var(--amber-ink); white-space:nowrap; }
+.mach-bar-dots{ flex:1; border-bottom:1px dotted currentColor; opacity:.26; transform:translateY(-3px); }
+/* 축과 같은 0~100% 자리를 쓰므로 띠의 위치가 위 눈금과 바로 맞물린다 */
+.mach-bar-track{ position:relative; height:6px; border-radius:3px; background:rgba(122,74,5,.10); }
+.mach-bar-track i, .mach-bar-track u{ position:absolute; top:0; bottom:0;
+  left:var(--a); width:calc(var(--b) - var(--a)); border-radius:3px; }
+.mach-bar-track i{ background:var(--amber-ink); }
+.mach-bar-track u{ background:rgba(122,74,5,.26); }   /* 증설 설계 범위 */
+/* 마하수로 규정되지 않은 설비는 끝을 열어 둔다 */
+.mach-bar-track i.is-open{ border-radius:3px 0 0 3px; }
+.mach-bar-track i.is-open::after{ content:''; position:absolute; right:-7px; top:50%; transform:translateY(-50%);
+  border-left:7px solid var(--amber-ink); border-top:4px solid transparent; border-bottom:4px solid transparent; }
+.mach-cover-note{ margin-top:11px; font-size:10.5px; line-height:1.7; color:var(--on-paper-2); opacity:.8; }
+
+/* ---- 태블릿 : 축을 접고 머리말을 2×2 로 ---- */
+@media (max-width:1023px){
+  .mach-line, .mach-ticks{ display:none; }
+  .mach-scale{ margin-top:16px; }
+  .mach-heads{ grid-template-columns:repeat(2,minmax(0,1fr)); gap:20px clamp(16px,3vw,32px); padding-bottom:0; }
+  .mach-head::before{ bottom:0; }
+  .mach-range{ display:block; margin-top:8px; }
+  .mach-head em{ margin-top:4px; }
+  /* 축이 사라지면 띠가 가리킬 자리도 없다 — 이름과 사양 줄만 남긴다 */
+  .mach-bar-track, .mach-cover-note{ display:none; }
+  .mach-bar{ margin-top:0; }
+  .mach-bar-head{ margin-bottom:0; padding:9px 0; border-bottom:1px solid var(--hair-paper); }
+}
+
+/* ---- 모바일 : 세로 레일 목록 ---- */
+@media (max-width:767px){
+  .mach-scale{ margin-top:6px; }
+  .mach-heads{ grid-template-columns:minmax(0,1fr); gap:0; }
+  .mach-head{ padding:13px 0 13px 24px; border-bottom:1px solid var(--hair-paper); }
+  .mach-head:last-child{ border-bottom:0; }
+  /* 왼쪽을 따라 흐르는 레일과 각 항목의 점 */
+  .mach-head::before{ left:4px; top:0; bottom:0; }
+  .mach-head:first-child::before{ top:19px; }
+  .mach-head:last-child::before{ bottom:calc(100% - 19px); }
+  .mach-head::after{ content:''; position:absolute; left:0; top:14px;
+    width:9px; height:9px; border-radius:50%; background:var(--amber-ink); }
+  .mach-en{ display:none; }
+  .mach-head b{ display:inline; font-size:13.5px; }
+  .mach-range{ display:inline; margin:0 0 0 10px; font-size:11px; color:var(--on-paper-2); }
+  .mach-head em{ margin-top:3px; font-size:12px; }
+}
+
+/* ---- 스크롤 등장 : 축 그리기 + 커버리지 띠 (mach_block.grow_css) ---- */
+@media (min-width:1024px){
+  /* ① 머리말 세로선 — 위에서 아래로 */
+  .mach-anim .mach-head::before{ transform:scaleY(0); transform-origin:top center; transition:transform .25s ease; }
+  .mach-anim.is-draw .mach-head::before{ transform:none; transition:transform .5s cubic-bezier(.2,.7,.3,1); }
+  .mach-anim.is-draw .mach-head:nth-child(2)::before{ transition-delay:.18s; }
+  .mach-anim.is-draw .mach-head:nth-child(3)::before{ transition-delay:.36s; }
+  .mach-anim.is-draw .mach-head:nth-child(4)::before{ transition-delay:.54s; }
+
+  /* ① 축 선 — 왼쪽부터 드러난다. 위아래·왼쪽 여유는 점(9px)과 화살촉이 잘리지 않게 */
+  .mach-anim .mach-line{ clip-path:inset(-8px 100% -8px -8px); transition:clip-path .3s ease; }
+  .mach-anim.is-draw .mach-line{ clip-path:inset(-8px -14px -8px -8px);
+    transition:clip-path .9s cubic-bezier(.35,.15,.35,1); }
+  /* 점 — 선이 닿을 때 톡 */
+  .mach-anim .mach-line i{ transform:translate(-50%,-50%) scale(0); transition:transform .2s ease; }
+  .mach-anim.is-draw .mach-line i{ transform:translate(-50%,-50%) scale(1);
+    transition:transform .4s cubic-bezier(.3,1.7,.5,1); }
+  .mach-anim.is-draw .mach-line i:nth-child(2){ transition-delay:.20s; }
+  .mach-anim.is-draw .mach-line i:nth-child(3){ transition-delay:.38s; }
+  .mach-anim.is-draw .mach-line i:nth-child(4){ transition-delay:.56s; }
+  /* 눈금 글자 — 점과 같은 박자 */
+  .mach-anim .mach-ticks span{ opacity:0; transition:opacity .2s ease; }
+  .mach-anim.is-draw .mach-ticks span{ opacity:1; transition:opacity .45s ease; }
+  .mach-anim.is-draw .mach-ticks span:nth-child(2){ transition-delay:.22s; }
+  .mach-anim.is-draw .mach-ticks span:nth-child(3){ transition-delay:.40s; }
+  .mach-anim.is-draw .mach-ticks span:nth-child(4){ transition-delay:.58s; }
+  .mach-anim.is-draw .mach-ticks span:nth-child(5){ transition-delay:.80s; }
+
+  /* ② 커버리지 띠 — 왼쪽 끝 기준으로 늘어난다 */
+  .mach-anim .mach-bar-track i, .mach-anim .mach-bar-track u{
+    transform:scaleX(0); transform-origin:left center; transition:transform .28s ease; }
+  .mach-anim.is-grow .mach-bar-track i, .mach-anim.is-grow .mach-bar-track u{
+    transform:none; transition:transform 1s cubic-bezier(.2,.7,.3,1); }
+  /* 줄마다 시차 — 극초음속은 옅은 설계 범위가 먼저 깔리고 운용 띠가 그 위로 */
+  .mach-anim.is-grow .mach-bar:nth-of-type(2) u{ transition-delay:.14s; }
+  .mach-anim.is-grow .mach-bar:nth-of-type(2) i{ transition-delay:.40s; }
+  .mach-anim.is-grow .mach-bar:nth-of-type(3) i{ transition-delay:.28s; }
+  /* 열린 끝 화살촉은 띠와 함께 늘리면 찌그러진다 — 띠가 다 선 뒤 나타난다 */
+  .mach-anim .mach-bar-track i.is-open::after{ opacity:0; transition:opacity .15s; }
+  .mach-anim.is-grow .mach-bar-track i.is-open::after{ opacity:1; transition:opacity .3s 1.05s; }
+
+  /* 처음 붙일 때 다 그려진 상태가 접히는 모습이 보이지 않게 */
+  .mach-anim:not(.is-armed) .mach-head::before, .mach-anim:not(.is-armed) .mach-line,
+  .mach-anim:not(.is-armed) .mach-line i, .mach-anim:not(.is-armed) .mach-ticks span,
+  .mach-anim:not(.is-armed) .mach-bar-track i, .mach-anim:not(.is-armed) .mach-bar-track u,
+  .mach-anim:not(.is-armed) .mach-bar-track i.is-open::after{ transition:none !important; }
+}
+
+/* 04 수치 : 왼쪽 글, 오른쪽 그래픽 — 시안 B 개요 절과 같은 짜임 */
+.ov-split{ display:grid; grid-template-columns:minmax(0,.52fr) minmax(0,1fr);
+  gap:clamp(24px,3.4vw,60px); align-items:start; }
+/* 절 머리가 분할 밖으로 나갔으니 두 칸은 같은 선에서 시작한다.
+   머리와의 간격은 예전 figband 인라인 여백(34px)을 그대로 옮긴 것. */
+.figs .ov-split{ margin-top:34px; }
+.ov-split .mach{ margin-top:0; }
+.figs .wordmark{ margin-top:clamp(30px,4.6vh,56px); }
+@media (max-width:1023px){
+  .ov-split{ grid-template-columns:minmax(0,1fr); gap:clamp(22px,4vh,38px); }
+  .ov-split .mach{ margin-top:0; }
+}
+
 /* ============ 03 장비 — 세로쓰기 탭 아코디언 ============ */
 .acc{ display:flex; height:min(84vh,780px); min-height:470px; overflow:hidden; border-top:1px solid var(--hair-ink); border-bottom:1px solid var(--hair-ink); }
 .pan{
@@ -418,13 +574,15 @@ button{ font:inherit; color:inherit; background:none; border:0; cursor:pointer; 
 .model-hud{ position:absolute; left:12px; bottom:12px; z-index:3; display:flex; gap:6px; flex-wrap:wrap; }
 .model-hud button{ font-family:var(--mono); font-size:9.5px; letter-spacing:.12em; text-transform:uppercase;
   padding:7px 10px 6px; border:1px solid rgba(237,240,250,.24); background:rgba(10,14,36,.6);
-  color:var(--on-ink-2); transition:border-color .2s, color .2s, background .2s; }
+  color:var(--on-ink-2); border-radius:4px;
+  transition:border-color .2s, color .2s, background .2s; }
 .model-hud button:hover{ border-color:var(--amber); color:var(--amber); }
 .model-hud button[aria-pressed="true"]{ background:var(--amber); border-color:var(--amber); color:#1A1000; }
 
 /* 보기 전환 토글 */
 .view-toggle{ position:absolute; z-index:6; top:12px; right:12px; display:flex;
-  border:1px solid rgba(237,240,250,.24); background:rgba(10,14,36,.6); backdrop-filter:blur(6px); }
+  border:1px solid rgba(237,240,250,.24); background:rgba(10,14,36,.6); backdrop-filter:blur(6px);
+  border-radius:4px; overflow:hidden; }
 .view-toggle button{ font-family:var(--mono); font-size:9.5px; font-weight:700; letter-spacing:.14em;
   text-transform:uppercase; padding:7px 13px 6px; color:var(--on-ink-2);
   border-left:1px solid rgba(237,240,250,.18); transition:background .2s, color .2s; }
@@ -451,20 +609,17 @@ button{ font:inherit; color:inherit; background:none; border:0; cursor:pointer; 
 
 /* ============ 04 수치 띠 + 잘린 워드마크 ============ */
 .figs{ position:relative; overflow:hidden; }
-.figband{ display:flex; flex-wrap:wrap; border-top:1px solid var(--hair-paper); }
-.figband div{ flex:1 1 170px; border-right:1px solid var(--hair-paper);
-  padding:clamp(26px,3.6vw,46px) clamp(26px,3vw,46px) clamp(30px,4vw,54px) 0; }
-.figband div + div{ padding-left:clamp(22px,2.6vw,40px); }
-.figband div:nth-child(1){ flex-grow:1.35; }
-.figband div:nth-child(2){ flex-grow:1.1; }
-.figband div:nth-child(3){ flex-grow:.72; }
-.figband div:nth-child(4){ flex-grow:1.0; }
-.figband div:last-child{ border-right:0; }
-.figband b{ display:block; font-family:var(--mono); font-weight:700; letter-spacing:-.045em;
-  font-size:clamp(34px,5.4vw,78px); line-height:.92; }
-.figband b sup{ font-size:.34em; font-weight:500; letter-spacing:.08em; vertical-align:super; margin-left:.18em;
-  color:var(--amber-ink); opacity:1; }
-.figband span{ display:block; margin-top:14px; font-size:13px; line-height:1.6; }
+/* 사양 목록 — 세로줄 없이 가로 괘선만. 값 칸 + 설명 칸 */
+.figband{ margin:clamp(18px,2.6vh,30px) 0 0; border-top:1px solid var(--hair-paper); }
+.figband > div{ display:grid; grid-template-columns:clamp(132px,12vw,176px) minmax(0,1fr);
+  align-items:center; column-gap:clamp(14px,1.6vw,24px);
+  padding:clamp(14px,1.9vh,20px) 0; border-bottom:1px solid var(--hair-paper); }
+.figband dd{ margin:0; grid-column:1; grid-row:1; white-space:nowrap; }
+.figband dt{ grid-column:2; grid-row:1; font-size:13.5px; line-height:1.6; color:var(--on-paper-2); }
+.figband dd b{ font-family:var(--mono); font-weight:700; letter-spacing:-.045em; line-height:1;
+  font-size:clamp(26px,2.3vw,36px); color:var(--on-paper); }
+.figband dd span{ margin-left:.4em; font-family:var(--mono); font-size:10px; font-weight:500;
+  letter-spacing:.14em; color:var(--amber-ink); vertical-align:.9em; }
 .wordmark{
   font-family:var(--sans); font-weight:900; letter-spacing:-.055em; line-height:.78;
   font-size:clamp(78px,17vw,250px); white-space:nowrap;
@@ -490,9 +645,9 @@ button{ font:inherit; color:inherit; background:none; border:0; cursor:pointer; 
   border-bottom:1px solid var(--hair-ink);
   transition:background .3s, padding-left .45s cubic-bezier(.2,.8,.3,1);
 }
-.nrow::before{ content:''; position:absolute; left:0; top:0; bottom:0; width:3px; background:var(--amber); transform:scaleY(0); transform-origin:top; transition:transform .45s cubic-bezier(.2,.8,.3,1); }
+
 .nrow:hover{ background:rgba(237,240,250,.045); padding-left:22px; }
-.nrow:hover::before{ transform:scaleY(1); }
+
 .nrow .d{ 
   font-family:var(--mono); font-size:12px; color:var(--on-ink-2); letter-spacing:.04em; margin-left: auto;}
 .nrow .t{ 
@@ -505,8 +660,14 @@ button{ font:inherit; color:inherit; background:none; border:0; cursor:pointer; 
   white-space: nowrap;
 }
 .nrow:hover .t{ color:var(--amber); }
+/* 소식 분류 라벨 : 공지는 채우고 나머지는 눅인다.
+   반전한 면에 알파를 주면 글자색(지면색)이 그대로 비쳐 올라와 대비가 깎인다.
+   그래서 채우는 쪽은 0.85 까지만 내린다 — 7.30:1. 0.70 이 작은 글씨의 한계선이다. */
 .nrow .c{ font-family:var(--mono); font-size:10.5px; letter-spacing:.17em; text-transform:uppercase;
-  color:var(--amber); border:1px solid rgba(232,163,61,.4); padding:4px 10px; justify-self:start; }
+  color:var(--amber); background:rgba(232,163,61,.14); padding:4px 10px; justify-self:start;
+  border-radius:4px;   /* 지면 전체는 각진 채로 두고 이 라벨만 모서리를 눅인다 */
+  transition:background .25s, color .25s; }
+.nrow .c.is-notice{ background:rgba(232,163,61,.85); color:var(--ink); }
 .nrow .a{ 
   font-family:var(--mono); 
   font-size:15px; 
@@ -880,11 +1041,26 @@ button{ font:inherit; color:inherit; background:none; border:0; cursor:pointer; 
       </div>
       
     </div>
-    <div class="figband seq" style="margin-top:34px">
-      <div><b>0.5–3<sup>MACH</sup></b><span class="dim">삼중음속 풍동 시험 마하수</span></div>
-      <div><b>7<sup>MACH</sup></b><span class="dim">극초음속 풍동 시험 마하수</span></div>
-      <div><b>4<sup>KM/S</sup></b><span class="dim">발리스틱 레인지 최대 발사속도</span></div>
-      <div><b>3<sup>UNITS</sup></b><span class="dim">센터가 운용하는 주요 설비</span></div>
+
+    <div class="ov-split">
+      <div>
+        <p class="mach-label">Key Figures</p>
+        <dl class="figband seq">
+          <div><dt>삼중음속 풍동 시험 마하수</dt><dd><b>0.5–3</b><span>MACH</span></dd></div>
+          <div><dt>극초음속 풍동 시험 마하수</dt><dd><b>7</b><span>MACH</span></dd></div>
+          <div><dt>발리스틱 레인지 최대 발사속도</dt><dd><b>4</b><span>KM/S</span></dd></div>
+          <div><dt>센터가 운용하는 주요 설비</dt><dd><b>3</b><span>UNITS</span></dd></div>
+        </dl>
+      </div>
+      <div><div class="mach rv">
+  <p class="mach-label">Mach Number Spectrum</p>
+  <div class="mach-scale">
+    <div class="mach-heads"><div class="mach-head" style="--p:0%"><b>아음속</b><span class="mach-en">Subsonic</span><span class="mach-range">M &lt; 1</span><em>음속보다 느린 영역</em><p class="mach-note">공기역학적 안정성이 높은 구간</p></div><div class="mach-head" style="--p:25%"><b>천음속</b><span class="mach-en">Transonic</span><span class="mach-range">0.8 ≤ M ≤ 1.2</span><em>음속에 근접하는 영역</em><p class="mach-note">압축성 효과가 나타나는 전이 구간</p></div><div class="mach-head" style="--p:50%"><b>초음속</b><span class="mach-en">Supersonic</span><span class="mach-range">1.2 &lt; M &lt; 5</span><em>음속보다 빠른 영역</em><p class="mach-note">충격파가 발생하는 고속 구간</p></div><div class="mach-head" style="--p:75%"><b>극초음속</b><span class="mach-en">Hypersonic</span><span class="mach-range">M ≥ 5</span><em>마하 5 이상의 영역</em><p class="mach-note">극한의 온도·압력 환경을 동반하는 구간</p></div></div>
+    <div class="mach-line" aria-hidden="true"><i style="--p:0%"></i><i style="--p:25%"></i><i style="--p:50%"></i><i style="--p:75%"></i></div>
+    <div class="mach-ticks" aria-hidden="true"><span style="--p:0%">M &lt; 1</span><span style="--p:25%">M 0.8</span><span style="--p:50%">M 1.2</span><span style="--p:75%">M 5</span><span class="mach-tick-end">M 5+</span></div>
+  </div>
+  <div class="mach-cover"><p class="mach-cover-label">Facility Coverage</p><div class="mach-bar"><p class="mach-bar-head"><b>삼중음속 풍동</b><span class="mach-bar-dots"></span><span>M 0.5 – 3 급</span></p><div class="mach-bar-track"><i style="--a:12%;--b:62%"></i></div></div><div class="mach-bar"><p class="mach-bar-head"><b>극초음속 풍동</b><span class="mach-bar-dots"></span><span>M 7 급</span></p><div class="mach-bar-track"><u style="--a:75%;--b:100%"></u><i style="--a:82%;--b:88%"></i></div></div><div class="mach-bar"><p class="mach-bar-head"><b>발리스틱 레인지</b><span class="mach-bar-dots"></span><span>자유비행</span></p><div class="mach-bar-track"><i style="--a:93%;--b:100%" class="is-open"></i></div></div><p class="mach-cover-note">옅은 띠는 극초음속 풍동의 증설 설계 범위(M5–10). 발리스틱 레인지는 마하수가 아니라 발사속도(최대 4 km/s)로 규정되어 위치는 참고용이다.</p></div>
+</div></div>
     </div>
     <p class="wordmark rv" id="wm1">AEROSPACE INTEGRATED WIND TUNNEL</p>
   </div>
@@ -901,12 +1077,12 @@ button{ font:inherit; color:inherit; background:none; border:0; cursor:pointer; 
     </div>
     <div class="news seq">
       <a class="nrow">
-        <span class="c">공지</span>
+        <span class="c is-notice">공지</span>
         <span class="t">2026년 하반기 풍동 시험 설비 이용 신청 안내</span>
         <span class="d">2026.09.24</span>
       </a>
       <a class="nrow">
-        <span class="c">운영</span>
+        <span class="c is-notice">공지</span>
         <span class="t">극초음속 풍동 정기 점검에 따른 운용 일정 변경</span>
         <span class="d">2026.09.11</span>
       </a>
@@ -916,7 +1092,7 @@ button{ font:inherit; color:inherit; background:none; border:0; cursor:pointer; 
         <span class="d">2026.08.29</span>
       </a>
       <a class="nrow">
-        <span class="c">모집</span>
+        <span class="c is-notice">공지</span>
         <span class="t">산업체 공동연구 파트너 모집 공고</span>
         <span class="d">2026.08.14</span>
       </a>
@@ -1708,5 +1884,35 @@ button{ font:inherit; color:inherit; background:none; border:0; cursor:pointer; 
 })();
 </script>
 
+<script>
+/* 마하 스펙트럼 · 축 그리기 + 커버리지 띠 (mach_block.grow_js) */
+(function () {
+  var blocks = document.querySelectorAll('.mach');
+  if (!blocks.length || !('IntersectionObserver' in window)) return;
+  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  var DRAW_MS = 950;
+  Array.prototype.forEach.call(blocks, function (m) {
+    var scale = m.querySelector('.mach-scale'), cover = m.querySelector('.mach-cover');
+    if (!scale || !cover) return;
+    var drawn = false, seen = false, timer = 0;
+    function sync() {
+      if (!seen) m.classList.remove('is-grow');          // 띠는 띠가 사라질 때만 접힌다
+      else if (drawn) m.classList.add('is-grow');        // 축이 다 그려지고 띠가 보일 때
+    }
+    new IntersectionObserver(function (es) {
+      var on = es[es.length - 1].isIntersecting;
+      m.classList.toggle('is-draw', on);
+      clearTimeout(timer);
+      if (on) timer = setTimeout(function () { drawn = true; sync(); }, DRAW_MS);
+      else drawn = false;                                // 축이 사라져도 보이는 띠는 그대로
+    }, { threshold: 0.6, rootMargin: '0px 0px -8% 0px' }).observe(scale);
+    new IntersectionObserver(function (es) {
+      seen = es[es.length - 1].isIntersecting; sync();
+    }, { threshold: 0.35, rootMargin: '0px 0px -8% 0px' }).observe(cover);
+    m.classList.add('mach-anim');
+    requestAnimationFrame(function () { requestAnimationFrame(function () { m.classList.add('is-armed'); }); });
+  });
+})();
+</script>
 </body>
 </html>
